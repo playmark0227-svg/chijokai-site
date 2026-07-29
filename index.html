@@ -129,6 +129,10 @@
     </div>
   </div>
 
+  <figure class="hero__photo" aria-hidden="true">
+    <img src="assets/img/ocean-hero.jpg" alt="" width="933" height="1400" loading="eager" fetchpriority="high">
+  </figure>
+
   <div class="wave-divider wave-divider--bottom">
     <svg class="wave-move" viewBox="0 0 2880 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <path class="is-back" fill="#f2fbfc" opacity=".55" d="M0,70 C240,116 480,16 720,48 C960,80 1200,126 1440,70 C1680,116 1920,16 2160,48 C2400,80 2640,126 2880,70 L2880,120 L0,120 Z"></path>
@@ -237,7 +241,8 @@
 </section>
 
 <!-- ============ 数字 ============ -->
-<section class="section section--deep">
+<section class="section section--deep has-photo-bg">
+  <div class="photo-bg" aria-hidden="true"><img src="assets/img/ocean-deep.jpg" alt="" width="1400" height="919" loading="lazy"></div>
   <div class="wave-divider wave-divider--top">
     <svg class="wave-move" viewBox="0 0 2880 120" preserveAspectRatio="none" aria-hidden="true">
       <path fill="#f2fbfc" d="M0,64 C240,110 480,10 720,42 C960,74 1200,120 1440,64 C1680,110 1920,10 2160,42 C2400,74 2640,120 2880,64 L2880,120 L0,120 Z"></path>
@@ -282,16 +287,10 @@
 <section class="section section--feature">
   <div class="wrap split">
     <div class="split__media" data-reveal="left">
-      <div class="media-card">
-        <svg viewBox="0 0 200 150" width="70%" aria-hidden="true">
-          <rect x="20" y="45" width="160" height="80" rx="14" fill="#0c3a5c"/>
-          <circle cx="70" cy="85" r="26" fill="#1f93b8"/><circle cx="70" cy="85" r="10" fill="#fff3d6"/>
-          <rect x="112" y="66" width="52" height="8" rx="4" fill="#7fd6da"/>
-          <rect x="112" y="82" width="40" height="8" rx="4" fill="#eab24d"/>
-          <rect x="112" y="98" width="46" height="8" rx="4" fill="#ff8f6b"/>
-          <path d="M150 30q14 6 14 20M158 24q20 8 20 26" stroke="#1f93b8" stroke-width="4" fill="none" stroke-linecap="round" class="float" style="--d:-1.4s"/>
-        </svg>
-      </div>
+      <figure class="media-card media-card--photo">
+        <img src="assets/img/radio-mic.jpg" alt="収録用のマイクとパソコンが置かれたデスク" width="787" height="1400" loading="lazy">
+        <figcaption class="media-card__cap">毎日配信中</figcaption>
+      </figure>
     </div>
     <div data-reveal="right">
       <span class="eyebrow">RADIO</span>
@@ -308,7 +307,8 @@
 </section>
 
 <!-- ============ CTA ============ -->
-<section class="cta-band">
+<section class="cta-band has-photo-bg">
+  <div class="photo-bg" aria-hidden="true"><img src="assets/img/ocean-wave.jpg" alt="" width="1400" height="933" loading="lazy"></div>
   <div class="bubbles" data-bubbles="14"></div>
   <div class="wrap" style="position:relative;z-index:2">
     <h2 data-reveal>まずは、お話を聞かせてください。</h2>
