@@ -186,58 +186,7 @@
     });
   }
 
-  /* ---------- Bubbles（端末に応じて数を調整・1回で挿入） ---------- */
-  $$(".bubbles").forEach(function (box) {
-    if (reduce) return;
-    var n = parseInt(box.dataset.bubbles || "14", 10);
-    if (window.matchMedia("(max-width: 720px)").matches) n = Math.ceil(n * 0.5);
-    if ((navigator.hardwareConcurrency || 8) <= 4) n = Math.ceil(n * 0.7);
-    var frag = document.createDocumentFragment();
-    for (var i = 0; i < n; i++) {
-      var b = document.createElement("span");
-      b.className = "bubble";
-      var size = 6 + Math.random() * 26;
-      b.style.width = b.style.height = size + "px";
-      b.style.left = (Math.random() * 100) + "%";
-      b.style.animationDuration = (7 + Math.random() * 9) + "s";
-      b.style.animationDelay = (-Math.random() * 12) + "s";
-      b.style.opacity = 0.15 + Math.random() * 0.4;
-      frag.appendChild(b);
-    }
-    box.appendChild(frag);
-  });
-
-  /* ---------- Decorative ships & islands（船・島をところどころに） ---------- */
-  var DECO_SVG = {
-    ship:    '<svg class="deco-svg" viewBox="0 0 120 112" fill="currentColor" aria-hidden="true"><path d="M12 68h96l-12 24a8 8 0 0 1-7 4H31a8 8 0 0 1-7-4z"/><rect x="58" y="8" width="4" height="60"/><path d="M62 14q36 10 30 46l-30 3z"/></svg>',
-    island:  '<svg class="deco-svg" viewBox="0 0 132 92" fill="currentColor" aria-hidden="true"><ellipse cx="66" cy="74" rx="56" ry="14"/><rect x="62" y="30" width="6" height="44"/><path d="M65 28q23 2 27 17q-17-7-27-5z"/><path d="M65 28q-23 2-27 17q17-7 27-5z"/></svg>',
-    fish:    '<svg class="deco-svg" viewBox="0 0 124 74" fill="currentColor" aria-hidden="true"><path d="M8 37q32-30 74-8q12-13 34-16q-9 24 0 48q-22-3-34-16q-42 22-74-8z"/></svg>',
-    compass: '<svg class="deco-svg" viewBox="0 0 112 112" fill="currentColor" aria-hidden="true"><circle cx="56" cy="56" r="50" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="3 7"/><path d="M56 18l9 29 29 9-29 9-9 29-9-29-29-9 29-9z"/></svg>'
-  };
-  var DECO_PLAN = [
-    { m: "island",  c: "bl", p: 0.16, slow: true,  d: "-2.4s" },
-    { m: "ship",    c: "tr", p: 0.20, slow: false, d: "-1.1s" },
-    { m: "fish",    c: "br", p: 0.14, slow: true,  d: "-4.7s" },
-    { m: "ship",    c: "tl", p: 0.12, slow: false, d: "-0.6s" },
-    { m: "compass", c: "tr", p: 0.18, slow: true,  d: "-3.2s" },
-    { m: "island",  c: "br", p: 0.15, slow: false, d: "-5.5s" }
-  ];
-  $$(".section, .cta-band").forEach(function (sec, i) {
-    if (sec.dataset.deco) return; sec.dataset.deco = "1";
-    var plan = DECO_PLAN[i % DECO_PLAN.length];
-    var light = sec.classList.contains("section--deep") || sec.classList.contains("cta-band");
-    var layer = document.createElement("div");
-    layer.className = "deco-layer " + (light ? "deco--light" : "deco--dark");
-    var pos = document.createElement("div");
-    pos.className = "deco-pos " + plan.c;
-    if (!reduce) pos.setAttribute("data-parallax", plan.p);
-    var fl = document.createElement("div");
-    fl.className = "deco-float" + (plan.slow ? " deco-float--slow" : "");
-    fl.style.setProperty("--d", plan.d);
-    fl.innerHTML = DECO_SVG[plan.m];
-    pos.appendChild(fl); layer.appendChild(pos);
-    sec.insertBefore(layer, sec.firstChild);
-  });
+  /* 装飾モチーフ（船・島）は廃止しました */
 
   /* パララックス対象とタイムラインを確定（初回計算はすべての定義後にまとめて実行） */
   paras = $$("[data-parallax]");
@@ -267,48 +216,6 @@
     $$(".section-title, .stat").forEach(function (el) { el.classList.add("is-visible"); });
   }
 
-  /* ---- ボタンがカーソルに引き寄せられる（マグネティック） ---- */
-  if (!reduce && window.matchMedia("(pointer:fine)").matches) {
-    $$(".btn").forEach(function (btn) {
-      var raf = 0, r = null;
-      btn.addEventListener("mouseenter", function () { r = btn.getBoundingClientRect(); btn.classList.add("is-magnetic"); });
-      btn.addEventListener("mousemove", function (e) {
-        if (!r) r = btn.getBoundingClientRect();
-        var dx = (e.clientX - (r.left + r.width / 2)) * 0.22;
-        var dy = (e.clientY - (r.top + r.height / 2)) * 0.32;
-        if (!raf) raf = requestAnimationFrame(function () {
-          raf = 0;
-          btn.style.setProperty("--mx", dx.toFixed(1) + "px");
-          btn.style.setProperty("--my", dy.toFixed(1) + "px");
-        });
-      });
-      btn.addEventListener("mouseleave", function () {
-        btn.classList.remove("is-magnetic");
-        btn.style.setProperty("--mx", "0px");
-        btn.style.setProperty("--my", "0px");
-        r = null;
-      });
-    });
-  }
-
-  /* ---- クリックで波紋がひろがる ---- */
-  if (!reduce) {
-    document.addEventListener("click", function (e) {
-      var t = e.target.closest(".btn, .card, .sol, .next-card, .faq-item summary");
-      if (!t) return;
-      var r = t.getBoundingClientRect();
-      var size = Math.max(r.width, r.height) * 1.9;
-      var rip = document.createElement("span");
-      rip.className = "ripple";
-      rip.style.width = rip.style.height = size + "px";
-      rip.style.left = (e.clientX - r.left) + "px";
-      rip.style.top = (e.clientY - r.top) + "px";
-      if (getComputedStyle(t).position === "static") t.style.position = "relative";
-      t.appendChild(rip);
-      setTimeout(function () { rip.remove(); }, 800);
-    }, { passive: true });
-  }
-
   /* ---- ヒーローがマウスに反応して層で動く ---- */
   var hero = $(".hero"), scene = $(".hero__scene svg");
   if (hero && scene && !reduce && window.matchMedia("(pointer:fine)").matches) {
@@ -329,43 +236,10 @@
     });
   }
 
-  /* ---- 航海の深度メーター（現在地インジケーター） ---- */
-  var meterSections = $$("main > section");
-  var meter = null, dots = [];
-  if (meterSections.length > 2 && !reduce) {
-    meter = document.createElement("nav");
-    meter.className = "depth-meter";
-    meter.setAttribute("aria-label", "ページ内の現在位置");
-    meterSections.forEach(function (sec, i) {
-      var d = document.createElement("a");
-      d.className = "depth-dot";
-      if (!sec.id) sec.id = "sec-" + (i + 1);
-      d.href = "#" + sec.id;
-      var t = sec.querySelector(".section-title, h1, h2");
-      d.setAttribute("aria-label", (t ? t.textContent.trim().slice(0, 24) : "セクション " + (i + 1)) + "へ移動");
-      meter.appendChild(d);
-      dots.push(d);
-    });
-    document.body.appendChild(meter);
-  }
+  var meter = null, dots = [], meterSections = [];
 
   /* ---- スクロールに応じて背景がわずかに深くなる ---- */
-  var TINTS = ["#f2f5f7", "#eef2f5", "#eaeff3", "#e6ecf0"];
-
-  function updateExtras(y) {
-    if (meter) {
-      meter.classList.toggle("show", y > 500);
-      var mid = vh * 0.4, best = 0;
-      for (var i = 0; i < meterSections.length; i++) {
-        var r = meterSections[i].getBoundingClientRect();
-        if (r.top <= mid) best = i;
-      }
-      for (var j = 0; j < dots.length; j++) dots[j].classList.toggle("is-active", j === best);
-    }
-    var h = root.scrollHeight - vh;
-    var p = h > 0 ? y / h : 0;
-    document.body.style.backgroundColor = TINTS[Math.min(TINTS.length - 1, Math.floor(p * TINTS.length))];
-  }
+  function updateExtras() { /* 背景トーンの変化・深度メーターは廃止 */ }
 
   /* すべての定義が揃ったところで初回計算（同期実行で初期値を確定） */
   readWrite();

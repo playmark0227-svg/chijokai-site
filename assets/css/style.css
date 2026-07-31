@@ -153,7 +153,7 @@ p, li { line-break: strict; }
   margin: 1rem 0 1.2rem;
   color: var(--deep);
 }
-.section-title .accent { color: var(--gold); font-style: normal; }
+.section-title .accent { color: var(--ocean); font-style: normal; }
 .lead { font-size: clamp(1rem, 2.2vw, 1.12rem); line-height: 1.9; color: var(--ink-2); }
 .center { text-align: center; }
 .center .eyebrow { justify-content: center; }
@@ -225,6 +225,8 @@ p, li { line-break: strict; }
 }
 .nav__links a:hover, .nav__links a[aria-current="page"] { color: var(--deep); background: rgba(46,176,207,.14); }
 .nav__cta { margin-left: .4rem; }
+.nav__links a.nav__cta { color: #fff; }
+.nav__links a.nav__cta:hover { color: #fff; background: var(--deep-2); }
 
 .nav__toggle {
   display: none; width: 46px; height: 46px; border-radius: var(--r-s);
@@ -241,45 +243,21 @@ p, li { line-break: strict; }
 .nav__toggle[aria-expanded="true"] span::before { transform: translate(-50%,0) rotate(45deg); }
 .nav__toggle[aria-expanded="true"] span::after  { transform: translate(-50%,0) rotate(-45deg); }
 
-/* ヒーロー等の暗い背景に重なる未スクロール時のヘッダー */
-body:has(.hero) .site-header:not(.scrolled) .nav__links a { color: rgba(255,255,255,.82); }
-body:has(.hero) .site-header:not(.scrolled) .nav__links a:hover,
-body:has(.hero) .site-header:not(.scrolled) .nav__links a[aria-current="page"] {
-  color: #fff; background: rgba(255,255,255,.14);
-}
-body:has(.hero) .site-header:not(.scrolled) .brand { color: #fff; }
-body:has(.hero) .site-header:not(.scrolled) .brand__name small { color: rgba(255,255,255,.62); }
-body:has(.hero) .site-header:not(.scrolled) .nav__toggle { background: rgba(255,255,255,.16); }
-body:has(.hero) .site-header:not(.scrolled) .nav__toggle span,
-body:has(.hero) .site-header:not(.scrolled) .nav__toggle span::before,
-body:has(.hero) .site-header:not(.scrolled) .nav__toggle span::after { background: #fff; }
-body:has(.hero) .site-header:not(.scrolled) .nav__cta {
-  background: rgba(255,255,255,.14); color: #fff;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.32);
-}
-body:has(.hero) .site-header:not(.scrolled) .nav__cta:hover { background: rgba(255,255,255,.24); }
-
 /* ---------- 07. Hero ---------- */
 .hero {
-  position: relative; min-height: 100svh; display: flex; align-items: center;
-  padding: 140px 0 180px; overflow: hidden;
-  background: var(--deep);
-  color: #fff;
+  position: relative; display: flex; align-items: center;
+  padding: 190px 0 120px; overflow: hidden;
+  background: #fff;
+  color: var(--ink);
 }
-/* ヒーロー全面の写真 */
-.hero__bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
-.hero__bg img { width: 100%; height: 100%; object-fit: cover; }
-.hero__bg::after {
-  content: ""; position: absolute; inset: 0;
-  background:
-    linear-gradient(100deg, rgba(10,28,46,.88) 0%, rgba(10,28,46,.62) 42%, rgba(10,28,46,.25) 100%),
-    linear-gradient(180deg, rgba(10,28,46,.55) 0%, transparent 30%, rgba(10,28,46,.4) 100%);
-}
+/* ヒーロー背景写真は使用しない（明るさと可読性を優先） */
+.hero__bg { display: none; }
 .hero__inner {
   position: relative; z-index: 5;
-  display: grid; grid-template-columns: 1.15fr .85fr; gap: 3rem; align-items: center;
+  display: grid; grid-template-columns: 1.25fr .75fr; gap: clamp(2rem,5vw,4.5rem); align-items: center;
 }
-.hero h1, .hero .hero__sub { color: #fff; text-shadow: 0 1px 24px rgba(10,28,46,.4); }
+.hero h1 { color: var(--deep); }
+.hero .hero__sub { color: var(--ink-2); }
 .hero__badge {
   display: inline-flex; align-items: center; gap: .5em;
   background: rgba(255,255,255,.55); backdrop-filter: blur(8px);
@@ -289,22 +267,18 @@ body:has(.hero) .site-header:not(.scrolled) .nav__cta:hover { background: rgba(2
 }
 .hero__badge .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
 .hero h1 {
-  font-size: clamp(2.3rem, 6vw, 4rem); color: var(--deep); line-height: 1.22;
-  text-shadow: 0 2px 0 rgba(255,255,255,.4);
+  font-size: clamp(1.9rem, 4.2vw, 3.1rem); color: var(--deep); line-height: 1.5;
 }
-.hero h1 .grad { color: var(--gold-2); }
-.hero__sub { margin: 1.4rem 0 2rem; font-size: clamp(1rem, 2.4vw, 1.2rem); color: var(--deep-2); max-width: 32ch; }
+.hero h1 .grad { color: var(--ocean); }
+.hero__sub { margin: 1.6rem 0 2.4rem; font-size: 1.02rem; line-height: 1.95; color: var(--ink-2); max-width: 34ch; }
 .hero__cta { display: flex; flex-wrap: wrap; gap: .8rem; }
 .hero__scene {
   position: relative; margin: 0; overflow: hidden;
   aspect-ratio: 4/5; border-radius: var(--r-s);
-  box-shadow: 0 30px 60px -24px rgba(0,0,0,.55);
+  box-shadow: var(--shadow);
 }
 .hero__scene img { width: 100%; height: 100%; object-fit: cover; }
-.hero__scene::after {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(10,28,46,.04), rgba(10,28,46,.2));
-}
+
 
 /* ロード時の登場オーケストレーション */
 .js .hero__copy > * { opacity: 0; transform: translateY(26px); transition: opacity .9s var(--ease), transform .9s var(--ease); }
@@ -321,12 +295,6 @@ body:has(.hero) .site-header:not(.scrolled) .nav__cta:hover { background: rgba(2
 .float--slow { animation-duration: 9s; }
 .float--rev { animation-direction: alternate-reverse; }
 .sway { animation: swayRot 5.5s var(--ease) infinite alternate; animation-delay: var(--d, 0s); transform-origin: bottom center; }
-
-/* 暗いヒーロー上のゴーストボタン */
-.hero .btn--ghost { color: #fff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.42); }
-.hero .btn--ghost:hover { background: rgba(255,255,255,.12); box-shadow: inset 0 0 0 1px rgba(255,255,255,.7); }
-.hero .btn--primary { --bg: #fff; color: var(--deep); }
-.hero .btn--primary:hover { --bg: rgba(255,255,255,.88); }
 
 /* ---------- 08. Waves / Bubbles ---------- */
 .wave-divider { position: absolute; left: 0; right: 0; width: 100%; line-height: 0; z-index: 4; pointer-events: none; overflow: hidden; }
@@ -356,25 +324,14 @@ body:has(.hero) .site-header:not(.scrolled) .nav__cta:hover { background: rgba(2
 .section--shoal .card { background: rgba(255,255,255,.94); }
 .section--deep {
   overflow: hidden;
-  background:
-    radial-gradient(120% 90% at 15% 0%, #0e4468 0%, transparent 50%),
-    linear-gradient(160deg, var(--deep) 0%, var(--deep-2) 60%, var(--ocean) 100%);
-  color: #dff3f8;
+  background: var(--deep);
+  color: #e6ecf0;
 }
 .section--deep .section-title { color: #fff; }
 .section--deep .lead { color: #cfe8f1; }
 .section--deep .eyebrow { color: var(--aqua); }
 .section--deep .eyebrow::before { background: linear-gradient(90deg, var(--gold-2), var(--aqua)); }
 
-/* 深海の光条（caustics） */
-.section--deep::after {
-  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
-  background: repeating-linear-gradient(101deg,
-    transparent 0 58px, rgba(173,232,228,.06) 58px 92px, transparent 92px 156px);
-  -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,.95), transparent 68%);
-          mask-image: linear-gradient(180deg, rgba(0,0,0,.95), transparent 68%);
-  animation: caustics 17s ease-in-out infinite alternate;
-}
 .section--deep > .wrap, .section--deep > .narrow { position: relative; z-index: 2; }
 
 /* 深海セクション内のカード */
@@ -600,9 +557,7 @@ body:has(.hero) .site-header:not(.scrolled) .nav__cta:hover { background: rgba(2
 .cta-band {
   position: relative; overflow: hidden; text-align: center; color: #fff;
   padding: clamp(3.5rem, 8vw, 6rem) 0;
-  background:
-    radial-gradient(90% 120% at 50% -20%, #146d92 0%, transparent 60%),
-    linear-gradient(150deg, var(--ocean), var(--deep));
+  background: var(--deep);
 }
 .cta-band h2 { font-size: clamp(1.7rem, 5vw, 2.8rem); color: #fff; }
 .cta-band p { color: #dff3f8; margin: 1rem auto 2rem; max-width: 44ch; }
@@ -931,17 +886,10 @@ a.card:focus-visible, .next-card:focus-visible { transform: translateY(-8px); bo
 body { transition: background-color 1.2s var(--ease); }
 
 /* ---- 29-16. 泡に揺らぎを与える ---- */
-.bubble { animation-name: riseSway; }
 
-/* ---- 29-17. CTA帯：光が回る ---- */
-.cta-band::before {
-  content: ""; position: absolute; inset: -40% -10%; z-index: 0; pointer-events: none;
-  background: conic-gradient(from 0deg, transparent 0deg, rgba(127,214,218,.13) 60deg, transparent 140deg, rgba(234,178,77,.10) 220deg, transparent 300deg);
-  animation: spin 26s linear infinite;
-}
 
 /* ---- 29-18. フッターの船がゆっくり進む ---- */
-.footer-ship { animation: footerSail 22s var(--ease) infinite alternate; }
+
 
 /* =====================================================================
    30. Photography — 写真レイヤー
