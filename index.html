@@ -63,25 +63,38 @@
 
 <!-- ============ Hero ============ -->
 <section class="hero">
+  <span class="hero__vertical" aria-hidden="true">CHIJOKAI</span>
+
   <div class="hero__inner wrap">
     <div class="hero__copy">
-      <span class="hero__badge"><span class="dot"></span>金融教育・資産形成サポート</span>
-      <h1>お金の知識が、<br><span class="grad">これからの安心</span>をつくる。</h1>
+      <span class="hero__badge">金融教育・資産形成サポート</span>
+      <h1 class="hero__title">
+        <span class="line"><span>お金の知識が、</span></span>
+        <span class="line"><span>これからの<em>安心</em>をつくる。</span></span>
+      </h1>
       <p class="hero__sub">資産形成の基礎から、その後の運用まで。お金の不安をなくすための知識と、続けるためのサポートをご提供します。</p>
       <div class="hero__cta">
         <a href="contact.html" class="btn btn--primary btn--lg">無料で相談する <span class="arrow" aria-hidden="true">→</span></a>
         <a href="service.html" class="btn btn--ghost btn--lg">サポートを見る</a>
       </div>
-    </div>
 
-    <figure class="hero__scene">
-      <img src="assets/img/talk-silhouette.jpg" alt="窓辺で向かい合って語り合う二人" width="933" height="1400" fetchpriority="high">
-    </figure>
+      <dl class="hero__facts">
+        <div><dt>活動年数</dt><dd><span>8</span><small>年</small></dd></div>
+        <div><dt>サポート費用</dt><dd><small>¥</small><span>0</span></dd></div>
+        <div><dt>取扱ソリューション</dt><dd><span>9</span><small>件</small></dd></div>
+      </dl>
+    </div>
   </div>
+
+  <figure class="hero__media">
+    <img src="assets/img/talk-silhouette.jpg" alt="窓辺で向かい合って話す二人" width="933" height="1400" fetchpriority="high">
+  </figure>
+
+  <a class="hero__scroll" href="#about" aria-label="下へスクロール"><span></span>SCROLL</a>
 </section>
 
 <!-- ============ 入口ゲート（個人／法人） ============ -->
-<section class="section" style="padding-top:clamp(2.6rem,6vw,4rem)">
+<section class="section" id="about" style="padding-top:clamp(2.6rem,6vw,4rem)">
   <div class="wrap center">
     <span class="eyebrow eyebrow--center" data-reveal>WHERE TO</span>
     <h2 class="section-title reveal-words">ご関心のある分野をお選びください</h2>
@@ -187,9 +200,9 @@
     <h2 class="section-title reveal-words">数字で見る地上界</h2>
   </div>
   <div class="wrap stats section-body">
-    <div class="stat" data-reveal data-reveal-delay="1"><div class="stat__num"><span data-count="9">9</span><span class="unit">+</span></div><div class="stat__label">厳選ソリューション</div></div>
-    <div class="stat" data-reveal data-reveal-delay="2"><div class="stat__num">¥<span data-count="0">0</span></div><div class="stat__label">伴走サポート費用</div></div>
-    <div class="stat" data-reveal data-reveal-delay="3"><div class="stat__num"><span data-count="8">8</span><span class="unit">年</span></div><div class="stat__label">活動年数</div></div>
+    <div class="stat" data-reveal data-reveal-delay="1"><div class="stat__num"><span>9</span><span class="unit">+</span></div><div class="stat__label">厳選ソリューション</div></div>
+    <div class="stat" data-reveal data-reveal-delay="2"><div class="stat__num">¥<span>0</span></div><div class="stat__label">伴走サポート費用</div></div>
+    <div class="stat" data-reveal data-reveal-delay="3"><div class="stat__num"><span>8</span><span class="unit">年</span></div><div class="stat__label">活動年数</div></div>
     <div class="stat" data-reveal data-reveal-delay="4"><div class="stat__num">∞</div><div class="stat__label">生涯つづく伴走の姿勢</div></div>
   </div>
   <div class="narrow" style="margin-top:1.8rem">

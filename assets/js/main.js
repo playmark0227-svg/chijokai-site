@@ -131,34 +131,7 @@
     revealables.forEach(function (el) { el.classList.add("is-visible"); });
   }
 
-  /* ---------- Number counters ---------- */
-  function animateCount(el) {
-    var target = parseFloat(el.dataset.count);
-    var dec = (el.dataset.count.split(".")[1] || "").length;
-    var dur = 1600, start = null;
-    function step(ts) {
-      if (!start) start = ts;
-      var p = Math.min((ts - start) / dur, 1);
-      var eased = 1 - Math.pow(1 - p, 3);
-      var val = target * eased;
-      el.textContent = dec ? val.toFixed(dec) : Math.round(val).toLocaleString("ja-JP");
-      if (p < 1) requestAnimationFrame(step);
-      else el.textContent = dec ? target.toFixed(dec) : target.toLocaleString("ja-JP");
-    }
-    requestAnimationFrame(step);
-  }
-  var counters = $$("[data-count]");
-  if ("IntersectionObserver" in window && !reduce) {
-    var cio = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { if (e.isIntersecting) { animateCount(e.target); cio.unobserve(e.target); } });
-    }, { threshold: 0.6 });
-    counters.forEach(function (el) { el.textContent = "0"; cio.observe(el); });
-  } else {
-    counters.forEach(function (el) {
-      var d = parseFloat(el.dataset.count);
-      el.textContent = (el.dataset.count.split(".")[1] || "").length ? el.dataset.count : d.toLocaleString("ja-JP");
-    });
-  }
+  /* 数字はHTMLに直接記載（アニメーションなし） */
 
   /* ---------- Card tilt（rAF でカーソルに即応） ---------- */
   if (!reduce && window.matchMedia("(pointer:fine)").matches) {
@@ -217,7 +190,7 @@
   }
 
   /* ---- ヒーローがマウスに反応して層で動く ---- */
-  var hero = $(".hero"), scene = $(".hero__scene svg");
+  var hero = $(".hero"), scene = $(".hero__media img");
   if (hero && scene && !reduce && window.matchMedia("(pointer:fine)").matches) {
     var hraf = 0;
     hero.addEventListener("mousemove", function (e) {
@@ -227,7 +200,7 @@
       var py = (e.clientY - r.top) / r.height - 0.5;
       if (!hraf) hraf = requestAnimationFrame(function () {
         hraf = 0;
-        scene.style.transform = "translate3d(" + (px * 26).toFixed(1) + "px," + (py * 18).toFixed(1) + "px,0) rotate(" + (px * 1.6).toFixed(2) + "deg)";
+        scene.style.transform = "scale(1.06) translate3d(" + (px * 14).toFixed(1) + "px," + (py * 10).toFixed(1) + "px,0)";
       });
     });
     hero.addEventListener("mouseleave", function () {
