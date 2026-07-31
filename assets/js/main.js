@@ -21,8 +21,8 @@
   var header = $(".site-header");
   var prog = document.createElement("div"); prog.className = "scroll-prog"; document.body.appendChild(prog);
   var toTop = $(".to-top");
-  var paras = [];      // パララックス対象（deco 生成後に確定）
-  var timeline = null; // story.html の航路
+  var paras = [];      // パララックス対象
+  var timeline = null; // story.html の経歴タイムライン
   var vh = window.innerHeight || 800;
   var ticking = false;
 
@@ -48,7 +48,7 @@
       el.style.transform = "translate3d(0," + t.toFixed(1) + "px,0)";
     }
 
-    /* タイムラインの航路を伸ばす */
+    /* 経歴タイムラインの線を伸ばす */
     if (timeline) {
       var tr = timeline.getBoundingClientRect();
       var p = (vh * 0.72 - tr.top) / tr.height;
@@ -197,7 +197,7 @@
     var pio = new IntersectionObserver(function (es) {
       es.forEach(function (e) { e.target.classList.toggle("anim-off", !e.isIntersecting); });
     }, { rootMargin: "250px 0px" });
-    $$(".bubbles, .deco-layer, .wave-divider, .portrait__ring").forEach(function (el) { pio.observe(el); });
+    $$(".portrait__ring, .footer-boat").forEach(function (el) { pio.observe(el); });
   }
 
   /* =================================================================
@@ -344,7 +344,7 @@
     var t = document.createElement("div");
     t.className = "egg-toast";
     t.setAttribute("role", "status");
-    t.innerHTML = '<span aria-hidden="true">🧭</span><span>' + msg + "</span>";
+    t.textContent = msg;
     document.body.appendChild(t);
     requestAnimationFrame(function () { t.classList.add("show"); });
     setTimeout(function () { t.classList.remove("show"); setTimeout(function () { t.remove(); }, 600); }, 4200);
@@ -360,8 +360,7 @@
       if (taps >= 5) {
         e.preventDefault();
         taps = 0;
-        toast("ようこそ、航海者へ。知識と知恵の海はどこまでも広い。⚓");
-        sailShip();
+        toast("見つけましたね。ここまで読んでいただき、ありがとうございます。");
       }
     });
   }
@@ -373,34 +372,16 @@
     var k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
     if (k === seq[pos]) {
       pos++;
-      if (pos === seq.length) { pos = 0; toast("隠しコマンド発見！ 宝の地図が開かれた。🗺️✨"); sailShip(); }
+      if (pos === seq.length) { pos = 0; toast("隠しコマンドを発見しました。"); }
     } else {
       pos = (k === seq[0]) ? 1 : 0;
     }
   });
 
-  function sailShip() {
-    if (reduce) return;
-    var ship = document.createElement("div");
-    ship.className = "egg-ship";
-    ship.setAttribute("aria-hidden", "true");
-    ship.innerHTML =
-      '<svg viewBox="0 0 160 120" xmlns="http://www.w3.org/2000/svg">' +
-      '<path d="M20 78 h120 l-14 26 a10 10 0 0 1-9 6 H43 a10 10 0 0 1-9-6 z" fill="#8a5a2b"/>' +
-      '<path d="M20 78 h120 l-6 11 H26 z" fill="#a5713a"/>' +
-      '<rect x="78" y="8" width="4" height="72" fill="#5c3b1e"/>' +
-      '<path d="M82 14 q42 12 34 46 l-34 4 z" fill="#f4c96a"/>' +
-      '<path d="M78 14 q-38 12 -30 46 l30 4 z" fill="#fff3d6"/>' +
-      '<path d="M82 6 l20 6 -20 6 z" fill="#ff8f6b"/>' +
-      "</svg>";
-    document.body.appendChild(ship);
-    requestAnimationFrame(function () { ship.classList.add("sail"); });
-    setTimeout(function () { ship.remove(); }, 7200);
-  }
 
   /* console 署名（隠し） */
   try {
-    console.log("%c⚓ 地上界 — 知識と知恵の海へ", "color:#1f93b8;font-size:16px;font-weight:bold;");
-    console.log("%cbuilt with care. ロゴを5回タップ or ↑↑↓↓←→←→BA を試してみて。", "color:#6d859a;");
+    console.log("%c地上界 — 金融教育・資産形成サポート", "color:#1b4f6b;font-size:15px;font-weight:bold;");
+    console.log("%cbuilt with care.", "color:#6b7c8a;");
   } catch (_) {}
 })();

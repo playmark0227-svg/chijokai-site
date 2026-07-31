@@ -1,7 +1,7 @@
 /* =====================================================================
    地上界 (Chijokai) — Web Site
-   Theme: 航海 / 海（知識と知恵の海を渡る航海）
-   Design: イラストチック・海・アニメーション多め・信頼感
+   Design: 落ち着いたネイビー基調。明朝の見出しと写真で構成。
+   装飾はフッターの船のイラスト1点のみ。
 
    目次
      01. Reset
@@ -11,7 +11,6 @@
      05. Buttons
      06. Header / Nav
      07. Hero
-     08. Waves / Bubbles
      09. Sections
      10. Cards
      11. Stats
@@ -27,7 +26,6 @@
      21. Footer
      22. Page hero (sub pages)
      23. Easter eggs / Utilities
-     24. Decorative motifs
      25. Focus / Selection
      26. Keyframes
      27. Responsive
@@ -295,23 +293,6 @@ p, li { line-break: strict; }
 .float--slow { animation-duration: 9s; }
 .float--rev { animation-direction: alternate-reverse; }
 .sway { animation: swayRot 5.5s var(--ease) infinite alternate; animation-delay: var(--d, 0s); transform-origin: bottom center; }
-
-/* ---------- 08. Waves / Bubbles ---------- */
-.wave-divider { position: absolute; left: 0; right: 0; width: 100%; line-height: 0; z-index: 4; pointer-events: none; overflow: hidden; }
-.wave-divider--bottom { bottom: -1px; }
-.wave-divider--top { top: -1px; transform: rotate(180deg); }
-.wave-divider svg { width: 200%; height: clamp(34px, 4.5vw, 62px); }
-.wave-move path { animation: waveShift 16s linear infinite; will-change: transform; }
-.wave-move path.is-back { animation-duration: 11s; animation-direction: reverse; }
-
-/* Bubbles */
-.bubbles { position: absolute; inset: 0; overflow: hidden; z-index: 1; pointer-events: none; }
-.bubble {
-  position: absolute; bottom: -40px; border-radius: 50%;
-  background: radial-gradient(circle at 32% 28%, rgba(255,255,255,.5), rgba(255,255,255,.06) 65%, transparent);
-  animation: rise linear infinite;
-  will-change: transform, opacity;
-}
 
 /* 画面外のアニメーションを停止（軽量化） */
 .anim-off, .anim-off * { animation-play-state: paused !important; }
@@ -697,20 +678,12 @@ body[data-page="privacy"]   .page-hero { --ph-a: #f4fbfd; --ph-b: #cfe9f2; }
 }
 .egg-toast.show { transform: translate(-50%, 0); }
 
-.egg-ship { position: fixed; left: -180px; bottom: 12%; width: 150px; z-index: 150; pointer-events: none; }
-.egg-ship.sail { animation: sailAcross 7s var(--ease) forwards; }
 
 /* Scroll progress（先端に船） */
 .scroll-prog {
-  position: fixed; top: 0; left: 0; height: 4px; width: 0; z-index: 95; overflow: visible;
+  position: fixed; top: 0; left: 0; height: 3px; width: 0; z-index: 95;
   background: linear-gradient(90deg, var(--sea), var(--aqua), var(--gold));
   box-shadow: 0 0 10px rgba(46,176,207,.6);
-}
-.scroll-prog::after {
-  content: ""; position: absolute; right: -11px; top: -9px; width: 22px; height: 17px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 120'%3E%3Cpath d='M20 78h120l-14 26a10 10 0 0 1-9 6H43a10 10 0 0 1-9-6z' fill='%23eab24d'/%3E%3Crect x='78' y='16' width='4' height='62' fill='%23f4c96a'/%3E%3Cpath d='M82 22q42 12 34 46l-34 4z' fill='%23fff3d6'/%3E%3C/svg%3E") center/contain no-repeat;
-  animation: bob 3s var(--ease) infinite;
-  filter: drop-shadow(0 2px 4px rgba(7,42,68,.4));
 }
 
 .to-top {
@@ -721,22 +694,6 @@ body[data-page="privacy"]   .page-hero { --ph-a: #f4fbfd; --ph-b: #cfe9f2; }
 }
 .to-top.show { opacity: 1; transform: none; }
 .to-top:hover { transform: translateY(-3px) scale(1.05); }
-
-/* ---------- 24. Decorative motifs（船・島をところどころに） ---------- */
-.deco-layer { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
-.section > .wrap, .section > .narrow, .cta-band > .wrap { position: relative; z-index: 1; }
-.deco-pos { position: absolute; width: clamp(64px, 8vw, 124px); will-change: transform; }
-/* 視差で ±48px 動くため、端から十分内側に配置する */
-.deco-pos.tl { top: 13%;  left: 3%;  }
-.deco-pos.tr { top: 15%;  right: 4%; }
-.deco-pos.bl { bottom: 13%; left: 4%; }
-.deco-pos.br { bottom: 15%; right: 5%; }
-.deco-float { animation: bob 8s var(--ease) infinite; animation-delay: var(--d, 0s); }
-.deco-float--slow { animation-duration: 11s; animation-direction: alternate-reverse; }
-.deco-svg { width: 100%; height: auto; }
-.deco--dark  .deco-svg { color: #c6d2da; opacity: .22; }   /* 明るい背景の上 */
-.section--tint .deco--dark .deco-svg { color: #b9c7d1; opacity: .24; }
-.deco--light .deco-svg { color: #8fa9b8; opacity: .16; }   /* 濃い背景の上 */
 
 /* ---------- 25. Focus / Selection ---------- */
 :where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
@@ -844,25 +801,6 @@ a.card:focus-visible, .next-card:focus-visible { transform: translateY(-8px); bo
   border: 2px solid var(--aqua); opacity: 0;
 }
 .tl-item.is-visible .tl-item__dot::after { animation: haloOut 1.4s var(--ease) .25s both; }
-
-/* ---- 29-10. スクロール深度メーター（航海の進捗） ---- */
-.depth-meter {
-  position: fixed; right: 18px; top: 50%; transform: translateY(-50%);
-  display: grid; gap: 10px; z-index: 70;
-  opacity: 0; transition: opacity .5s var(--ease);
-}
-.depth-meter.show { opacity: 1; }
-.depth-dot {
-  width: 9px; height: 9px; border-radius: 50%; background: rgba(18,103,140,.22);
-  transition: transform .4s var(--ease-back), background .4s var(--ease);
-  position: relative;
-}
-.depth-dot.is-active { background: var(--gold); transform: scale(1.5); }
-.depth-dot.is-active::after {
-  content: ""; position: absolute; inset: -6px; border-radius: 50%;
-  border: 1.5px solid var(--gold); opacity: .55; animation: haloPulse 2s var(--ease) infinite;
-}
-@media (max-width: 940px) { .depth-meter { display: none; } }
 
 /* ---- 29-11. ヒーロー：マウスに反応して層が動く ---- */
 .hero__scene svg { transition: transform .6s var(--ease); }
@@ -1000,22 +938,12 @@ body { transition: background-color 1.2s var(--ease); }
 @keyframes haloOut { 0% { transform: scale(.6); opacity: .8; } 100% { transform: scale(1.9); opacity: 0; } }
 @keyframes haloPulse { 0%,100% { transform: scale(1); opacity: .55; } 50% { transform: scale(1.35); opacity: 0; } }
 @keyframes numRise { 0% { transform: translateY(18px) scale(.9); opacity: 0; } 100% { transform: none; opacity: 1; } }
-@keyframes riseSway {
-  0%   { transform: translateY(0) translateX(0); opacity: 0; }
-  10%  { opacity: .8; }
-  35%  { transform: translateY(-35vh) translateX(16px); }
-  65%  { transform: translateY(-70vh) translateX(-12px); }
-  90%  { opacity: .5; }
-  100% { transform: translateY(-115vh) translateX(22px); opacity: 0; }
-}
 @keyframes footerSail { from { transform: translateX(0) rotate(-1deg); } to { transform: translateX(-46px) rotate(1.5deg); } }
 
 @keyframes bob { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-16px) rotate(1.5deg); } }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,143,107,.6); } 70% { box-shadow: 0 0 0 12px rgba(255,143,107,0); } 100% { box-shadow: 0 0 0 0 rgba(255,143,107,0); } }
 @keyframes rise { 0% { transform: translateY(0) translateX(0); opacity: 0; } 10% { opacity: .8; } 90% { opacity: .5; } 100% { transform: translateY(-115vh) translateX(30px); opacity: 0; } }
-@keyframes waveShift { from { transform: translateX(0); } to { transform: translateX(-1440px); } }
 @keyframes spin { to { transform: rotate(360deg); } }
-@keyframes sailAcross { 0% { left: -180px; } 100% { left: 110vw; } }
 @keyframes floatY { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 @keyframes swayRot { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
 @keyframes caustics { from { transform: translateX(-3%) skewX(0deg); opacity: .6; } to { transform: translateX(3%) skewX(2.5deg); opacity: 1; } }
