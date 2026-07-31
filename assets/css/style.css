@@ -907,8 +907,8 @@ body { transition: background-color 1.2s var(--ease); }
 /* ---- 30-5. 代表ポートレート（写真が入ったら自動で切り替わる） ---- */
 /* 引きの写真をトリミングして使うためのズーム指定 */
 .portrait--zoom img {
-  transform: scale(var(--z, 2.35));
-  transform-origin: var(--zx, 43%) var(--zy, 44%);
+  transform: scale(var(--z, 1.02));
+  transform-origin: var(--zx, 50%) var(--zy, 30%);
 }
 /* 画像が入ったらプレースホルダーを隠す */
 .portrait:has(img) .portrait__ph { display: none; }
