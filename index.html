@@ -63,7 +63,10 @@
 
 <!-- ============ Hero ============ -->
 <section class="hero">
-  <div class="bubbles" data-bubbles="18"></div>
+  <div class="hero__bg" aria-hidden="true">
+    <img src="assets/img/hero-bg.jpg" alt="" width="2000" height="1333" fetchpriority="high">
+  </div>
+  <div class="bubbles" data-bubbles="6"></div>
   <div class="hero__inner wrap">
     <div class="hero__copy">
       <span class="hero__badge"><span class="dot"></span>知識と知恵を上げる界（せかい）</span>
@@ -75,63 +78,10 @@
       </div>
     </div>
 
-    <div class="hero__scene" aria-hidden="true">
-      <svg viewBox="0 0 520 480" xmlns="http://www.w3.org/2000/svg" role="img">
-        <defs>
-          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#eafaff"/><stop offset="1" stop-color="#bfe7f4"/>
-          </linearGradient>
-          <linearGradient id="seaG" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#4fc0da"/><stop offset="1" stop-color="#1f8fb8"/>
-          </linearGradient>
-          <radialGradient id="sun" cx="50%" cy="50%" r="50%">
-            <stop offset="0" stop-color="#fff3cf"/><stop offset="1" stop-color="#f4c96a"/>
-          </radialGradient>
-        </defs>
-        <circle cx="260" cy="240" r="230" fill="url(#sky)"/>
-        <circle cx="360" cy="130" r="52" fill="url(#sun)" class="float float--slow" style="--d:-3.6s"/>
-        <!-- clouds -->
-        <g fill="#ffffff" opacity=".92" class="float float--slow float--rev" style="--d:-1.2s">
-          <ellipse cx="120" cy="120" rx="42" ry="18"/><ellipse cx="150" cy="110" rx="30" ry="16"/>
-        </g>
-        <g fill="#ffffff" opacity=".8" class="float" style="--d:-4.7s">
-          <ellipse cx="410" cy="210" rx="34" ry="14"/><ellipse cx="435" cy="203" rx="24" ry="12"/>
-        </g>
-        <!-- island -->
-        <g class="float float--slow" style="--d:-2.1s">
-          <ellipse cx="150" cy="330" rx="90" ry="24" fill="#f2e0b4"/>
-          <path d="M150 250 q-18 40 -40 70 h80 q-22 -30 -40 -70z" fill="#3bb27f"/>
-          <path d="M150 258 q-10 30 -26 62 h52 q-16 -32 -26 -62z" fill="#59c993"/>
-          <rect x="146" y="285" width="8" height="46" fill="#8a5a2b"/>
-          <g class="sway" style="--d:-1.8s">
-            <path d="M150 262 q26 4 30 20 q-20 -8 -30 -6z" fill="#3bb27f"/>
-            <path d="M150 262 q-26 4 -30 20 q20 -8 30 -6z" fill="#59c993"/>
-          </g>
-        </g>
-        <!-- ship -->
-        <g class="float" style="--d:-0.6s">
-          <rect x="330" y="200" width="6" height="118" fill="#5c3b1e"/>
-          <g class="sway" style="--d:-3.1s">
-            <path d="M338 214 q66 18 54 74 l-54 6z" fill="#f4c96a"/>
-            <path d="M330 214 q-58 18 -48 74 l48 6z" fill="#fff3d6"/>
-          </g>
-          <path d="M338 202 l30 9 -30 9z" fill="#ff8f6b"/>
-          <path d="M280 320 h108 l-14 30 a12 12 0 0 1 -11 7 H305 a12 12 0 0 1 -11 -7 z" fill="#8a5a2b"/>
-          <path d="M280 320 h108 l-6 13 H286 z" fill="#a5713a"/>
-        </g>
-        <!-- sea -->
-        <path d="M30 350 q60 -22 120 0 t120 0 t120 0 t120 0 v130 H30 z" fill="url(#seaG)"/>
-        <g stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity=".55" fill="none" class="float float--rev" style="--d:-2.8s">
-          <path d="M90 400 q16 -12 32 0"/><path d="M200 420 q16 -12 32 0"/>
-          <path d="M330 405 q16 -12 32 0"/><path d="M420 425 q16 -12 32 0"/>
-        </g>
-      </svg>
-    </div>
+    <figure class="hero__scene">
+      <img src="assets/img/talk-silhouette.jpg" alt="窓辺で向かい合って語り合う二人" width="933" height="1400" fetchpriority="high">
+    </figure>
   </div>
-
-  <figure class="hero__photo" aria-hidden="true">
-    <img src="assets/img/ocean-hero.jpg" alt="" width="933" height="1400" loading="eager" fetchpriority="high">
-  </figure>
 
   <div class="wave-divider wave-divider--bottom">
     <svg class="wave-move" viewBox="0 0 2880 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -149,13 +99,13 @@
     <p class="lead narrow" data-reveal data-reveal-delay="1">地上界には、2つの航路があります。あなたのご関心に近い方から、どうぞ。</p>
   </div>
   <div class="wrap grid grid-2 section-body">
-    <a href="service.html" class="card card--gate tilt" data-reveal="left">
+    <a href="service.html" class="card card--gate" data-reveal="left">
       <span class="tag">個人の方へ</span>
       <h3>お金の不安を、なくしたい</h3>
       <p>資産形成の基礎から、長期の運用を乗りこなすまで。生き方・稼ぎ方のご相談まで含めて、生涯にわたって伴走します。サポート費用は0円です。</p>
       <span class="gate__go">資産形成サポートを見る <span class="arrow" aria-hidden="true">→</span></span>
     </a>
-    <a href="solutions.html" class="card card--gate tilt" data-reveal="right">
+    <a href="solutions.html" class="card card--gate" data-reveal="right">
       <span class="tag tag--gold">法人・事業者の方へ</span>
       <h3>事業のコストと課題を、減らしたい</h3>
       <p>電気代・法務・決済手数料・PR・社会貢献まで。その多くが初期費用・月額0円から。意味のある案件だけを厳選してご紹介します。</p>
@@ -173,21 +123,21 @@
   </div>
 
   <div class="wrap grid grid-3 section-body">
-    <article class="card tilt" data-reveal data-reveal-delay="1">
+    <article class="card" data-reveal data-reveal-delay="1">
       <div class="card__icon">
         <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M4 9l12-5 12 5-12 5z" fill="#1f93b8"/><path d="M9 13v7c0 2 3 4 7 4s7-2 7-4v-7" stroke="#0c3a5c" stroke-width="2" fill="none"/><path d="M28 9v8" stroke="#eab24d" stroke-width="2" stroke-linecap="round"/></svg>
       </div>
       <h3>学ぶ｜金融教育</h3>
       <p>基礎知識から、長期の資産形成を乗りこなすまで。「お金の不安」を「わかる」に変える、体系立てた学びを土台に。</p>
     </article>
-    <article class="card tilt" data-reveal data-reveal-delay="2">
+    <article class="card" data-reveal data-reveal-delay="2">
       <div class="card__icon">
         <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="11" cy="12" r="4" stroke="#0c3a5c" stroke-width="2"/><circle cx="22" cy="14" r="3.2" stroke="#1f93b8" stroke-width="2"/><path d="M4 26c0-4 3-6 7-6s7 2 7 6M17 26c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="#eab24d" stroke-width="2" stroke-linecap="round"/></svg>
       </div>
       <h3>伴走する｜寄り添う</h3>
       <p>導入して終わりではなく、その先を。勉強会・ラジオ・日々の連絡で、生きている限りサポートし続けます。</p>
     </article>
-    <article class="card tilt" data-reveal data-reveal-delay="3">
+    <article class="card" data-reveal data-reveal-delay="3">
       <div class="card__icon">
         <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M6 20l6-8 5 6 4-6 5 8" stroke="#1f93b8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="7" r="3" fill="#eab24d"/><path d="M4 26h24" stroke="#0c3a5c" stroke-width="2" stroke-linecap="round"/></svg>
       </div>
@@ -275,10 +225,10 @@
     <p class="lead narrow" data-reveal data-reveal-delay="1">「初期費用・月額0円」で始められるものを中心に、その企業にとって意味のある案件だけを厳選。気になるものは、堀之内へお気軽にご相談ください。</p>
   </div>
   <div class="wrap grid grid-4 section-body">
-    <a href="solutions.html#legal" class="card tilt" data-reveal data-reveal-delay="1"><div class="card__icon"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 4l10 4v6c0 8-5 12-10 14C11 26 6 22 6 14V8z" stroke="#1f93b8" stroke-width="2" fill="#dff3f5"/><path d="M12 16l3 3 6-6" stroke="#0c3a5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 style="font-size:1.05rem">法務相談</h3><p style="font-size:.88rem">弁護士に相談し放題</p></a>
-    <a href="solutions.html#iss4" class="card tilt" data-reveal data-reveal-delay="2"><div class="card__icon"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="5" y="9" width="22" height="14" rx="3" stroke="#1f93b8" stroke-width="2" fill="#dff3f5"/><path d="M10 15h4M10 19h8" stroke="#0c3a5c" stroke-width="2" stroke-linecap="round"/><path d="M24 6l2 3-4 1z" fill="#eab24d"/></svg></div><h3 style="font-size:1.05rem">ISS4 省エネ</h3><p style="font-size:.88rem">電力コストを削減</p></a>
-    <a href="solutions.html#art" class="card tilt" data-reveal data-reveal-delay="3"><div class="card__icon"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="6" y="7" width="20" height="14" rx="2" stroke="#1f93b8" stroke-width="2" fill="#dff3f5"/><circle cx="13" cy="13" r="2.4" fill="#eab24d"/><path d="M9 18l4-4 3 3 3-4 4 5" stroke="#ff8f6b" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 25h8" stroke="#0c3a5c" stroke-width="2" stroke-linecap="round"/></svg></div><h3 style="font-size:1.05rem">アート・サイネージ</h3><p style="font-size:.88rem">作家に届く社会貢献</p></a>
-    <a href="solutions.html#payment" class="card tilt" data-reveal data-reveal-delay="4"><div class="card__icon"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="7" y="5" width="18" height="22" rx="3" stroke="#1f93b8" stroke-width="2" fill="#dff3f5"/><path d="M11 11h10M11 15h10" stroke="#0c3a5c" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="22" r="2" fill="#eab24d"/></svg></div><h3 style="font-size:1.05rem">決済端末</h3><p style="font-size:.88rem">手数料をもっと安く</p></a>
+    <a href="solutions.html#legal" class="card" data-reveal data-reveal-delay="1"><div class="card__icon"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 4l10 4v6c0 8-5 12-10 14C11 26 6 22 6 14V8z" stroke="#1f93b8" stroke-width="2" fill="#dff3f5"/><path d="M12 16l3 3 6-6" stroke="#0c3a5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 style="font-size:1.05rem">法務相談</h3><p style="font-size:.88rem">弁護士に相談し放題</p></a>
+    <a href="solutions.html#iss4" class="card" data-reveal data-reveal-delay="2"><div class="card__icon"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="5" y="9" width="22" height="14" rx="3" stroke="#1f93b8" stroke-width="2" fill="#dff3f5"/><path d="M10 15h4M10 19h8" stroke="#0c3a5c" stroke-width="2" stroke-linecap="round"/><path d="M24 6l2 3-4 1z" fill="#eab24d"/></svg></div><h3 style="font-size:1.05rem">ISS4 省エネ</h3><p style="font-size:.88rem">電力コストを削減</p></a>
+    <a href="solutions.html#art" class="card" data-reveal data-reveal-delay="3"><div class="card__icon"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="6" y="7" width="20" height="14" rx="2" stroke="#1f93b8" stroke-width="2" fill="#dff3f5"/><circle cx="13" cy="13" r="2.4" fill="#eab24d"/><path d="M9 18l4-4 3 3 3-4 4 5" stroke="#ff8f6b" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 25h8" stroke="#0c3a5c" stroke-width="2" stroke-linecap="round"/></svg></div><h3 style="font-size:1.05rem">アート・サイネージ</h3><p style="font-size:.88rem">作家に届く社会貢献</p></a>
+    <a href="solutions.html#payment" class="card" data-reveal data-reveal-delay="4"><div class="card__icon"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="7" y="5" width="18" height="22" rx="3" stroke="#1f93b8" stroke-width="2" fill="#dff3f5"/><path d="M11 11h10M11 15h10" stroke="#0c3a5c" stroke-width="2" stroke-linecap="round"/><circle cx="16" cy="22" r="2" fill="#eab24d"/></svg></div><h3 style="font-size:1.05rem">決済端末</h3><p style="font-size:.88rem">手数料をもっと安く</p></a>
   </div>
   <div class="wrap center" style="margin-top:2rem"><a href="solutions.html" class="btn btn--sea">ソリューション一覧へ <span class="arrow" aria-hidden="true">→</span></a></div>
 </section>

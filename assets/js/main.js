@@ -350,7 +350,7 @@
   }
 
   /* ---- スクロールに応じて背景がわずかに深くなる ---- */
-  var TINTS = ["#f2fbfc", "#eef8fb", "#e9f5fa", "#e4f2f9"];
+  var TINTS = ["#f2f5f7", "#eef2f5", "#eaeff3", "#e6ecf0"];
 
   function updateExtras(y) {
     if (meter) {
