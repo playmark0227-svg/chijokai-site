@@ -1,5 +1,5 @@
 /* =====================================================================
-   地上界 (Chijokai) — Web Site
+   知上会 (Chijokai) — Web Site
    Design: 落ち着いたネイビー基調。明朝の見出しと写真で構成。
    装飾はフッターの船のイラスト1点のみ。
 
@@ -212,9 +212,16 @@ p, li { line-break: strict; }
   display: flex; align-items: center; justify-content: space-between;
   height: 74px;
 }
-.brand { display: flex; align-items: center; gap: .75rem; color: var(--deep); }
-.brand__mark { width: 34px; height: 34px; flex: none; color: var(--deep); }
-.site-header .brand__mark { view-transition-name: brand-mark; }
+.brand { display: flex; align-items: center; color: var(--deep); }
+.brand__logo {
+  height: clamp(30px, 3.4vw, 40px); width: auto;
+  transition: opacity .4s var(--ease);
+  view-transition-name: brand-logo;
+}
+.brand:hover .brand__logo { opacity: .68; }
+/* 濃色背景（フッター）では白抜きに */
+.brand__logo--light,
+.site-footer .brand__logo { filter: invert(1) brightness(1.7); height: clamp(28px, 3vw, 36px); }
 .brand__name { font-family: var(--font-serif); font-size: 1.16rem; font-weight: 500; letter-spacing: .16em; line-height: 1.15; }
 .brand__name small {
   display: block; font-family: var(--font-en); font-size: .52rem;
@@ -672,8 +679,8 @@ p, li { line-break: strict; }
 /* ---------- 21. Footer ---------- */
 .site-footer { position: relative; background: var(--deep); color: #b9d7e3; padding: 4.5rem 0 2rem; overflow: hidden; }
 .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 2rem; position: relative; z-index: 2; }
-.site-footer .brand__name { color: #fff; }
-.site-footer .brand__name small { color: var(--aqua); }
+
+
 .site-footer h4 { color: #fff; font-size: .95rem; letter-spacing: .1em; margin-bottom: 1rem; }
 .footer-links { display: grid; gap: .5rem; list-style: none; margin: 0; padding: 0; }
 .footer-links a { color: #a9cdda; font-size: .92rem; transition: color .2s, transform .2s; display: inline-block; }

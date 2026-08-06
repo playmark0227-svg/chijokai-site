@@ -1,5 +1,5 @@
 /* =====================================================================
-   地上界 — main.js
+   知上会 — main.js
    スクロール演出 / カウンター / チルト / 隠し要素 など
    ※ .js クラスは各ページの <head> でも付与済み（FOUC 回避）
    ===================================================================== */
@@ -354,7 +354,7 @@
 
   /* console 署名（隠し） */
   try {
-    console.log("%c地上界 — 金融教育・資産形成サポート", "color:#1b4f6b;font-size:15px;font-weight:bold;");
+    console.log("%c知上会 — 金融教育・資産形成サポート", "color:#1b4f6b;font-size:15px;font-weight:bold;");
     console.log("%cbuilt with care.", "color:#6b7c8a;");
   } catch (_) {}
 })();
