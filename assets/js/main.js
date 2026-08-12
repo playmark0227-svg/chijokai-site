@@ -217,7 +217,15 @@
   /* すべての定義が揃ったところで初回計算（同期実行で初期値を確定） */
   readWrite();
 
-  /* ---------- Contact form（検証つき・デモ送信） ---------- */
+  /* ---------- Contact form（検証つき） ----------
+     送信先メールアドレス。
+     FORM_ENDPOINT が空のあいだは、入力内容を件名・本文に組み立てて
+     利用者のメールソフトを開く方式（mailto）で動作します。
+     Formspree / Getform などのフォーム管理サービスを契約したら、
+     FORM_ENDPOINT にその POST 先 URL を入れるだけで自動送信に切り替わります。 */
+  var MAIL_TO = "info@chijoukai.com";
+  var FORM_ENDPOINT = "";
+
   var form = $("#contactForm");
   if (form) {
     /* ソリューション一覧から来た場合、相談内容を引き継ぐ（?topic=…） */
@@ -233,9 +241,9 @@
         }
         return;
       }
-      /* 案件名は「事業のソリューション」に寄せ、具体名は本文へ */
+      /* 案件名は「法人向けのご紹介」に寄せ、具体名は本文へ */
       for (var i = 0; i < sel.options.length; i++) {
-        if (/ソリューション/.test(sel.options[i].text)) { sel.selectedIndex = i; break; }
+        if (/法人向け/.test(sel.options[i].text)) { sel.selectedIndex = i; break; }
       }
       if (/キャビア/.test(raw)) {
         for (var c = 0; c < sel.options.length; c++) {
@@ -292,14 +300,55 @@
 
       var ok = $(".form-success", form);
       var btn = form.querySelector('button[type="submit"]');
-      if (btn) btn.disabled = true;
-      form.setAttribute("aria-busy", "true");
-      if (ok) {
-        ok.classList.add("show");
-        ok.setAttribute("tabindex", "-1");
-        ok.focus();
-        ok.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+
+      function done() {
+        if (btn) btn.disabled = true;
+        form.setAttribute("aria-busy", "true");
+        if (ok) {
+          ok.classList.add("show");
+          ok.setAttribute("tabindex", "-1");
+          ok.focus();
+          ok.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+        }
       }
+
+      var val = function (id) { var f = document.getElementById(id); return f ? f.value.trim() : ""; };
+
+      /* フォーム管理サービスが設定済みなら、そちらへ送信 */
+      if (FORM_ENDPOINT) {
+        var data = new FormData(form);
+        if (btn) btn.disabled = true;
+        form.setAttribute("aria-busy", "true");
+        fetch(FORM_ENDPOINT, { method: "POST", body: data, headers: { Accept: "application/json" } })
+          .then(function (res) {
+            if (!res.ok) throw new Error("送信に失敗しました");
+            done();
+          })
+          .catch(function () {
+            if (btn) btn.disabled = false;
+            form.removeAttribute("aria-busy");
+            showError(document.getElementById("message"),
+              "送信できませんでした。お手数ですが " + MAIL_TO + " へ直接ご連絡ください。");
+          });
+        return;
+      }
+
+      /* 既定：入力内容をメール本文に組み立てて、メールソフトを開く */
+      var lines = [
+        "お名前：" + val("name"),
+        "会社名・屋号：" + (val("company") || "（未記入）"),
+        "メールアドレス：" + val("email"),
+        "電話番号：" + (val("tel") || "（未記入）"),
+        "ご相談の内容：" + val("topic"),
+        "",
+        "【メッセージ】",
+        val("message")
+      ].join("\n");
+      var href = "mailto:" + MAIL_TO +
+        "?subject=" + encodeURIComponent("【お問い合わせ】" + val("topic") + "／" + val("name")) +
+        "&body=" + encodeURIComponent(lines);
+      window.location.href = href;
+      done();
     });
     /* 入力し直したらエラー表示を消す */
     form.addEventListener("input", function (e) {
