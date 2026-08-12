@@ -430,6 +430,9 @@ p, li { line-break: strict; }
   display: block; font-family: var(--font-en); font-size: .68rem; letter-spacing: .2em;
   color: var(--muted); margin-bottom: 1.1rem;
 }
+/* 並びに順番の意味がないカード群は連番を出さない
+   （手順・段階ではなく「3つの柱」「3つの約束」のような並列の場合） */
+.grid--plain > .card::before { content: none; display: none; }
 
 .card h3 {
   font-family: var(--font-serif); font-size: 1.24rem; font-weight: 500;
