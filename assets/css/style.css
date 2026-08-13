@@ -393,7 +393,8 @@ p, li { line-break: strict; }
 .section + .section:not(.section--tint):not(.section--deep) { padding-top: calc(var(--sp-sec) * .7); }
 
 /* ---------- 10. Cards ---------- */
-.grid { display: grid; gap: clamp(2.4rem, 4vw, 3.6rem) clamp(2rem, 4vw, 3.4rem); align-items: start; }
+/* 同じ行のカードは高さを揃える（align-items: start だと中身の量で枠がバラバラになる） */
+.grid { display: grid; gap: clamp(2.4rem, 4vw, 3.6rem) clamp(2rem, 4vw, 3.4rem); align-items: stretch; }
 .grid-2 { grid-template-columns: repeat(2, 1fr); }
 .grid-3 { grid-template-columns: repeat(3, 1fr); }
 .grid-4 { grid-template-columns: repeat(4, 1fr); }
@@ -446,9 +447,6 @@ p, li { line-break: strict; }
 .tilt { transform-style: preserve-3d; will-change: transform; }
 .tilt.is-tilting { transition: transform .09s linear !important; }
 
-/* 段違いグリッド */
-@media (min-width: 941px) { .grid--stagger > :nth-child(even) { margin-top: 2.6rem; } }
-
 /* 濃色の面を持つカード（お問い合わせのメッセージ枠など） */
 .card--sea {
   background-color: var(--deep);
@@ -462,7 +460,7 @@ p, li { line-break: strict; }
 
 /* 入口ゲートカード（個人／法人の二分岐） */
 .card--gate {
-  display: block; overflow: hidden; position: relative; text-align: left;
+  display: flex; flex-direction: column; overflow: hidden; position: relative; text-align: left;
   --gate-pad: clamp(1.6rem, 2.8vw, 2.3rem);
   background-color: var(--white);
   background-image: linear-gradient(90deg, var(--ocean), var(--sea-2));
@@ -479,7 +477,12 @@ p, li { line-break: strict; }
 .grid-2 > .card--gate::before { content: none; }
 .card--gate h3 { font-size: clamp(1.24rem, 2.6vw, 1.62rem); margin: 1rem 0 .8rem; }
 .card--gate p { font-size: 1rem; }
-.gate__go { display: inline-flex; align-items: center; gap: .4em; margin-top: 1.2rem; font-weight: 800; color: var(--sea-ink); font-size: .95rem; }
+/* 導線は常にカード下端へ。高さを揃えたときに2枚のリンク位置が並ぶ */
+.gate__go {
+  display: inline-flex; align-items: center; gap: .4em; align-self: flex-start;
+  margin-top: auto; padding-top: 1.3rem;
+  font-weight: 800; color: var(--sea-ink); font-size: .95rem;
+}
 .gate__go .arrow { transition: transform .3s var(--ease); }
 .card--gate:hover .gate__go .arrow { transform: translateX(5px); }
 /* 法人カードの下段：扱っている案件ジャンルを控えめに列挙
@@ -1219,7 +1222,6 @@ body { transition: background-color 1.2s var(--ease); }
   .split, .split--rev .split__media { grid-template-columns: 1fr; order: 0; }
   .grid-4 { grid-template-columns: repeat(2, 1fr); }
   .stats { grid-template-columns: repeat(2, 1fr); }
-  .grid--stagger > :nth-child(even) { margin-top: 0; }
   .spec > div { grid-template-columns: 1fr; gap: .2rem; }
   .contact-grid { grid-template-columns: 1fr; }
 }
