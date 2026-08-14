@@ -1098,12 +1098,22 @@ body { transition: background-color 1.2s var(--ease); }
 
 /* ---- 30-1. 写真入りメディアカード ---- */
 .media-card--photo { background: var(--deep-2); }
+/* 絶対配置で枠に貼り付ける。
+   .media-card は grid + aspect-ratio のため、img に height:100% を書くと
+   高さが循環参照になり、縦長写真がフォールバックして枠を無視した高さで描画される
+   （= object-fit / object-position が効かない）。inset:0 で高さを確定させる。 */
 .media-card--photo img {
+  position: absolute; inset: 0;
   width: 100%; height: 100%; object-fit: cover;
   transition: transform 1.1s var(--ease), filter .8s var(--ease);
   filter: saturate(1.02);
 }
 .media-card--photo:hover img { transform: scale(1.07); filter: saturate(1.12); }
+/* 4/3 に切り抜くと主題が外れる素材の見せどころを指定する
+   （人物が下寄り・上寄りに写っている写真向け） */
+.media-card--photo img[data-pos="bottom"] { object-position: center 80%; }
+.media-card--photo img[data-pos="foot"]   { object-position: center 100%; }
+.media-card--photo img[data-pos="top"]    { object-position: center 20%; }
 /* 海の世界観に馴染ませる薄いティント */
 .media-card--photo::after {
   content: ""; position: absolute; inset: 0; pointer-events: none;
