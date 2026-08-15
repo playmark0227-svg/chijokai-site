@@ -7,6 +7,10 @@
   "use strict";
   var root = document.documentElement;
   root.classList.add("js");
+  /* このファイルが動いたことの目印。
+     各ページの <head> にある保険（一定時間これが立たなければ js クラスを外す）と対になっている。
+     main.js の配信に失敗しても本文が透明のまま消えないようにするため。 */
+  window.__chijoukaiReady = true;
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var $  = function (s, c) { return (c || document).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
@@ -97,26 +101,90 @@
     });
   }
 
-  /* ---------- Word-by-word reveal（<br> などのタグは保持） ---------- */
-  $$(".reveal-words").forEach(function (el) {
-    if (el.dataset.split) return; el.dataset.split = "1";
-    var label = el.textContent.trim();
-    var frag = document.createDocumentFragment(), i = 0;
-    Array.prototype.slice.call(el.childNodes).forEach(function (node) {
-      if (node.nodeType === 3) {
-        Array.prototype.forEach.call(node.nodeValue, function (ch) {
-          var span = document.createElement("span");
-          span.textContent = ch;
-          span.style.transitionDelay = (i++ * 0.035) + "s";
-          frag.appendChild(span);
-        });
-      } else {
-        frag.appendChild(node.cloneNode(true));
-      }
+  /* ---------- 見出しの行マスク ----------
+     一度そのままのテキストに戻してブラウザに正しく折らせ、
+     できあがった「行」を span で包み直す。
+     文字単位で割らないので、word-break: auto-phrase（文節改行）も
+     line-break: strict（行頭禁則）もそのまま効く。 */
+  function bail(el, text) {         /* 計測できないときは素のテキストで見せる */
+    el.textContent = text;
+    el.classList.add("is-split", "is-visible");
+  }
+
+  function splitLines(el) {
+    if (el.dataset.raw == null) el.dataset.raw = el.textContent;
+    var text = el.dataset.raw;
+    if (!text) return;
+    el.textContent = text;                       /* 素に戻して自然に折らせる */
+    var node = el.firstChild;
+    if (!node) return;
+
+    /* まだレイアウトされていない（幅ゼロ・非表示）なら分割しない */
+    var box = el.getBoundingClientRect();
+    if (!box.width || !box.height) { bail(el, text); return; }
+
+    var range = document.createRange();
+    var lines = [], cur = "", top = null;
+    for (var i = 0; i < text.length; i++) {
+      range.setStart(node, i); range.setEnd(node, i + 1);
+      var r = range.getBoundingClientRect();
+      if (!r.height) { bail(el, text); return; }  /* 計測不能 */
+      var t = Math.round(r.top);
+      if (top !== null && t !== top) { lines.push(cur); cur = ""; }
+      cur += text.charAt(i); top = t;
+    }
+    if (cur) lines.push(cur);
+
+    /* 1文字ずつ別行になるなど、明らかに計測が破綻している場合は諦める。
+       見出しが縦に崩れるくらいなら、演出を捨てて正しく組まれた素のテキストを見せる。 */
+    var expected = Math.max(1, Math.round(box.height / (parseFloat(getComputedStyle(el).lineHeight) || box.height)));
+    if (lines.length > 8 || lines.length > expected + 1 || lines.length >= text.length) {
+      bail(el, text); return;
+    }
+
+    el.textContent = "";
+    lines.forEach(function (ln, idx) {
+      var outer = document.createElement("span");
+      outer.className = "ln";
+      var inner = document.createElement("span");
+      inner.textContent = ln;
+      inner.style.transitionDelay = (idx * 0.09) + "s";
+      outer.appendChild(inner);
+      el.appendChild(outer);
     });
-    el.textContent = ""; el.appendChild(frag);
-    el.setAttribute("aria-label", label); /* 1文字ずつの span で読み上げが分断されないように */
-  });
+    el.setAttribute("aria-label", text);         /* 行分割で読み上げが切れないように */
+    el.classList.add("is-split");
+  }
+
+  var wordEls = $$(".reveal-words");
+  if (reduce) {
+    /* 動きを抑える設定では分割しない（素のテキストのまま表示する） */
+    wordEls.forEach(function (el) { el.classList.add("is-split", "is-visible"); });
+  } else {
+    /* 書体が確定してから測る。Web フォント読み込み前に測ると折り位置がずれる */
+    var runSplit = function () { wordEls.forEach(splitLines); };
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(runSplit);
+      setTimeout(runSplit, 1200);      /* fonts.ready が返らない環境の保険 */
+    } else {
+      runSplit();
+    }
+    /* 幅が変われば折り位置も変わる。dataset.raw から復元するので何度呼んでも安全 */
+    if ("ResizeObserver" in window) {
+      var rsTimer = 0;
+      var ro = new ResizeObserver(function () {
+        clearTimeout(rsTimer);
+        rsTimer = setTimeout(function () {
+          wordEls.forEach(function (el) {
+            var wasVisible = el.classList.contains("is-visible");
+            splitLines(el);
+            if (wasVisible) el.classList.add("is-visible");
+          });
+        }, 180);
+      });
+      wordEls.forEach(function (el) { ro.observe(el); });
+    }
+  }
 
   /* ---------- Reveal on scroll ---------- */
   var revealables = $$("[data-reveal], .reveal-words");

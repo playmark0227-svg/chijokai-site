@@ -13,7 +13,7 @@
 <meta property="og:description" content="ご縁のある企業さまの課題に、見極めた選択肢をお繋ぎします。コスト削減から業務支援まで、「本当に意味があるか」だけを基準にした、ご紹介という形のお付き合いです。">
 <meta name="twitter:card" content="summary">
 <link rel="stylesheet" href="assets/css/style.css">
-<script>document.documentElement.className += " js";</script>
+<script>document.documentElement.className+=" js";/* main.js が届かなかった場合は js クラスを外し、演出前提で隠れている本文を必ず表示する */setTimeout(function(){if(!window.__chijoukaiReady){var r=document.documentElement;r.className=r.className.replace(/\bjs\b/,"")}},2500)</script>
 <link rel="icon" href="assets/img/logo-mark.png" type="image/png">
 <script type="application/ld+json">
 {
@@ -22,6 +22,46 @@
   "itemListElement": [
     { "@type": "ListItem", "position": 1, "name": "ホーム", "item": "index.html" },
     { "@type": "ListItem", "position": 2, "name": "法人の方へ" }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "なぜ低コストで導入できるのですか。",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "「まずご縁を繋ぐこと」を最優先にしている提供元の正規パートナーだからです。最初に大きな利益を取るのではなく、良い出会いを届けることを大切にしているため、通常はかかる初期費用や月額を抑えた成果報酬型ルートをご案内できます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "他の代理店との違いは何ですか。",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "幅広い商材の中から、その企業にとって意味のあるものだけをお出しします。「売れる案件」ではなく「合う案件」を。合わないと判断したものは、こちらからお勧めすることはありません。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "導入後のサポートは誰が行いますか。",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "各サービスの提供事業者が対応します。あわせて株式会社知上会も窓口として伴走しますので、「どこに聞けばいいかわからない」という状態にはなりません。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "掲載されていない案件もありますか。",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "あります。ここに載せているのは一部で、ほかにもお取り扱いがあります。「こんな課題を解決したい」というご相談から、合うものをお探しします。"
+      }
+    }
   ]
 }
 </script>
@@ -54,7 +94,7 @@
     <nav class="breadcrumb" aria-label="パンくずリスト">
       <ol><li><a href="index.html">ホーム</a></li><li aria-hidden="true">›</li><li aria-current="page">法人の方へ</li></ol>
     </nav>
-    <span class="eyebrow">FOR BUSINESS</span>
+    <span class="eyebrow" lang="en">FOR BUSINESS</span>
     <h1 class="reveal-words">ご縁の橋渡し</h1>
     <p class="eyebrow" data-reveal style="margin-top:1.2rem">法人の方へ — 課題解決のご紹介</p>
     <p data-reveal data-reveal-delay="1">ご縁のある企業さまの課題に、見極めた選択肢をお繋ぎします。売り込みではなく、「本当に意味があるか」だけを基準にした、ご紹介という形のお付き合いです。</p>
@@ -63,7 +103,7 @@
 
 <section class="section">
   <div class="wrap">
-    <span class="eyebrow" data-reveal>LINE UP</span>
+    <span class="eyebrow" data-reveal lang="en">LINE UP</span>
     <h2 class="section-title reveal-words">取り扱っている案件</h2>
     <p class="lead" data-reveal data-reveal-delay="1">その企業にとって本当に意味のある案件だけを厳選。初期費用を抑えて始められるものを中心にご用意しています。</p>
 
@@ -74,11 +114,11 @@
         <div class="sol__photo"><img src="assets/img/sol-hvac.jpg" alt="建物の外壁に並ぶ空調の室外機" width="1200" height="669" loading="lazy"></div>
         <div class="sol__head">
           <div class="sol__ic"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="4" y="8" width="24" height="13" rx="3" stroke="#1b4f6b" stroke-width="2" fill="#ecebe7"/><path d="M8 14h6M8 17h9" stroke="#0a1c2e" stroke-width="2" stroke-linecap="round"/><path d="M23 6l2 4-4 1z" fill="#b08d4f"/><path d="M9 24l-2 4M15 24l-2 4M21 24l-2 4" stroke="#8fb8c7" stroke-width="2" stroke-linecap="round"/></svg></div>
-          <h2 class="sol__title">ISS-4 ｜ 空調の省エネ<small>ENERGY SAVING</small></h2>
+          <h3 class="sol__title">ISS-4 ｜ 空調の省エネ<small lang="en">ENERGY SAVING</small></h3>
         </div>
         <div class="sol__body"><p>エアコン室外機に取り付ける省エネ機器。独自の技術で、快適さはそのままに消費電力を抑えます。温度・湿度・不快指数を数値で見える化し、自動で最適化。ホテルや低温物流倉庫、福祉施設など、大きな電力を使う現場で導入が進んでいます。導入時の初期費用や月額をかけずに始められる、成果報酬型のプランをご用意しています。</p></div>
         <div class="sol__tags"><span class="tag tag--gold">成果報酬型プランあり</span><span class="tag">電力コストの削減に貢献</span><span class="tag">買取プランも選択可</span></div>
-        <div class="sol__foot"><a href="contact.html?topic=ISS-4（空調の省エネ）" class="sol__link">この案件を相談する <span class="arrow" aria-hidden="true">→</span></a></div>
+        <div class="sol__foot"><a href="contact.html?topic=ISS-4（空調の省エネ）" class="sol__link" aria-label="ISS-4  空調の省エネ について相談する">この案件を相談する <span class="arrow" aria-hidden="true">→</span></a></div>
       </article>
 
       <!-- 決済端末 -->
@@ -86,11 +126,11 @@
         <div class="sol__photo"><img src="assets/img/sol-payment.jpg" alt="カフェのカウンターで決済端末にスマートフォンをかざす手" width="1200" height="669" loading="lazy"></div>
         <div class="sol__head">
           <div class="sol__ic"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="8" y="4" width="16" height="24" rx="3" stroke="#1b4f6b" stroke-width="2" fill="#ecebe7"/><path d="M12 9h8M12 13h8" stroke="#0a1c2e" stroke-width="2" stroke-linecap="round"/><rect x="12" y="17" width="8" height="5" rx="1" fill="#b08d4f"/></svg></div>
-          <h2 class="sol__title">決済端末 ｜ SWA Pay<small>PAYMENT</small></h2>
+          <h3 class="sol__title">決済端末 ｜ SWA Pay<small lang="en">PAYMENT</small></h3>
         </div>
         <div class="sol__body"><p>決済手数料を、今よりもっと安く。業種によっては最安クラスの水準まで抑えられる場合もあります（料率は業種・条件により異なります）。機器レンタル費などの負担も基本なし。各種QR決済を1つに束ね、Wi-Fiも不要——お客さまが支払い方法を選ぶだけのシンプルな仕組みです。</p></div>
         <div class="sol__tags"><span class="tag tag--gold">手数料をより安く（業種による）</span><span class="tag">機器費0円</span><span class="tag">QR決済を統合</span></div>
-        <div class="sol__foot"><a href="contact.html?topic=SWA%20Pay（決済端末）" class="sol__link">この案件を相談する <span class="arrow" aria-hidden="true">→</span></a></div>
+        <div class="sol__foot"><a href="contact.html?topic=SWA%20Pay（決済端末）" class="sol__link" aria-label="決済端末  SWA Pay について相談する">この案件を相談する <span class="arrow" aria-hidden="true">→</span></a></div>
       </article>
 
       <!-- パラキャンパス（アート・サイネージ） -->
@@ -98,11 +138,11 @@
         <div class="sol__photo"><img src="assets/img/sol-art.jpg" alt="オフィスのロビーに置かれ、抽象画を映すデジタルサイネージ" width="1200" height="669" loading="lazy"></div>
         <div class="sol__head">
           <div class="sol__ic"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="5" y="6" width="22" height="15" rx="2" stroke="#1b4f6b" stroke-width="2" fill="#ecebe7"/><circle cx="12" cy="12" r="2.4" fill="#b08d4f"/><path d="M8 18l4-4 3 3 4-5 4 6" stroke="#b5714f" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 25h8" stroke="#0a1c2e" stroke-width="2" stroke-linecap="round"/></svg></div>
-          <h2 class="sol__title">パラキャンパス ｜ アート・サイネージ<small>ART &amp; SOCIAL</small></h2>
+          <h3 class="sol__title">パラキャンパス ｜ アート・サイネージ<small lang="en">ART &amp; SOCIAL</small></h3>
         </div>
         <div class="sol__body"><p>デジタルサイネージを通じて、障がいのある作家のアートを届ける取り組み。毎月10作品が入れ替わり、そこで生まれた収益は作家へ還元されます。作品に出会う人にとっても豊かな時間になる、形だけで終わらない、続く社会貢献のかたちです。</p></div>
         <div class="sol__tags"><span class="tag--coral tag">収益は作家へ還元</span><span class="tag tag--free">初期導入料0円</span><span class="tag">月額のみ</span></div>
-        <div class="sol__foot"><a href="contact.html?topic=パラキャンパス（アート・サイネージ）" class="sol__link">この案件を相談する <span class="arrow" aria-hidden="true">→</span></a></div>
+        <div class="sol__foot"><a href="contact.html?topic=パラキャンパス（アート・サイネージ）" class="sol__link" aria-label="パラキャンパス  アート・サイネージ について相談する">この案件を相談する <span class="arrow" aria-hidden="true">→</span></a></div>
       </article>
 
       <!-- ハヤパス -->
@@ -110,11 +150,11 @@
         <div class="sol__photo"><img src="assets/img/sol-queue.jpg" alt="飲食店の入口に並ぶ人の列" width="1200" height="669" loading="lazy"></div>
         <div class="sol__head">
           <div class="sol__ic"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M18 4L8 18h7l-2 10 11-15h-7z" fill="#b08d4f" stroke="#0a1c2e" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
-          <h2 class="sol__title">ハヤパス ｜ ファストパス<small>FAST PASS</small></h2>
+          <h3 class="sol__title">ハヤパス ｜ ファストパス<small lang="en">FAST PASS</small></h3>
         </div>
         <div class="sol__body"><p>行列に並ばず、前に進める権利を購入できるサービス。QRコードを読み込んでボタンを押すだけ。店舗にやさしいレベニューシェア型で、収益の配分は店舗側が多くなる設計です。</p></div>
         <div class="sol__tags"><span class="tag tag--gold">店舗60% / 企業40%</span><span class="tag">QRで簡単購入</span><span class="tag">飲食チェーン導入実績</span></div>
-        <div class="sol__foot"><a href="contact.html?topic=ハヤパス" class="sol__link">この案件を相談する <span class="arrow" aria-hidden="true">→</span></a></div>
+        <div class="sol__foot"><a href="contact.html?topic=ハヤパス" class="sol__link" aria-label="ハヤパス  ファストパス について相談する">この案件を相談する <span class="arrow" aria-hidden="true">→</span></a></div>
       </article>
 
       <!-- アロマスタンド -->
@@ -122,11 +162,11 @@
         <div class="sol__photo"><img src="assets/img/sol-perfume.jpg" alt="洗面スペースの壁に取り付けられた小型のフレグランスディスペンサー" width="1200" height="669" loading="lazy"></div>
         <div class="sol__head">
           <div class="sol__ic"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="11" y="12" width="10" height="15" rx="3" stroke="#1b4f6b" stroke-width="2" fill="#ecebe7"/><rect x="13" y="7" width="6" height="5" rx="1.5" stroke="#0a1c2e" stroke-width="2"/><path d="M24 9c2 0 3 1.5 3 3M25 14c1.4 0 2 1 2 2" stroke="#8fb8c7" stroke-width="2" stroke-linecap="round" fill="none"/><circle cx="16" cy="19" r="2" fill="#b08d4f"/></svg></div>
-          <h2 class="sol__title">アロマスタンド<small>ONE-PUSH PERFUME</small></h2>
+          <h3 class="sol__title">アロマスタンド<small lang="en">ONE-PUSH PERFUME</small></h3>
         </div>
         <div class="sol__body"><p>ワンプッシュで香水を1回分。ボトルを買わずに、その場で気軽に。壁にも掛けられるコンパクトサイズで、トイレなどの空間にもすっと置けます。オンライン決済にも対応。日経トレンディ「2026年ヒット予測」でも話題のジャンル。</p></div>
         <div class="sol__tags"><span class="tag tag--free">0円で設置可</span><span class="tag">売上の10%を店舗へ</span><span class="tag">メンテナンス込み</span></div>
-        <div class="sol__foot"><a href="contact.html?topic=アロマスタンド" class="sol__link">この案件を相談する <span class="arrow" aria-hidden="true">→</span></a></div>
+        <div class="sol__foot"><a href="contact.html?topic=アロマスタンド" class="sol__link" aria-label="アロマスタンド について相談する">この案件を相談する <span class="arrow" aria-hidden="true">→</span></a></div>
       </article>
 
       <!-- エスコバンド -->
@@ -134,11 +174,11 @@
         <div class="sol__photo"><img src="assets/img/sol-escoband.jpg" alt="機械室の配管に巻かれた黒いラバーバンド" width="1200" height="669" loading="lazy"></div>
         <div class="sol__head">
           <div class="sol__ic"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M4 16h6M22 16h6" stroke="#0a1c2e" stroke-width="2" stroke-linecap="round"/><rect x="10" y="10" width="12" height="12" rx="3" stroke="#1b4f6b" stroke-width="2" fill="#ecebe7"/><path d="M13 10v12M16 10v12M19 10v12" stroke="#b08d4f" stroke-width="1.8"/></svg></div>
-          <h2 class="sol__title">エスコバンド ｜ 電気代削減<small>ESCO BAND</small></h2>
+          <h3 class="sol__title">エスコバンド ｜ 電気代削減<small lang="en">ESCO BAND</small></h3>
         </div>
         <div class="sol__body"><p>配管に巻きつけるだけのラバーバンド。柔らかいので、固いセラミック製では対応できない配管にもフィットします。独自の技術で電気代の削減に貢献し、大きな設備を持つ現場のコストダウンをサポートします。こちらも成果報酬型で、削減できた分に応じたお支払いから始められます。</p></div>
         <div class="sol__tags"><span class="tag tag--gold">成果報酬型</span><span class="tag">電気代の削減に貢献</span><span class="tag">独自技術</span><span class="tag">配管を選ばない</span></div>
-        <div class="sol__foot"><a href="contact.html?topic=エスコバンド（電気代削減）" class="sol__link">この案件を相談する <span class="arrow" aria-hidden="true">→</span></a></div>
+        <div class="sol__foot"><a href="contact.html?topic=エスコバンド（電気代削減）" class="sol__link" aria-label="エスコバンド  電気代削減 について相談する">この案件を相談する <span class="arrow" aria-hidden="true">→</span></a></div>
       </article>
 
       <!-- メディアリリース -->
@@ -146,11 +186,11 @@
         <div class="sol__photo"><img src="assets/img/sol-press.jpg" alt="机に置かれた新聞の束とノートパソコン" width="1200" height="669" loading="lazy"></div>
         <div class="sol__head">
           <div class="sol__ic"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M6 10h14v12H6z" stroke="#1b4f6b" stroke-width="2" fill="#ecebe7"/><path d="M20 12l6-3v14l-6-3" fill="#b08d4f"/><path d="M9 14h8M9 18h5" stroke="#0a1c2e" stroke-width="2" stroke-linecap="round"/></svg></div>
-          <h2 class="sol__title">メディアリリース<small>PR / PRESS RELEASE</small></h2>
+          <h3 class="sol__title">メディアリリース<small lang="en">PR / PRESS RELEASE</small></h3>
         </div>
         <div class="sol__body"><p>1媒体あたり1万円の完全成果報酬で、複数のニュース媒体に一斉掲載。原稿の作成も掲載作業もおまかせ。掲載された媒体数に応じたお支払いで、上限額もきちんと設定されているので安心です。認知を一気に広げたい企業に。</p></div>
         <div class="sol__tags"><span class="tag tag--gold">1媒体あたり1万円</span><span class="tag">完全成果報酬</span><span class="tag">原稿作成込み</span></div>
-        <div class="sol__foot"><a href="contact.html?topic=メディアリリース" class="sol__link">この案件を相談する <span class="arrow" aria-hidden="true">→</span></a></div>
+        <div class="sol__foot"><a href="contact.html?topic=メディアリリース" class="sol__link" aria-label="メディアリリース について相談する">この案件を相談する <span class="arrow" aria-hidden="true">→</span></a></div>
       </article>
 
       <!-- キャビア -->
@@ -158,11 +198,11 @@
         <div class="sol__photo"><img src="assets/img/sol-caviar.jpg" alt="氷に載せられたキャビアの缶とマザーオブパールのスプーン" width="1200" height="669" loading="lazy"></div>
         <div class="sol__head">
           <div class="sol__ic"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M6 20c0-5 5-8 10-8s10 3 10 8a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z" stroke="#1b4f6b" stroke-width="2" fill="#ecebe7"/><circle cx="12" cy="19" r="1.6" fill="#0a1c2e"/><circle cx="16" cy="21" r="1.6" fill="#0a1c2e"/><circle cx="20" cy="19" r="1.6" fill="#0a1c2e"/><path d="M12 12l2-4M20 12l-2-4" stroke="#b08d4f" stroke-width="2" stroke-linecap="round"/></svg></div>
-          <h2 class="sol__title">キャビア ｜ 自社ブランド<small>CAVIAR</small></h2>
+          <h3 class="sol__title">キャビア ｜ 自社ブランド<small lang="en">CAVIAR</small></h3>
         </div>
         <div class="sol__body"><p>代表自らがキャビアソムリエの資格を持ち、品質を見極めて厳選。専門家の目利きで仕入れる、高品質なキャビアをお届けします。ホテルや飲食店など、少量から使いたい現場のニーズにも。</p></div>
         <div class="sol__tags"><span class="tag--coral tag">ソムリエ監修</span><span class="tag">少量から対応</span><span class="tag">法人利用歓迎</span></div>
-        <div class="sol__foot"><a href="contact.html?topic=キャビア" class="sol__link">この案件を相談する <span class="arrow" aria-hidden="true">→</span></a></div>
+        <div class="sol__foot"><a href="contact.html?topic=キャビア" class="sol__link" aria-label="キャビア  自社ブランド について相談する">この案件を相談する <span class="arrow" aria-hidden="true">→</span></a></div>
       </article>
 
       <!-- Legal Base（法務サービス） -->
@@ -170,11 +210,11 @@
         <div class="sol__photo"><img src="assets/img/sol-legal.jpg" alt="机に積まれた法律書と眼鏡、ノートパソコン" width="1200" height="669" loading="lazy"></div>
         <div class="sol__head">
           <div class="sol__ic"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 4v22M8 26h16" stroke="#0a1c2e" stroke-width="2" stroke-linecap="round"/><path d="M16 8L7 12l3 6c1.5 1.5 4.5 1.5 6 0zM16 8l9 4-3 6c-1.5 1.5-4.5 1.5-6 0z" stroke="#1b4f6b" stroke-width="2" fill="#ecebe7" stroke-linejoin="round"/></svg></div>
-          <h2 class="sol__title">Legal Base ｜ 法務サービス<small>LEGAL SUPPORT</small></h2>
+          <h3 class="sol__title">Legal Base ｜ 法務サービス<small lang="en">LEGAL SUPPORT</small></h3>
         </div>
         <div class="sol__body"><p>登録弁護士に質問を投稿・相談できるサービス。相談料はかからず、月額のみのわかりやすい料金。法務部を持たない企業や個人事業主でも、専門家を身近に。</p></div>
         <div class="sol__tags"><span class="tag tag--free">相談料 0円</span><span class="tag">従業員10人以下 月1万円</span><span class="tag">個人事業主 月5,000円</span></div>
-        <div class="sol__foot"><a href="contact.html?topic=Legal%20Base（法務サービス）" class="sol__link">この案件を相談する <span class="arrow" aria-hidden="true">→</span></a></div>
+        <div class="sol__foot"><a href="contact.html?topic=Legal%20Base（法務サービス）" class="sol__link" aria-label="Legal Base  法務サービス について相談する">この案件を相談する <span class="arrow" aria-hidden="true">→</span></a></div>
       </article>
 
     </div>
@@ -188,7 +228,7 @@
   <div class="photo-bg" aria-hidden="true"><img src="assets/img/ocean-horizon.jpg" alt="" width="1800" height="1004" loading="lazy"></div>
   <div class="wrap split">
     <div data-reveal="left">
-      <span class="eyebrow">WHY LOW COST</span>
+      <span class="eyebrow" lang="en">WHY LOW COST</span>
       <h2 class="section-title">なぜ初期負担を抑えられるのか</h2>
       <p class="lead">大切にしているのは「まず、ご縁を繋ぐこと」。そこで大きな利益を取るのではなく、良い出会いを届けることを最優先にしています。だから、初期費用や月額を抑えたルートを実現できるのです。</p>
       <p class="p-sub">幅広い商材の中から、相手にとって本当にヒットするものを。「導入しない理由が見当たらない」——そんな案件を、厳選してお届けします。</p>
@@ -207,7 +247,7 @@
 <!-- 法人向けFAQ -->
 <section class="section section--tint" id="faq">
   <div class="wrap">
-    <span class="eyebrow" data-reveal>FAQ</span>
+    <span class="eyebrow" data-reveal lang="en">FAQ</span>
     <h2 class="section-title reveal-words">よくあるご質問</h2>
   </div>
   <div class="faq section-body">
@@ -233,17 +273,17 @@
 <!-- 次に読む -->
 <section class="section">
   <div class="wrap">
-    <span class="eyebrow" data-reveal>NEXT</span>
+    <span class="eyebrow" data-reveal lang="en">NEXT</span>
     <h2 class="section-title reveal-words">次に読む</h2>
   </div>
   <div class="wrap next-read section-body">
     <a href="story.html" class="next-card" data-reveal="left">
-      <span class="eyebrow">STORY</span>
+      <span class="eyebrow" lang="en">STORY</span>
       <h3>代表の想い</h3>
       <p>どんな人が、どんな考えでご紹介しているのか。原点となった経験を。<span class="arrow" aria-hidden="true">→</span></p>
     </a>
     <a href="service.html" class="next-card" data-reveal="right">
-      <span class="eyebrow">FOR INDIVIDUALS</span>
+      <span class="eyebrow" lang="en">FOR INDIVIDUALS</span>
       <h3>資産形成サポート</h3>
       <p>経営者ご自身の資産についても。基礎から長期まで、生涯伴走します。<span class="arrow" aria-hidden="true">→</span></p>
     </a>
@@ -264,7 +304,7 @@
 
 <footer class="site-footer">
   <div class="wrap footer-grid">
-    <div><div class="brand" style="margin-bottom:1rem"><img class="brand__logo brand__logo--light" src="assets/img/logo-full.png" alt="知上会" width="600" height="215"></div><p style="font-size:.9rem;color:#a9cdda;max-width:34ch">知識と知恵を高め、お金や詐欺の不安のない未来へ。一人ひとりに、生涯にわたって寄り添います。</p></div>
+    <div><div class="brand" style="margin-bottom:1rem"><img class="brand__logo brand__logo--light" src="assets/img/logo-full.png" alt="知上会" width="600" height="215"></div><p class="footer-lede">知識と知恵を高め、お金や詐欺の不安のない未来へ。一人ひとりに、生涯にわたって寄り添います。</p></div>
     <nav aria-label="フッターメニュー"><h4>メニュー</h4><ul class="footer-links"><li><a href="index.html">ホーム</a></li><li><a href="story.html">代表の想い</a></li><li><a href="service.html">資産形成サポート</a></li><li><a href="solutions.html">法人の方へ</a></li><li><a href="contact.html">お問い合わせ</a></li></ul></nav>
     <nav aria-label="ご相談・その他"><h4>ご相談</h4><ul class="footer-links"><li><a href="contact.html">無料相談フォーム</a></li><li><a href="solutions.html#faq">よくあるご質問</a></li><li><a href="privacy.html">プライバシーポリシー</a></li></ul></nav>
   </div>

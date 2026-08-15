@@ -13,7 +13,7 @@
 <meta property="og:description" content="金融詐欺の経験を原点に。知上会代表 堀之内の歩みと、知識と知恵を届ける使命。">
 <meta name="twitter:card" content="summary">
 <link rel="stylesheet" href="assets/css/style.css">
-<script>document.documentElement.className += " js";</script>
+<script>document.documentElement.className+=" js";/* main.js が届かなかった場合は js クラスを外し、演出前提で隠れている本文を必ず表示する */setTimeout(function(){if(!window.__chijoukaiReady){var r=document.documentElement;r.className=r.className.replace(/\bjs\b/,"")}},2500)</script>
 <link rel="icon" href="assets/img/logo-mark.png" type="image/png">
 <script type="application/ld+json">
 {
@@ -55,7 +55,7 @@
     <nav class="breadcrumb" aria-label="パンくずリスト">
       <ol><li><a href="index.html">ホーム</a></li><li aria-hidden="true">›</li><li aria-current="page">代表の想い</li></ol>
     </nav>
-    <span class="eyebrow">OUR STORY</span>
+    <span class="eyebrow" lang="en">OUR STORY</span>
     <h1 data-reveal>代表の想い</h1>
     <p data-reveal data-reveal-delay="1">失敗も遠回りも、すべてが今の使命につながっています。知上会代表・堀之内の歩みをご紹介します。</p>
   </div>
@@ -64,7 +64,7 @@
 <!-- 企業理念 -->
 <section class="creed">
   <div class="wrap">
-    <span class="eyebrow" data-reveal>OUR PHILOSOPHY</span>
+    <span class="eyebrow" data-reveal lang="en">OUR PHILOSOPHY</span>
     <h2 class="creed__title" data-reveal data-reveal-delay="1">学びを通じて、人生を豊かにする。</h2>
     <p class="creed__body" data-reveal data-reveal-delay="2">知上会という名前には、「知を上げる」という意味を込めています。お金の知識も、法人さまへのご紹介も、すべてはこの理念のもとにあります。</p>
   </div>
@@ -78,7 +78,7 @@
            onerror="this.remove()" loading="lazy">
     </div>
     <div data-reveal="right">
-      <span class="eyebrow">REPRESENTATIVE</span>
+      <span class="eyebrow" lang="en">REPRESENTATIVE</span>
       <h2 class="section-title">代表 <span class="accent">堀之内</span></h2>
       <p class="lead">薬学部を卒業し、薬剤師として歩み始めた一人の青年。学びの好奇心から学部の外へ飛び出し、全国の仲間と出会う日々。しかしその先で、人生を揺るがす経験をします。</p>
       <p class="p-sub">「なぜ、お金の学びは世の中にないのだろう」。その問いが、知上会のすべての出発点になりました。</p>
@@ -89,11 +89,21 @@
 <!-- Timeline -->
 <section class="section section--tint">
   <div class="wrap">
-    <span class="eyebrow" data-reveal>JOURNEY</span>
+    <span class="eyebrow" data-reveal lang="en">JOURNEY</span>
     <h2 class="section-title reveal-words">代表の経歴</h2>
   </div>
   <div class="narrow timeline section-body">
     <div class="timeline__trail" aria-hidden="true"></div>
+    <!-- スクロールに合わせて航路を進む小舟（位置は main.js が --p / --track で制御） -->
+    <div class="timeline__ship" aria-hidden="true">
+      <svg viewBox="0 0 34 34" xmlns="http://www.w3.org/2000/svg">
+        <rect x="16" y="5" width="1.8" height="15" rx=".9" fill="#8a6a45"/>
+        <path d="M18.6 7.4c5.2 2.4 8 6.4 8.4 11.2 0 .6-.4 1-1 1h-7.4z" fill="#f4ead6"/>
+        <path d="M15.4 9c-3.8 2-6 5.2-6.6 8.8-.1.6.3 1.2.9 1.2h5.7z" fill="#dcc9a6"/>
+        <path d="M8 21h18c.6 0 1 .6.7 1.2l-1.8 3.6a3.2 3.2 0 0 1-2.9 1.8H12a3.2 3.2 0 0 1-2.9-1.8l-1.8-3.6C7 21.6 7.4 21 8 21z" fill="#b08a5f"/>
+        <path d="M8 21h18c.6 0 1 .6.7 1.2l-.4.9H7.7l-.4-.9C7 21.6 7.4 21 8 21z" fill="#cfa87a"/>
+      </svg>
+    </div>
 
 <div class="tl-item" data-reveal="right">
       <span class="tl-item__dot"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 9l8-4 8 4-8 4z" fill="#1b4f6b"/><path d="M7 12v5c0 1.5 2.2 3 5 3s5-1.5 5-3v-5" stroke="#0a1c2e" stroke-width="2" fill="none"/></svg></span>
@@ -156,7 +166,7 @@
       </figure>
     </div>
     <div data-reveal="right">
-      <span class="eyebrow">TURNING POINT</span>
+      <span class="eyebrow" lang="en">TURNING POINT</span>
       <h2 class="section-title">アメリカの金融教育</h2>
       <p class="lead">語学留学で渡ったアメリカで、高校生向けの金融カリキュラムを目の当たりにしました。大学の講義にも飛び込み、教育レベルの違いに衝撃を受けます。</p>
       <p class="p-sub">「日本にも、この学びを」——知上会の輪郭が、はっきりと見えた瞬間でした。</p>
@@ -168,7 +178,7 @@
 <section class="section section--deep has-photo-bg">
   <div class="photo-bg" aria-hidden="true"><img src="assets/img/ocean-horizon.jpg" alt="" width="1800" height="1004" loading="lazy"></div>
     <div class="wrap">
-    <span class="eyebrow" data-reveal>LESSONS</span>
+    <span class="eyebrow" data-reveal lang="en">LESSONS</span>
     <h2 class="section-title reveal-words">詐欺に共通する3つの特徴</h2>
     <p class="lead" data-reveal data-reveal-delay="1">当時流行していた手口には、ほとんど引っかかりました。だからこそ今、はっきり言える共通点が3つあります。</p>
   </div>
@@ -209,17 +219,17 @@
 <!-- 次に読む -->
 <section class="section section--tint">
   <div class="wrap">
-    <span class="eyebrow" data-reveal>NEXT</span>
+    <span class="eyebrow" data-reveal lang="en">NEXT</span>
     <h2 class="section-title reveal-words">次に読む</h2>
   </div>
   <div class="wrap next-read section-body">
     <a href="service.html" class="next-card" data-reveal="left">
-      <span class="eyebrow">FOR INDIVIDUALS</span>
+      <span class="eyebrow" lang="en">FOR INDIVIDUALS</span>
       <h3>資産形成サポート</h3>
       <p>基礎から長期の運用まで、一生涯つづく伴走。伴走サポートが0円である理由もこちらで。<span class="arrow" aria-hidden="true">→</span></p>
     </a>
     <a href="solutions.html" class="next-card" data-reveal="right">
-      <span class="eyebrow">FOR BUSINESS</span>
+      <span class="eyebrow" lang="en">FOR BUSINESS</span>
       <h3>法人の方へ</h3>
       <p>事業のコストと課題に。初期費用を抑えて始められるものを中心にご紹介します。<span class="arrow" aria-hidden="true">→</span></p>
     </a>
@@ -240,7 +250,7 @@
 
 <footer class="site-footer">
   <div class="wrap footer-grid">
-    <div><div class="brand" style="margin-bottom:1rem"><img class="brand__logo brand__logo--light" src="assets/img/logo-full.png" alt="知上会" width="600" height="215"></div><p style="font-size:.9rem;color:#a9cdda;max-width:34ch">知識と知恵を高め、お金や詐欺の不安のない未来へ。一人ひとりに、生涯にわたって寄り添います。</p></div>
+    <div><div class="brand" style="margin-bottom:1rem"><img class="brand__logo brand__logo--light" src="assets/img/logo-full.png" alt="知上会" width="600" height="215"></div><p class="footer-lede">知識と知恵を高め、お金や詐欺の不安のない未来へ。一人ひとりに、生涯にわたって寄り添います。</p></div>
     <nav aria-label="フッターメニュー"><h4>メニュー</h4><ul class="footer-links"><li><a href="index.html">ホーム</a></li><li><a href="story.html">代表の想い</a></li><li><a href="service.html">資産形成サポート</a></li><li><a href="solutions.html">法人の方へ</a></li><li><a href="contact.html">お問い合わせ</a></li></ul></nav>
     <nav aria-label="ご相談・その他"><h4>ご相談</h4><ul class="footer-links"><li><a href="contact.html">無料相談フォーム</a></li><li><a href="service.html#faq">よくあるご質問</a></li><li><a href="privacy.html">プライバシーポリシー</a></li></ul></nav>
   </div>

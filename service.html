@@ -13,7 +13,7 @@
 <meta property="og:description" content="始めて終わりではなく、その先へ。基礎から長期の資産形成まで、一生涯つづく伴走でお金と人生に寄り添います。">
 <meta name="twitter:card" content="summary">
 <link rel="stylesheet" href="assets/css/style.css">
-<script>document.documentElement.className += " js";</script>
+<script>document.documentElement.className+=" js";/* main.js が届かなかった場合は js クラスを外し、演出前提で隠れている本文を必ず表示する */setTimeout(function(){if(!window.__chijoukaiReady){var r=document.documentElement;r.className=r.className.replace(/\bjs\b/,"")}},2500)</script>
 <link rel="icon" href="assets/img/logo-mark.png" type="image/png">
 <script type="application/ld+json">
 {
@@ -22,6 +22,62 @@
   "itemListElement": [
     { "@type": "ListItem", "position": 1, "name": "ホーム", "item": "index.html" },
     { "@type": "ListItem", "position": 2, "name": "資産形成サポート" }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "本当に費用は0円ですか。どこで収益を得ているのですか。",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "日々の伴走・連絡、質問への回答、初回のご相談は無料です。一方で、セミナーと継続的な個別相談は有料でご提供しています。また、株式会社知上会の運営は、さまざまなご縁をお繋ぎするなかでも成り立っています。無料・有料にかかわらず、基準はいつも「その方にとってベストかどうか」だけです。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "無理に契約を勧められませんか。",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "勧誘はいたしません。お話をうかがったうえで合わないと判断すれば、理由とともに率直にお伝えします。ご相談いただいたからといって、何かを契約していただく必要はありません。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "お金の知識がまったくありませんが、大丈夫ですか。",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "まったく問題ありません。代表自身、かつては知識がないまま金融詐欺に何度も遭いました。だからこそ「わからない」からの出発を、いちばん大切にしています。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "サポートはいつまで続きますか。",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "期限はありません。むしろ目指しているのは、いずれ私たちがいなくてもご自身で判断し、歩いていけるようになることです。そのうえで、必要なときにはいつでも戻ってこられる場所であり続けます。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "セミナーに、なぜZoom面談が必要なのですか。",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "どんな状況の方かがわからないまま一般論をお話ししても、お役に立てないからです。まず一度お顔を合わせて、あなたに合った内容をご用意するための時間をいただいています。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "相談したあと、しつこく連絡が来ませんか。",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "来ません。契約を迫るような連絡はしません。ご希望があれば、連絡の頻度もいつでも調整します。"
+      }
+    }
   ]
 }
 </script>
@@ -54,7 +110,7 @@
     <nav class="breadcrumb" aria-label="パンくずリスト">
       <ol><li><a href="index.html">ホーム</a></li><li aria-hidden="true">›</li><li aria-current="page">資産形成サポート</li></ol>
     </nav>
-    <span class="eyebrow">SERVICE</span>
+    <span class="eyebrow" lang="en">SERVICE</span>
     <h1 class="reveal-words">始めたあとが、本番です</h1>
     <p data-reveal data-reveal-delay="1">大切なのは、その先。基礎知識から長期の資産形成を乗りこなすまで、一生涯つづく伴走で、あなたのお金と人生に寄り添います。</p>
   </div>
@@ -64,7 +120,7 @@
 <section class="section section--feature">
   <div class="wrap split">
     <div data-reveal="left">
-      <span class="eyebrow">OUR APPROACH</span>
+      <span class="eyebrow" lang="en">OUR APPROACH</span>
       <h2 class="section-title">常に、その時点で最適な方法を</h2>
       <p class="lead">お客さまにとって一番良い方法は、時代とともに変わっていくもの。だからこそ、常にベストを追求し続けます。そして始めたあとが本番。伴走型のサポートで、長期にわたってサポートします。</p>
       <p class="p-sub">お金の相談の延長で、生き方や稼ぎ方の話になることもよくあります。そんなときも、遠慮なくお話しください。</p>
@@ -93,7 +149,7 @@
       </figure>
     </div>
     <div data-reveal="left">
-      <span class="eyebrow">LEARNING</span>
+      <span class="eyebrow" lang="en">LEARNING</span>
       <h2 class="section-title">知識が、いちばんの防御になります</h2>
       <p class="lead">代表自身、かつては知識がないまま金融詐欺に何度も遭いました。だからこそ、専門用語を並べる講義ではなく、「わからない」からの出発をいちばん大切にしています。</p>
       <p class="p-sub">良し悪しを測る物差しさえ持てれば、判断はご自身でできるようになります。そこまでご一緒するのが、私たちの役割です。</p>
@@ -104,7 +160,7 @@
 <!-- 流れ -->
 <section class="section section--tint">
   <div class="wrap">
-    <span class="eyebrow" data-reveal>FLOW</span>
+    <span class="eyebrow" data-reveal lang="en">FLOW</span>
     <h2 class="section-title reveal-words">サポートの流れ</h2>
     <p class="lead" data-reveal data-reveal-delay="1">はじめての方も、着実に。学びから伴走まで、4つのステップでご一緒します。</p>
   </div>
@@ -119,7 +175,7 @@
 <!-- 伴走に含まれるもの -->
 <section class="section">
   <div class="wrap">
-    <span class="eyebrow" data-reveal>COMPANION</span>
+    <span class="eyebrow" data-reveal lang="en">COMPANION</span>
     <h2 class="section-title reveal-words">伴走に、含まれるもの</h2>
     <p class="lead" data-reveal data-reveal-delay="1">一度きりのアドバイスではありません。日々の暮らしに学びを織り込む、継続のサポートです。</p>
   </div>
@@ -150,7 +206,7 @@
   <div class="photo-bg" aria-hidden="true"><img src="assets/img/ocean-horizon.jpg" alt="" width="1800" height="1004" loading="lazy"></div>
   <div class="wrap split">
     <div data-reveal="left">
-      <span class="eyebrow">PRICING</span>
+      <span class="eyebrow" lang="en">PRICING</span>
       <h2 class="section-title">伴走サポートは0円です</h2>
       <p class="lead">「せっかくお繋ぎするなら」——伴走サポートそのものに費用はいただいていません。株式会社知上会の運営は、さまざまなご縁をお繋ぎするなかで成り立っています。だから、あなたに寄り添うことに、遠慮はいりません。</p>
       <p class="p-sub">お伝えする情報や案件も、その多くが無料のもの。あくまで「あなたにとってベストなもの」を基準にご案内します。</p>
@@ -173,7 +229,7 @@
 <!-- しないこと -->
 <section class="section">
   <div class="wrap">
-    <span class="eyebrow" data-reveal>OUR PROMISE</span>
+    <span class="eyebrow" data-reveal lang="en">OUR PROMISE</span>
     <h2 class="section-title reveal-words">私たちがしないこと</h2>
     <p class="lead" data-reveal data-reveal-delay="1">できることをお伝えするのと同じくらい、しないことをお伝えするのが大切だと考えています。</p>
   </div>
@@ -193,7 +249,7 @@
 <!-- セミナー -->
 <section class="section">
   <div class="narrow">
-    <span class="eyebrow" data-reveal>SEMINAR</span>
+    <span class="eyebrow" data-reveal lang="en">SEMINAR</span>
     <h2 class="section-title reveal-words">セミナーについて</h2>
     <p class="lead" data-reveal data-reveal-delay="1">一人ひとりに合わせた対話を大切にするため、まずはオンライン面談から。あなたの状況をうかがったうえで、最適な学びの場をご案内します。</p>
     <div class="callout" data-reveal data-reveal-delay="2">
@@ -216,7 +272,7 @@
 <!-- FAQ -->
 <section class="section section--tint" id="faq">
   <div class="wrap">
-    <span class="eyebrow" data-reveal>FAQ</span>
+    <span class="eyebrow" data-reveal lang="en">FAQ</span>
     <h2 class="section-title reveal-words">よくあるご質問</h2>
   </div>
   <div class="faq section-body">
@@ -250,17 +306,17 @@
 <!-- 次に読む -->
 <section class="section">
   <div class="wrap">
-    <span class="eyebrow" data-reveal>NEXT</span>
+    <span class="eyebrow" data-reveal lang="en">NEXT</span>
     <h2 class="section-title reveal-words">次に読む</h2>
   </div>
   <div class="wrap next-read section-body">
     <a href="story.html" class="next-card" data-reveal="left">
-      <span class="eyebrow">STORY</span>
+      <span class="eyebrow" lang="en">STORY</span>
       <h3>代表の想い</h3>
       <p>なぜ「詐欺に遭う人を減らしたい」のか。すべての原点となった経験を。<span class="arrow" aria-hidden="true">→</span></p>
     </a>
     <a href="solutions.html" class="next-card" data-reveal="right">
-      <span class="eyebrow">FOR BUSINESS</span>
+      <span class="eyebrow" lang="en">FOR BUSINESS</span>
       <h3>法人の方へ</h3>
       <p>事業をお持ちの方へ。コストと課題に効く案件を厳選しています。<span class="arrow" aria-hidden="true">→</span></p>
     </a>
@@ -281,7 +337,7 @@
 
 <footer class="site-footer">
   <div class="wrap footer-grid">
-    <div><div class="brand" style="margin-bottom:1rem"><img class="brand__logo brand__logo--light" src="assets/img/logo-full.png" alt="知上会" width="600" height="215"></div><p style="font-size:.9rem;color:#a9cdda;max-width:34ch">知識と知恵を高め、お金や詐欺の不安のない未来へ。一人ひとりに、生涯にわたって寄り添います。</p></div>
+    <div><div class="brand" style="margin-bottom:1rem"><img class="brand__logo brand__logo--light" src="assets/img/logo-full.png" alt="知上会" width="600" height="215"></div><p class="footer-lede">知識と知恵を高め、お金や詐欺の不安のない未来へ。一人ひとりに、生涯にわたって寄り添います。</p></div>
     <nav aria-label="フッターメニュー"><h4>メニュー</h4><ul class="footer-links"><li><a href="index.html">ホーム</a></li><li><a href="story.html">代表の想い</a></li><li><a href="service.html">資産形成サポート</a></li><li><a href="solutions.html">法人の方へ</a></li><li><a href="contact.html">お問い合わせ</a></li></ul></nav>
     <nav aria-label="ご相談・その他"><h4>ご相談</h4><ul class="footer-links"><li><a href="contact.html">無料相談フォーム</a></li><li><a href="service.html#faq">よくあるご質問</a></li><li><a href="privacy.html">プライバシーポリシー</a></li></ul></nav>
   </div>
