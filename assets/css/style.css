@@ -304,19 +304,36 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   border-bottom: 0;
   padding: clamp(170px, 25vh, 280px) 0 clamp(84px, 11vw, 140px);
 }
-.hero__bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+/* 外側＝読み込み時のゆっくりした引き、内側の img ＝マウス追従の視差。
+   役割を分けておくと2つのアニメーションが干渉しない。 */
+.hero__bg {
+  position: absolute; inset: 0; z-index: 0; overflow: hidden;
+  transform: scale(1.05); transform-origin: center 60%;
+}
+.is-loaded .hero__bg { transform: none; transition: transform 3.4s cubic-bezier(.16,.84,.3,1) .15s; }
 .hero__bg img {
   width: 100%; height: 100%; object-fit: cover; object-position: center 58%;
-  transform: scale(1.06); transform-origin: center 60%;
+  /* 視差で動かす余白ぶん、あらかじめ拡大しておく。
+     移動量は JS が transform を直接書き換えて与える（var() を transform に
+     入れるとブラウザによって transition が効かないため）。 */
+  transform: scale(1.1);
+  transition: transform .7s cubic-bezier(.22,.61,.36,1);
+  will-change: transform;
 }
-/* 読み込み後、ゆっくり引く */
-.is-loaded .hero__bg img { transform: none; transition: transform 3.4s cubic-bezier(.16,.84,.3,1) .15s; }
-/* 左と上下を締めるスクリム。右側の水面と光の道は残す */
+/* スクリムは「色を塗る」のではなく「露出を落とす」。
+   彩度のある紺を全面に重ねると階調が潰れて絵に見えるため、
+   色味のない黒で、見出しが乗る左下と上端だけを浅く締める。 */
 .hero__bg::after {
   content: ""; position: absolute; inset: 0;
   background:
-    linear-gradient(90deg, rgba(6,18,31,.94) 0%, rgba(6,18,31,.86) 30%, rgba(6,18,31,.52) 58%, rgba(6,18,31,.28) 100%),
-    linear-gradient(180deg, rgba(6,18,31,.72) 0%, rgba(6,18,31,.12) 30%, rgba(6,18,31,.18) 70%, rgba(6,18,31,.66) 100%);
+    linear-gradient(102deg, rgba(0,0,0,.70) 0%, rgba(0,0,0,.55) 30%, rgba(0,0,0,.30) 62%, rgba(0,0,0,0) 88%),
+    linear-gradient(180deg, rgba(0,0,0,.48) 0%, rgba(0,0,0,.04) 20%, rgba(0,0,0,.04) 58%, rgba(0,0,0,.52) 100%);
+}
+/* フィルムグレイン。生成画像特有のつるりとした階調を写真らしく散らす */
+.hero--cinematic::before {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: .55;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)' opacity='.5'/%3E%3C/svg%3E");
 }
 .hero--cinematic .hero__main { grid-template-columns: 1fr; }
 .hero--cinematic .hero__eyebrow { color: #b9d2de; }
@@ -324,9 +341,14 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 .hero--cinematic .hero__title {
   color: #fff;
   font-size: clamp(2.2rem, 5.9vw, 4.7rem);
-  text-shadow: 0 2px 40px rgba(6,18,31,.45);
+  /* スクリムを浅くしたぶん、文字側に無彩色の落ち影で可読性を持たせる */
+  text-shadow: 0 1px 3px rgba(0,0,0,.34), 0 4px 28px rgba(0,0,0,.42);
   max-width: 24ch;
 }
+.hero--cinematic .hero__eyebrow,
+.hero--cinematic .hero__sub { text-shadow: 0 1px 10px rgba(0,0,0,.5); }
+.hero--cinematic .hero__facts dd,
+.hero--cinematic .hero__facts dt { text-shadow: 0 1px 10px rgba(0,0,0,.5); }
 .hero--cinematic .hero__foot { border-top: 1px solid rgba(255,255,255,.22); }
 .hero--cinematic .hero__sub { color: #dceaf1; }
 .hero--cinematic .hero__facts dt { color: #a9c4d2; }
@@ -1359,6 +1381,10 @@ body { transition: background-color 1.2s var(--ease); }
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
   [data-reveal] { opacity: 1 !important; transform: none !important; }
   .js .reveal-words span { opacity: 1 !important; transform: none !important; }
-  .hero__title .line > span, .hero__media { transform: none !important; clip-path: none !important; }
+  .hero__title .line > span, .hero__figure { transform: none !important; clip-path: none !important; }
+  /* 視差・寄りの演出は止める（画像は縁が見えないよう拡大だけ維持） */
+  .hero__bg { transform: none !important; }
+  .hero__bg img { transform: scale(1.1) !important; }
+  .hero--cinematic::before { display: none; }
   @view-transition { navigation: none; }
 }

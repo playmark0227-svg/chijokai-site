@@ -189,23 +189,34 @@
     $$(".section-title, .stat").forEach(function (el) { el.classList.add("is-visible"); });
   }
 
-  /* ---- ヒーローがマウスに反応して層で動く ---- */
-  var hero = $(".hero"), scene = $(".hero__media img");
-  if (hero && scene && !reduce && window.matchMedia("(pointer:fine)").matches) {
-    var hraf = 0;
+  /* ---- ヒーローの背景がマウスに追従して動く（視差） ----
+     画像は CSS で scale(1.1) してあるので、その余白のぶんだけ平行移動しても
+     縁が見えない。移動はカーソルと逆向きにすると奥行きが出る。
+     滑らかさは CSS 側の transition に任せる。 */
+  var hero = $(".hero--cinematic");
+  var heroImg = hero && $(".hero__bg img", hero);
+  if (hero && heroImg && !reduce && window.matchMedia("(pointer:fine)").matches) {
+    var hraf = 0, hx = 0, hy = 0;
+    var AMP_X = 30, AMP_Y = 20; /* 最大移動量(px) */
+
+    function applyHero() {
+      hraf = 0;
+      heroImg.style.transform =
+        "scale(1.1) translate3d(" + hx.toFixed(1) + "px," + hy.toFixed(1) + "px,0)";
+    }
     hero.addEventListener("mousemove", function (e) {
-      hero.classList.add("is-pointing");
       var r = hero.getBoundingClientRect();
-      var px = (e.clientX - r.left) / r.width - 0.5;
-      var py = (e.clientY - r.top) / r.height - 0.5;
-      if (!hraf) hraf = requestAnimationFrame(function () {
-        hraf = 0;
-        scene.style.transform = "scale(1.06) translate3d(" + (px * 14).toFixed(1) + "px," + (py * 10).toFixed(1) + "px,0)";
-      });
-    });
+      hx = -((e.clientX - r.left) / r.width - 0.5) * 2 * AMP_X;
+      hy = -((e.clientY - r.top) / r.height - 0.5) * 2 * AMP_Y;
+      if (!hraf) hraf = requestAnimationFrame(applyHero);
+    }, { passive: true });
     hero.addEventListener("mouseleave", function () {
-      hero.classList.remove("is-pointing");
-      scene.style.transform = "";
+      hx = 0; hy = 0;
+      if (!hraf) hraf = requestAnimationFrame(applyHero);
+    });
+    /* rAF が動かない環境（背面タブ等）でも位置がずれたままにならないように */
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) { hx = 0; hy = 0; applyHero(); }
     });
   }
 
