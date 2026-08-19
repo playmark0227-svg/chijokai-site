@@ -57,7 +57,15 @@
 <!-- ============ Hero ============ -->
 <section class="hero hero--cinematic">
   <div class="hero__bg" aria-hidden="true">
-    <img src="assets/img/hero-ocean.jpg" alt="" width="1800" height="1004" fetchpriority="high">
+    <div class="hero__layers">
+      <img src="assets/img/hero-ocean.jpg" alt="" width="1800" height="1004" fetchpriority="high">
+      <!-- 動画は既定では読み込まない。main.js が回線・画面幅・動きの設定を見てから
+           読み込み、再生できたときだけ静止画の上にフェードインさせる。 -->
+      <video class="hero__video" preload="none" muted loop playsinline
+             poster="assets/img/hero-ocean.jpg" tabindex="-1" aria-hidden="true">
+        <source src="assets/video/hero-ocean.mp4" type="video/mp4">
+      </video>
+    </div>
   </div>
   <div class="hero__inner wrap">
     <p class="hero__eyebrow">金融教育・資産形成サポート</p>

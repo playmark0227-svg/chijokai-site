@@ -357,15 +357,28 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   transform: scale(1.05); transform-origin: center 60%;
 }
 .is-loaded .hero__bg { transform: none; transition: transform 3.4s cubic-bezier(.16,.84,.3,1) .15s; }
-.hero__bg img {
-  width: 100%; height: 100%; object-fit: cover; object-position: center 58%;
-  /* 視差で動かす余白ぶん、あらかじめ拡大しておく。
-     移動量は JS が transform を直接書き換えて与える（var() を transform に
-     入れるとブラウザによって transition が効かないため）。 */
+/* 静止画と動画をまとめて視差で動かす層。
+   移動量は JS が transform を直接書き換えて与える（var() を transform に
+   入れるとブラウザによって transition が効かないため）。 */
+.hero__layers {
+  position: absolute; inset: 0;
   transform: scale(1.1);
   transition: transform .7s cubic-bezier(.22,.61,.36,1);
   will-change: transform;
 }
+.hero__bg img,
+.hero__video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover; object-position: center 58%;
+}
+/* 動画は再生できたときだけ静止画の上に重ねる。
+   読み込めない・再生できない・動きを抑える設定・細い回線では
+   静止画のまま（= これまでと同じ表紙）になる。 */
+.hero__video {
+  opacity: 0; pointer-events: none;
+  transition: opacity 1.4s var(--ease);
+}
+.hero--cinematic.is-video .hero__video { opacity: 1; }
 /* スクリムは「色を塗る」のではなく「露出を落とす」。
    彩度のある紺を全面に重ねると階調が潰れて絵に見えるため、
    色味のない黒で、見出しが乗る左下と上端だけを浅く締める。 */
@@ -1521,7 +1534,8 @@ body { transition: background-color 1.2s var(--ease); }
   .hero__title .line > span, .hero__figure { transform: none !important; clip-path: none !important; }
   /* 視差・寄りの演出は止める（画像は縁が見えないよう拡大だけ維持） */
   .hero__bg { transform: none !important; }
-  .hero__bg img { transform: scale(1.1) !important; }
+  .hero__layers { transform: scale(1.1) !important; }
+  .hero__video { display: none; }
   .hero--cinematic::before { display: none; }
   @view-transition { navigation: none; }
 }

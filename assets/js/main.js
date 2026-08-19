@@ -262,7 +262,7 @@
      縁が見えない。移動はカーソルと逆向きにすると奥行きが出る。
      滑らかさは CSS 側の transition に任せる。 */
   var hero = $(".hero--cinematic");
-  var heroImg = hero && $(".hero__bg img", hero);
+  var heroImg = hero && $(".hero__layers", hero);
   if (hero && heroImg && !reduce && window.matchMedia("(pointer:fine)").matches) {
     var hraf = 0, hx = 0, hy = 0;
     var AMP_X = 30, AMP_Y = 20; /* 最大移動量(px) */
@@ -287,6 +287,58 @@
       if (document.hidden) { hx = 0; hy = 0; applyHero(); }
     });
   }
+
+  /* ---------- 表紙の背景動画 ----------
+     既定では読み込まない（preload="none"）。次のすべてを満たしたときだけ
+     読み込んで再生し、成功したら静止画の上にフェードインさせる。
+       ・動きを抑える設定になっていない
+       ・画面が十分に広い（スマートフォンでは通信量と自動再生の制約を避ける）
+       ・データ節約モード／低速回線ではない
+     どれかを満たさない、または再生が拒否された場合は静止画のまま。 */
+  (function heroVideo() {
+    var v = hero && $(".hero__video", hero);
+    if (!v || reduce) return;
+    if (!window.matchMedia("(min-width: 721px)").matches) return;
+
+    var c = navigator.connection || navigator.webkitConnection || {};
+    if (c.saveData) return;
+    if (/(^|-)(slow-)?2g$/.test(c.effectiveType || "")) return;
+
+    /* 表示の切り替えは play() の戻り値ではなく、実際に再生が始まった
+       playing イベントで行う。背面タブで開かれた場合、play() は解決しても
+       ブラウザの省電力で即座に止まることがあり、その状態で表示を切り替えると
+       「再生していないのに動画が見えている」ことになる。逆に、あとで前面に
+       戻って再生が始まったときは確実に切り替わる。 */
+    v.addEventListener("playing", function () { hero.classList.add("is-video"); });
+
+    var started = false;
+    function start() {
+      if (started) return; started = true;
+      v.preload = "auto";
+      v.load();
+      var p = v.play();
+      if (p && p.catch) p.catch(function () { /* 拒否されたら静止画のまま */ });
+    }
+    /* 先頭の描画とLCP画像の取得を邪魔しないよう、読み込み完了後に取りかかる */
+    if (document.readyState === "complete") setTimeout(start, 400);
+    else window.addEventListener("load", function () { setTimeout(start, 400); });
+
+    /* 表紙が画面から外れているあいだ、そしてタブが背面のあいだは止める */
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          if (!started) return;
+          if (e.isIntersecting) { v.play().catch(function () {}); }
+          else v.pause();
+        });
+      }, { threshold: 0.05 }).observe(hero);
+    }
+    document.addEventListener("visibilitychange", function () {
+      if (!started) return;
+      if (document.hidden) v.pause();
+      else if (hero.getBoundingClientRect().bottom > 0) v.play().catch(function () {});
+    });
+  })();
 
   var meter = null, dots = [], meterSections = [];
 
