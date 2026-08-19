@@ -62,23 +62,24 @@ input, textarea, select { font: inherit; }
   --sea-ink: #1b4f6b;
 
   /* 濃色面の文字色。濃紺の上での役割ごとに決めてある。
-     直書きの var(--on-deep-body) などが散らばっていたのをここに集約した。 */
-  --on-deep:       var(--on-deep);  /* 見出し・強調 */
-  --on-deep-body:  var(--on-deep-body);  /* 本文・リード */
-  --on-deep-muted: var(--on-deep-muted);  /* 補助・注記 */
-  --on-deep-label: var(--on-deep-label);  /* ラベル・eyebrow */
+     直書きの #cfe8f1 などが散らばっていたのをここに集約した。 */
+  --on-deep:       #eafaff;  /* 見出し・強調 */
+  --on-deep-body:  #cfe8f1;  /* 本文・リード */
+  --on-deep-muted: #a9cdda;  /* 補助・注記 */
+  --on-deep-label: #9fb3c2;  /* ラベル・eyebrow */
 
   /* Accent — くすんだ真鍮色。彩度を落として上品に */
   --sand:   #e8dcc8;
   --gold:   #b08d4f;
   --gold-2: #c9a86a;
+  --gold-ink: #7d6438; /* 真鍮色を明色面の文字に使うとき（--gold は面・罫線用で文字には暗さが足りない） */
   --coral:  #b5714f;
-  --coral-2:#9e5e3f;
+  --coral-2:#96593c;
 
   /* Ink */
   --ink:    #1a2b38;
   --ink-2:  #45596a;
-  --muted:  #6b7c8a;
+  --muted:  #5c6b77;   /* 紙色・薄地・写真を薄く敷いた地のいずれでも AA(4.5:1) を満たす濃さ */
   --line:   #e2e0db;
   --white:  #ffffff;
 
@@ -981,7 +982,7 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 .price-row__label { color: var(--ink-2); font-size: .95rem; }
 .price-row__value {
   font-family: var(--font-serif); font-size: 1.06rem; font-weight: 600;
-  letter-spacing: .04em; color: var(--gold); white-space: nowrap;
+  letter-spacing: .04em; color: var(--gold-ink); white-space: nowrap;
 }
 .price-list__note { padding: 0 0 .95rem; margin: 0; font-size: .8rem; color: var(--muted); line-height: 1.8; }
 .point-row {
