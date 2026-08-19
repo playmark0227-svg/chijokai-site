@@ -1378,7 +1378,7 @@ body { transition: background-color 1.2s var(--ease); }
   transform: scale(1.06); will-change: transform;
 }
 /* 濃色セクション用
-   写真自体が十分に暗い（ocean-horizon.jpg）ので、以前のように
+   写真自体が十分に暗い（海中写真）ので、以前のように
    opacity .26／brightness .7 まで落とさない。落としすぎると
    海の水平線だと分からない「スモーク」状態になる。
    代わりに、文字が乗る帯だけを ::after のスクリムで締める。 */
