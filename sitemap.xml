@@ -1,42 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  公開ドメインが決まったら、各 <loc> の https://example.com を実際のドメインに置き換えてください。
-  <lastmod> は内容を更新した日付に合わせて更新します。
+  独自ドメイン（chijoukai.com など）に移すときは、各 <loc> と robots.txt の
+  Sitemap 行、そして各HTMLの canonical / og:url を新しいURLへ置き換えてください。
+  <lastmod> は内容を更新した日付に合わせます。
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://example.com/</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://playmark0227-svg.github.io/chijokai-site/</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://example.com/story.html</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://playmark0227-svg.github.io/chijokai-site/story.html</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://example.com/service.html</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://playmark0227-svg.github.io/chijokai-site/service.html</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://example.com/solutions.html</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://playmark0227-svg.github.io/chijokai-site/solutions.html</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://example.com/contact.html</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://playmark0227-svg.github.io/chijokai-site/contact.html</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://example.com/privacy.html</loc>
-    <lastmod>2026-08-12</lastmod>
+    <loc>https://playmark0227-svg.github.io/chijokai-site/privacy.html</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

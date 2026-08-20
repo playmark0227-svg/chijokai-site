@@ -7,9 +7,15 @@
 <meta name="description" content="お探しのページは見つかりませんでした。メニューからお探しください。">
 <meta name="theme-color" content="#12678c">
 <meta name="robots" content="noindex">
-<link rel="stylesheet" href="assets/css/style.css">
+<meta name="robots" content="noindex, follow">
+<meta property="og:image" content="https://playmark0227-svg.github.io/chijokai-site/assets/img/ogp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="お金の知識が、これからの安心をつくる。｜株式会社知上会">
+<link rel="stylesheet" href="assets/css/style.css?v=4ee25335">
 <script>document.documentElement.className+=" js";/* main.js が届かなかった場合は js クラスを外し、演出前提で隠れている本文を必ず表示する */setTimeout(function(){if(!window.__chijoukaiReady){var r=document.documentElement;r.className=r.className.replace(/\bjs\b/,"")}},2500)</script>
-<link rel="icon" href="assets/img/logo-mark.png" type="image/png">
+<link rel="icon" href="assets/img/favicon.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 </head>
 <body data-page="404">
 <a href="#main" class="skip-link">本文へスキップ</a>
@@ -17,7 +23,7 @@
 <header class="site-header">
   <nav class="nav wrap" aria-label="メインナビゲーション">
     <a href="index.html" class="brand" aria-label="知上会 トップへ">
-      <img class="brand__logo" src="assets/img/logo-full.png" alt="知上会" width="600" height="215">
+      <picture><source srcset="assets/img/logo-full.webp" type="image/webp"><img decoding="async" class="brand__logo" src="assets/img/logo-full.png" alt="知上会" width="600" height="215"></picture>
     </a>
     <div class="nav__links" id="navLinks">
       <a href="index.html">ホーム</a>
@@ -33,9 +39,9 @@
 
 <main id="main" tabindex="-1">
 
-<section class="hero" style="min-height:100svh">
-  <div class="wrap center" style="position:relative;z-index:5">
-    <div style="max-width:320px;margin:0 auto 1.5rem" aria-hidden="true">
+<section class="hero page-404">
+  <div class="wrap center hero__content">
+    <div class="page-404__art" aria-hidden="true">
       <svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg">
         <rect x="126" y="30" width="6" height="96" fill="#5c3b1e"/>
         <path d="M132 44q56 16 46 78l-46 6z" fill="#c9a86a"/>
@@ -46,9 +52,9 @@
       </svg>
     </div>
     <span class="tag tag--gold">404 NOT FOUND</span>
-    <h1 style="font-size:clamp(2.2rem,7vw,3.6rem);color:var(--deep)">ページが見つかりませんでした</h1>
-    <p class="hero__sub" style="margin:1.4rem auto 2rem;max-width:34ch">URLが変更されたか、削除された可能性があります。メニューからお探しください。</p>
-    <div class="hero__cta" style="justify-content:center">
+    <h1>ページが見つかりませんでした</h1>
+    <p class="hero__sub">URLが変更されたか、削除された可能性があります。メニューからお探しください。</p>
+    <div class="hero__cta u-center-x">
       <a href="index.html" class="btn btn--primary btn--lg">トップへ戻る <span class="arrow" aria-hidden="true">→</span></a>
       <a href="contact.html" class="btn btn--ghost btn--lg">相談する</a>
     </div>
@@ -59,9 +65,9 @@
 
 <footer class="site-footer">
   <div class="wrap footer-grid">
-    <div><div class="brand" style="margin-bottom:1rem"><img class="brand__logo brand__logo--light" src="assets/img/logo-full.png" alt="知上会" width="600" height="215"></div><p class="footer-lede">知識と知恵を高め、お金や詐欺の不安のない未来へ。一人ひとりに、生涯にわたって寄り添います。</p></div>
-    <nav aria-label="フッターメニュー"><h4>メニュー</h4><ul class="footer-links"><li><a href="index.html">ホーム</a></li><li><a href="story.html">代表の想い</a></li><li><a href="service.html">資産形成サポート</a></li><li><a href="solutions.html">法人の方へ</a></li><li><a href="contact.html">お問い合わせ</a></li></ul></nav>
-    <nav aria-label="ご相談・その他"><h4>ご相談</h4><ul class="footer-links"><li><a href="contact.html">無料相談フォーム</a></li><li><a href="service.html#faq">よくあるご質問</a></li><li><a href="privacy.html">プライバシーポリシー</a></li></ul></nav>
+    <div><div class="brand"><picture><source srcset="assets/img/logo-full.webp" type="image/webp"><img decoding="async" class="brand__logo brand__logo--light" src="assets/img/logo-full.png" alt="知上会" width="600" height="215"></picture></div><p class="footer-lede">知識と知恵を高め、お金や詐欺の不安のない未来へ。一人ひとりに、生涯にわたって寄り添います。</p></div>
+    <nav aria-label="フッターメニュー"><h2>メニュー</h2><ul class="footer-links"><li><a href="index.html">ホーム</a></li><li><a href="story.html">代表の想い</a></li><li><a href="service.html">資産形成サポート</a></li><li><a href="solutions.html">法人の方へ</a></li><li><a href="contact.html">お問い合わせ</a></li></ul></nav>
+    <nav aria-label="ご相談・その他"><h2>ご相談</h2><ul class="footer-links"><li><a href="contact.html">無料相談フォーム</a></li><li><a href="service.html#faq">よくあるご質問</a></li><li><a href="privacy.html">プライバシーポリシー</a></li></ul></nav>
   </div>
   <div class="wrap footer-bottom"><span>© <span data-year>2026</span> 株式会社知上会 All rights reserved.</span><span>金融教育・資産形成サポート</span></div>
   <div class="footer-boat" aria-hidden="true">
@@ -94,6 +100,6 @@
 </footer>
 
 <button class="to-top" aria-label="ページ上部へ戻る"><svg viewBox="0 0 24 24" width="22" fill="none" aria-hidden="true"><path d="M6 15l6-6 6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-<script src="assets/js/main.js" defer></script>
+<script src="assets/js/main.js?v=3f051b5a" defer></script>
 </body>
 </html>

@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
 
-# 公開ドメインが決まったら、下記のコメントを外して実際のURLに書き換えてください
-# Sitemap: https://example.com/sitemap.xml
+Sitemap: https://playmark0227-svg.github.io/chijokai-site/sitemap.xml

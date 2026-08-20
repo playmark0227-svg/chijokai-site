@@ -11,16 +11,23 @@
 <meta property="og:locale" content="ja_JP">
 <meta property="og:title" content="お問い合わせ・無料相談 ｜ 知上会">
 <meta property="og:description" content="相談は無料。お金のこと、事業のこと、生き方のこと。まずはお気軽にご相談ください。">
-<meta name="twitter:card" content="summary">
-<link rel="stylesheet" href="assets/css/style.css">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://playmark0227-svg.github.io/chijokai-site/contact.html">
+<meta property="og:url" content="https://playmark0227-svg.github.io/chijokai-site/contact.html">
+<meta property="og:image" content="https://playmark0227-svg.github.io/chijokai-site/assets/img/ogp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="お金の知識が、これからの安心をつくる。｜株式会社知上会">
+<link rel="stylesheet" href="assets/css/style.css?v=4ee25335">
 <script>document.documentElement.className+=" js";/* main.js が届かなかった場合は js クラスを外し、演出前提で隠れている本文を必ず表示する */setTimeout(function(){if(!window.__chijoukaiReady){var r=document.documentElement;r.className=r.className.replace(/\bjs\b/,"")}},2500)</script>
-<link rel="icon" href="assets/img/logo-mark.png" type="image/png">
+<link rel="icon" href="assets/img/favicon.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "ホーム", "item": "index.html" },
+    { "@type": "ListItem", "position": 1, "name": "ホーム", "item": "https://playmark0227-svg.github.io/chijokai-site/" },
     { "@type": "ListItem", "position": 2, "name": "お問い合わせ" }
   ]
 }
@@ -32,7 +39,7 @@
 <header class="site-header">
   <nav class="nav wrap" aria-label="メインナビゲーション">
     <a href="index.html" class="brand" aria-label="知上会 トップへ">
-      <img class="brand__logo" src="assets/img/logo-full.png" alt="知上会" width="600" height="215">
+      <picture><source srcset="assets/img/logo-full.webp" type="image/webp"><img decoding="async" class="brand__logo" src="assets/img/logo-full.png" alt="知上会" width="600" height="215"></picture>
     </a>
     <div class="nav__links" id="navLinks">
       <a href="index.html">ホーム</a>
@@ -49,7 +56,7 @@
 <main id="main" tabindex="-1">
 
 <section class="page-hero has-photo-bg">
-  <div class="photo-bg" aria-hidden="true"><img src="assets/img/sea-cave.jpg" alt="" width="1400" height="1050" fetchpriority="low"></div>
+  <div class="photo-bg" aria-hidden="true"><picture><source srcset="assets/img/sea-cave.webp" type="image/webp"><img decoding="async" src="assets/img/sea-cave.jpg" alt="" width="1400" height="1050" fetchpriority="low"></picture></div>
     <div class="wrap">
     <nav class="breadcrumb" aria-label="パンくずリスト">
       <ol><li><a href="index.html">ホーム</a></li><li aria-hidden="true">›</li><li aria-current="page">お問い合わせ</li></ol>
@@ -66,8 +73,8 @@
     <!-- Form -->
     <div data-reveal="left">
       <div class="card cell--roomy">
-        <h2 style="color:var(--deep);font-size:1.4rem;margin-bottom:.4rem">無料相談フォーム</h2>
-        <p style="color:var(--ink-2);font-size:.95rem;margin-bottom:1.4rem">下記フォームよりお気軽にお問い合わせください。内容を確認のうえ、担当よりご連絡いたします。</p>
+        <h2 class="card__title">無料相談フォーム</h2>
+        <p class="card__lede">下記フォームよりお気軽にお問い合わせください。内容を確認のうえ、担当よりご連絡いたします。</p>
 
         <form id="contactForm" class="form" method="post" novalidate>
           <p class="form__legend"><span class="req">*</span> は入力必須の項目です。</p>
@@ -109,9 +116,9 @@
           </div>
           <!-- 自動投稿対策（利用者には見えません） -->
           <div class="honeypot" aria-hidden="true"><label for="_gotcha">この欄は入力しないでください</label><input type="text" id="_gotcha" name="_gotcha" tabindex="-1" autocomplete="off"></div>
-          <p class="form__note">メールソフトが開かない場合は、<a href="mailto:info@chijoukai.com" style="color:var(--sea-ink);font-weight:700;text-decoration:underline">info@chijoukai.com</a> へ直接お送りください。</p>
-          <p class="form__note">送信いただいた内容は、ご相談対応の目的にのみ使用します。詳しくは<a href="privacy.html" style="color:var(--sea-ink);font-weight:700;text-decoration:underline">プライバシーポリシー</a>をご覧ください。</p>
-          <button type="submit" class="btn btn--primary btn--lg" style="width:100%">メールで送信する <span class="btn__spinner" aria-hidden="true"></span><span class="arrow" aria-hidden="true">→</span></button>
+          <p class="form__note">メールソフトが開かない場合は、<a href="mailto:info@chijoukai.com" class="link-inline">info@chijoukai.com</a> へ直接お送りください。</p>
+          <p class="form__note">送信いただいた内容は、ご相談対応の目的にのみ使用します。詳しくは<a href="privacy.html" class="link-inline">プライバシーポリシー</a>をご覧ください。</p>
+          <button type="submit" class="btn btn--primary btn--lg u-w-full">メールで送信する <span class="btn__spinner" aria-hidden="true"></span><span class="arrow" aria-hidden="true">→</span></button>
           <div class="form-success" role="status" aria-live="polite">
             <svg viewBox="0 0 24 24" width="24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#34c78c" opacity=".2"/><path d="M7 12l3 3 7-7" stroke="#1c7a55" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <span>メールの作成画面が開きます。内容をご確認のうえ送信してください。</span>
@@ -122,9 +129,9 @@
     </div>
 
     <!-- Info -->
-    <div data-reveal="right" style="display:grid;gap:1.2rem">
+    <div class="u-stack" data-reveal="right">
       <figure class="media-card media-card--photo">
-        <img src="assets/img/founder-phone.jpg" alt="オフィスで電話に応じる代表 堀之内" width="750" height="1000" loading="lazy" data-pos="top">
+        <picture><source srcset="assets/img/founder-phone.webp" type="image/webp"><img decoding="async" src="assets/img/founder-phone.jpg" alt="オフィスで電話に応じる代表 堀之内" width="750" height="1000" loading="lazy" data-pos="top"></picture>
         <figcaption class="media-card__cap">まずはお話をうかがいます</figcaption>
       </figure>
       <div class="info-card">
@@ -143,7 +150,7 @@
         <h3>知上会からのメッセージ</h3>
         <p>「その方が豊かに、幸せになってくれたら、それでいい」。その考えで、一人ひとりに向き合っています。どうぞお気軽にご相談ください。</p>
       </div>
-      <p style="font-size:.88rem"><a href="service.html#faq" style="color:var(--sea-ink);font-weight:800">よくあるご質問を見る →</a></p>
+      <p class="u-sm"><a href="service.html#faq" class="link-strong">よくあるご質問を見る →</a></p>
     </div>
 
   </div>
@@ -163,7 +170,7 @@
       <div><dt>所在地</dt><dd>奈良県大和郡山市若槻町</dd></div>
       <div><dt>営業所</dt><dd>北海道札幌市西区</dd></div>
       <div><dt>事業内容</dt><dd>金融教育・情報提供および伴走サポート／法人向け課題解決のご紹介</dd></div>
-      <div><dt>お問い合わせ</dt><dd><a href="mailto:info@chijoukai.com" style="color:var(--sea-ink);font-weight:700;text-decoration:underline">info@chijoukai.com</a>／本ページのフォーム</dd></div>
+      <div><dt>お問い合わせ</dt><dd><a href="mailto:info@chijoukai.com" class="link-inline">info@chijoukai.com</a>／本ページのフォーム</dd></div>
     </dl>
   </div>
 </section>
@@ -172,9 +179,9 @@
 
 <footer class="site-footer">
   <div class="wrap footer-grid">
-    <div><div class="brand" style="margin-bottom:1rem"><img class="brand__logo brand__logo--light" src="assets/img/logo-full.png" alt="知上会" width="600" height="215"></div><p class="footer-lede">知識と知恵を高め、お金や詐欺の不安のない未来へ。一人ひとりに、生涯にわたって寄り添います。</p></div>
-    <nav aria-label="フッターメニュー"><h4>メニュー</h4><ul class="footer-links"><li><a href="index.html">ホーム</a></li><li><a href="story.html">代表の想い</a></li><li><a href="service.html">資産形成サポート</a></li><li><a href="solutions.html">法人の方へ</a></li><li><a href="contact.html">お問い合わせ</a></li></ul></nav>
-    <nav aria-label="ご相談・その他"><h4>ご相談</h4><ul class="footer-links"><li><a href="contact.html">無料相談フォーム</a></li><li><a href="service.html#faq">よくあるご質問</a></li><li><a href="privacy.html">プライバシーポリシー</a></li></ul></nav>
+    <div><div class="brand"><picture><source srcset="assets/img/logo-full.webp" type="image/webp"><img decoding="async" class="brand__logo brand__logo--light" src="assets/img/logo-full.png" alt="知上会" width="600" height="215"></picture></div><p class="footer-lede">知識と知恵を高め、お金や詐欺の不安のない未来へ。一人ひとりに、生涯にわたって寄り添います。</p></div>
+    <nav aria-label="フッターメニュー"><h2>メニュー</h2><ul class="footer-links"><li><a href="index.html">ホーム</a></li><li><a href="story.html">代表の想い</a></li><li><a href="service.html">資産形成サポート</a></li><li><a href="solutions.html">法人の方へ</a></li><li><a href="contact.html">お問い合わせ</a></li></ul></nav>
+    <nav aria-label="ご相談・その他"><h2>ご相談</h2><ul class="footer-links"><li><a href="contact.html">無料相談フォーム</a></li><li><a href="service.html#faq">よくあるご質問</a></li><li><a href="privacy.html">プライバシーポリシー</a></li></ul></nav>
   </div>
   <div class="wrap footer-bottom"><span>© <span data-year>2026</span> 株式会社知上会 All rights reserved.</span><span>金融教育・資産形成サポート</span></div>
   <div class="footer-boat" aria-hidden="true">
@@ -207,6 +214,6 @@
 </footer>
 
 <button class="to-top" aria-label="ページ上部へ戻る"><svg viewBox="0 0 24 24" width="22" fill="none" aria-hidden="true"><path d="M6 15l6-6 6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-<script src="assets/js/main.js" defer></script>
+<script src="assets/js/main.js?v=3f051b5a" defer></script>
 </body>
 </html>

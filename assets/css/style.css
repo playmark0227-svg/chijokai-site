@@ -39,6 +39,9 @@ body, h1, h2, h3, h4, p, ul, ol, li, figure, blockquote, dl, dd { margin: 0; }
 ul[class], ol[class] { list-style: none; padding: 0; }
 a { text-decoration: none; color: inherit; }
 img, svg { display: block; max-width: 100%; }
+/* WebP と JPEG を切り替えるためだけの <picture> は箱を作らない。
+   箱ができると .photo-bg img などの height:100% の基準がずれて画像が潰れる。 */
+picture { display: contents; }
 button { font: inherit; cursor: pointer; border: none; background: none; }
 input, textarea, select { font: inherit; }
 
@@ -278,11 +281,6 @@ p, li, dd, figcaption,
 /* 濃色背景（フッター）では白抜きに */
 .brand__logo--light,
 .site-footer .brand__logo { filter: invert(1) brightness(1.7); height: clamp(28px, 3vw, 36px); }
-.brand__name { font-family: var(--font-serif); font-size: 1.16rem; font-weight: 500; letter-spacing: .16em; line-height: 1.15; }
-.brand__name small {
-  display: block; font-family: var(--font-en); font-size: .52rem;
-  letter-spacing: .32em; color: var(--muted); font-weight: 500; margin-top: .18em;
-}
 
 .nav__links { display: flex; align-items: center; gap: .3rem; }
 .nav__links a {
@@ -342,7 +340,7 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 
 /* ---------- 07-b. シネマティックヒーロー（トップページ） ----------
    写真を全面に敷き、濃紺のスクリムで文字を守る。
-   小さな写真枠（.hero__figure）は使わず、背景そのものが主役。 */
+   小さな写真枠は使わず、背景そのものが主役。 */
 .hero--cinematic {
   isolation: isolate;
   background: var(--deep);
@@ -448,27 +446,6 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .42fr);
   gap: clamp(1.6rem, 4vw, 3.6rem); align-items: end;
 }
-.hero__figure {
-  margin: 0; overflow: hidden; border-radius: var(--r-s);
-  aspect-ratio: 4/5; align-self: end;
-}
-.hero__figure img { width: 100%; height: 100%; object-fit: cover; }
-/* 読み込み時、マスクが開いて画像がゆっくり寄る */
-.js .hero__figure { clip-path: inset(100% 0 0 0); }
-.js .hero__figure img { transform: scale(1.24); }
-.is-loaded .hero__figure {
-  clip-path: inset(0 0 0 0);
-  transition: clip-path 1.5s cubic-bezier(.16,.84,.3,1) .35s;
-}
-.is-loaded .hero__figure img {
-  transform: none;
-  transition: transform 2.4s cubic-bezier(.16,.84,.3,1) .35s;
-}
-@media (max-width: 860px) {
-  .hero__main { grid-template-columns: 1fr; }
-  .hero__figure { aspect-ratio: 16/9; margin-top: 2rem; }
-}
-
 /* 見出し：行ごとにマスクして下から立ち上がる */
 .hero__title {
   font-size: clamp(2.1rem, 5.6vw, 4.4rem);
@@ -581,10 +558,12 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   box-shadow: var(--shadow);
   border-color: var(--cell-line-hover);
 }
+/* 1枚だけ置くカード。見出しと左端を揃えたいので、中央寄せではなく幅だけ絞る */
+.card--solo { max-width: 820px; }
+
 /* 余白を広めに取りたいセル（フォーム枠など） */
 .cell--roomy { padding: clamp(1.6rem, 3vw, 2.3rem); background-position: clamp(1.6rem, 3vw, 2.3rem) 0; }
 
-.card__icon { display: none; }
 /* 連番（グリッド内での並び順を数字で示す） */
 .grid-3 > .card, .grid-4 > .card { counter-increment: cardnum; }
 .grid-3, .grid-4 { counter-reset: cardnum; }
@@ -605,9 +584,6 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 .card .tag ~ h3 { margin-top: .95rem; }
 .card p { color: var(--ink-2); font-size: .93rem; line-height: 2; }
 .card p + p { margin-top: .8rem; }
-
-.tilt { transform-style: preserve-3d; will-change: transform; }
-.tilt.is-tilting { transition: transform .09s linear !important; }
 
 /* 濃色の面を持つカード（お問い合わせのメッセージ枠など） */
 .card--sea {
@@ -683,7 +659,9 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 
 /* ---------- Pill / tag ---------- */
 .tag {
-  display: inline-flex; align-items: center; gap: .4em;
+  /* 縦並びの flex（入口カードなど）の中でも、内容ぶんの幅に収める。
+     align-self を書かないと stretch で枠いっぱいに伸びてしまう。 */
+  display: inline-flex; align-self: flex-start; align-items: center; gap: .4em;
   padding: .4em .9em; border-radius: var(--r-xs); font-size: .72rem; font-weight: 600;
   letter-spacing: .04em; background: rgba(27,79,107,.07); color: var(--ocean);
   border: 1px solid rgba(27,79,107,.14);
@@ -795,8 +773,6 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   display: flex; align-items: center; gap: .9rem;
   padding: var(--cell-pad-y) var(--cell-pad-x) 0;
 }
-.sol__ic { display: none; }
-.sol__ic svg { width: 24px; height: 24px; }
 .sol__title {
   font-family: var(--font-serif); font-size: 1.2rem; color: var(--deep); font-weight: 500;
   margin: 0; line-height: 1.5; letter-spacing: .04em;
@@ -836,10 +812,6 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   background: linear-gradient(160deg, var(--sky), var(--sea)); box-shadow: var(--shadow);
   display: grid; place-items: center; color: #fff;
 }
-.portrait__ph { text-align: center; opacity: .95; position: relative; z-index: 2; }
-.portrait__ph svg { width: 96px; height: 96px; margin-inline: auto; }
-.portrait__ph small { display: block; margin-top: .6rem; font-size: .78rem; letter-spacing: .08em; }
-.portrait__ring { position: absolute; inset: -30%; background: conic-gradient(from 0deg, transparent, rgba(255,255,255,.25), transparent 60%); animation: spin 14s linear infinite; }
 
 /* 引用：白い箱＋太い金の縦棒＋大きな引用符という「よくある」作りをやめ、
    紙面の抜き組みに寄せる。本文は明朝、両端に細い罫、署名は右揃え。 */
@@ -1145,10 +1117,14 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 .site-footer { position: relative; background: var(--deep); color: var(--on-deep-muted); padding: 4.5rem 0 2rem; overflow: hidden; }
 .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 2rem; position: relative; z-index: 2; }
 
-
 /* フッターの説明文。7ファイルに同じインラインスタイルを書いていたのをクラス化 */
 .footer-lede { font-size: .9rem; color: var(--on-deep-muted); max-width: var(--measure-note); line-height: 2; }
-.site-footer h4 { color: #fff; font-size: .95rem; letter-spacing: .1em; margin-bottom: 1rem; }
+/* フッターの見出し。h4 だと本文の h2 から階層が飛ぶため h2 にしてある。
+   見た目は本文の h2（明朝の大見出し）ではなく、小さな角ゴのラベルのまま。 */
+.site-footer h2 {
+  font-family: var(--font); font-weight: 600; line-height: 1.6;
+  color: #fff; font-size: .95rem; letter-spacing: .1em; margin-bottom: 1rem;
+}
 .footer-links { display: grid; gap: .5rem; list-style: none; margin: 0; padding: 0; }
 .footer-links a { color: var(--on-deep-muted); font-size: .92rem; transition: color .2s, transform .2s; display: inline-block; }
 .footer-links a:hover { color: #fff; transform: translateX(3px); }
@@ -1157,7 +1133,6 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   display: flex; justify-content: space-between; flex-wrap: wrap; gap: .6rem;
   font-size: .82rem; color: var(--on-deep-muted); position: relative; z-index: 2;
 }
-.footer-ship { position: absolute; right: 4%; bottom: 8px; width: 120px; opacity: .5; z-index: 1; }
 
 /* ---------- 22. Page hero (sub pages) ---------- */
 .page-hero {
@@ -1192,7 +1167,6 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 }
 .egg-toast.show { transform: translate(-50%, 0); }
 
-
 /* Scroll progress（先端に船） */
 .scroll-prog {
   position: fixed; top: 0; left: 0; height: 3px; width: 0; z-index: 95;
@@ -1211,6 +1185,41 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 }
 .to-top.show { opacity: 1; transform: none; visibility: visible; pointer-events: auto; transition-delay: 0s; }
 .to-top:hover { transform: translateY(calc(var(--lift) * -1)) scale(1.05); }
+
+/* ---------- 24. Utilities ----------
+   各ページの HTML に直接書いていた style="" をここへ集めた。
+   値の種類を絞ってあるので、ページをまたいでも余白が揃う。 */
+.u-mt-1 { margin-top: 1.2rem; }
+.u-mt-2 { margin-top: 1.6rem; }
+.u-mt-3 { margin-top: 2rem; }
+.u-mt-4 { margin-top: 2.4rem; }
+.u-mt-block { margin-top: clamp(2.4rem, 5vw, 3.6rem); }
+.u-center-x { justify-content: center; }
+.u-w-full { width: 100%; }
+.u-muted { color: var(--muted); }
+.u-sm { font-size: .88rem; }
+.u-stack { display: grid; gap: 1.2rem; }
+/* .wrap の内側をさらに絞る（3列より少ない枚数を並べるとき） */
+.wrap--tight { max-width: 960px; margin-inline: auto; }
+/* 直前のセクションと地色が同じで、上の余白を詰めたいとき */
+.section--tight-top { padding-top: clamp(2.6rem, 6vw, 4rem); }
+/* 本文中のリンク（メールアドレス・ポリシーへの導線など） */
+.link-inline { color: var(--sea-ink); font-weight: 700; text-decoration: underline; }
+.link-inline:hover { color: var(--deep); }
+.link-strong { color: var(--sea-ink); font-weight: 800; }
+/* 表紙の粒子（.hero::after）より前に本文を置く */
+.hero__content { position: relative; z-index: 5; }
+/* カード内の小見出しと導入文（お問い合わせのフォーム枠） */
+.card__title { color: var(--deep); font-size: 1.4rem; margin-bottom: .4rem; }
+.card__lede { color: var(--ink-2); font-size: .95rem; margin-bottom: 1.4rem; }
+/* フッターのロゴ下の余白 */
+.site-footer .brand { margin-bottom: 1rem; }
+
+/* 404 ページ */
+.page-404 { min-height: 100svh; }
+.page-404__art { max-width: 320px; margin: 0 auto 1.5rem; }
+.page-404 h1 { font-size: clamp(2.2rem, 7vw, 3.6rem); color: var(--deep); }
+.page-404 .hero__sub { margin: 1.4rem auto 2rem; max-width: 30em; }
 
 /* ---------- 25. Focus / Selection ---------- */
 :where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
@@ -1242,13 +1251,6 @@ a.card:focus-visible, .next-card:focus-visible { transform: translateY(calc(var(
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.045'/%3E%3C/svg%3E");
 }
 
-/* ヘッダーのガラス質感を強化 */
-
-
-/* ---- 29-2. ブランドロゴ：ホバーで羅針盤が回る ---- */
-.brand__mark { transition: transform .8s var(--ease-back); }
-.brand:hover .brand__mark { transform: rotate(180deg) scale(1.08); }
-
 /* ---- 29-3. ナビ：下線が滑って伸びる ---- */
 .nav__links a::after {
   content: ""; position: absolute; left: 50%; right: 50%; bottom: .28em; height: 2px;
@@ -1258,14 +1260,6 @@ a.card:focus-visible, .next-card:focus-visible { transform: translateY(calc(var(
 .nav__links a:hover::after { left: .95em; right: .95em; }
 .nav__links a[aria-current="page"]::after { left: .95em; right: .95em; }
 .nav__links .nav__cta::after { display: none; }
-
-/* ---- 29-4. 見出し：アクセント文字がゆっくり流れる ---- */
-
-
-/* 見出し下のアンダーラインがスクロールで伸びる */
-
-
-
 
 /* ---- 29-5. カード：光沢が走る ---- */
 /* 光沢はホバー時だけ走らせ、離したら即座に左へ戻す。
@@ -1284,25 +1278,6 @@ a.card:focus-visible, .next-card:focus-visible { transform: translateY(calc(var(
 /* 連番を表示するカードでは ::before が連番、::after が光沢。中身を前面に保つ */
 .card > *, .sol > *, .next-card > *, .info-card > * { position: relative; z-index: 4; }
 
-/* アイコンがホバーで弾む */
-.card__icon, .sol__ic { transition: transform .5s var(--ease-back), box-shadow .4s var(--ease); }
-.card:hover .card__icon, .sol:hover .sol__ic {
-  transform: translateY(-2px);
-  box-shadow: inset 0 0 0 1px rgba(27,79,107,.2);
-}
-
-/* タグがふわりと持ち上がる */
-
-
-/* ---- 29-6. ボタン：マグネティック＋波紋 ---- */
-.btn { --mx: 0px; --my: 0px; }
-.btn.is-magnetic { transform: translate(var(--mx), var(--my)) translateY(calc(var(--lift-sm) * -1)); }
-.ripple {
-  position: absolute; border-radius: 50%; pointer-events: none; z-index: 2;
-  background: radial-gradient(circle, rgba(255,255,255,.75), rgba(255,255,255,0) 70%);
-  transform: translate(-50%, -50%) scale(0); animation: rippleOut .75s var(--ease) forwards;
-}
-
 /* ---- 29-7. リンクの矢印がふわふわ ---- */
 .sol__link:hover .arrow, .gate__go:hover .arrow { animation: nudge 1s var(--ease) infinite; }
 
@@ -1319,29 +1294,16 @@ a.card:focus-visible, .next-card:focus-visible { transform: translateY(calc(var(
 }
 .tl-item.is-visible .tl-item__dot::after { animation: haloOut 1.4s var(--ease) .25s both; }
 
-/* ---- 29-11. ヒーロー：マウスに反応して層が動く ---- */
-
 /* ---- 29-12. 統計数値：出現時にせり上がる ---- */
 .stat__num { display: inline-block; }
 .stat.is-visible .stat__num { animation: numRise .8s var(--ease-back) both; }
 
 /* ---- 29-13. 画像・メディアカードのズーム ---- */
-.media-card svg { transition: transform .9s var(--ease); }
-.media-card:hover svg { transform: scale(1.06); }
 .portrait { transition: transform .7s var(--ease), box-shadow .7s var(--ease); }
 .portrait:hover { transform: translateY(calc(var(--lift) * -1)) scale(1.02); box-shadow: var(--shadow-lift); }
 
-/* ---- 29-14. 引用がゆっくり浮く ---- */
-/* 引用は箱ではなくなったので、浮かせない */
-
 /* ---- 29-15. スクロールで海が深くなる（body 背景） ---- */
 body { transition: background-color 1.2s var(--ease); }
-
-/* ---- 29-16. 泡に揺らぎを与える ---- */
-
-
-/* ---- 29-18. フッターの船がゆっくり進む ---- */
-
 
 /* =====================================================================
    30. Photography — 写真レイヤー
@@ -1420,19 +1382,6 @@ body { transition: background-color 1.2s var(--ease); }
   background: linear-gradient(180deg, rgba(6,18,31,.78) 0%, rgba(6,18,31,.46) 45%, rgba(6,18,31,.74) 100%);
 }
 
-/* ---- 30-3. ヒーローに写真を添える（イラストと共存） ---- */
-.hero__photo {
-  position: absolute; right: 4%; bottom: 15%; width: min(21%, 230px);
-  aspect-ratio: 3/4; border-radius: var(--r-l); overflow: hidden;
-  box-shadow: var(--shadow-lift); z-index: 6;
-  border: 5px solid rgba(255,255,255,.9);
-  transform: rotate(4deg);
-  transition: transform .8s var(--ease);
-}
-.hero__photo img { width: 100%; height: 100%; object-fit: cover; }
-.hero__photo:hover { transform: rotate(0deg) scale(1.03); }
-@media (max-width: 940px) { .hero__photo { display: none; } }
-
 /* ---- 30-4. ソリューション：カード上部の写真帯 ---- */
 .sol__photo { position: relative; overflow: hidden; height: 200px; flex: none; }
 .sol__photo img { width: 100%; height: 100%; object-fit: cover; transition: transform 1s var(--ease); }
@@ -1444,11 +1393,7 @@ body { transition: background-color 1.2s var(--ease); }
   transform: scale(var(--z, 1.02));
   transform-origin: var(--zx, 50%) var(--zy, 30%);
 }
-/* 画像が入ったらプレースホルダーを隠す */
-.portrait:has(img) .portrait__ph { display: none; }
-.portrait:has(img) .portrait__ring { display: none; }
 .portrait img { width: 100%; height: 100%; object-fit: cover; }
-.portrait:has(img) .portrait__ph { display: none; }
 
 /* ---- 30-6. フッターの小さな船（ブランドのアクセント） ---- */
 .footer-boat {
@@ -1470,26 +1415,15 @@ body { transition: background-color 1.2s var(--ease); }
   0%, 100% { transform: translateX(0); }
   50%      { transform: translateX(-9px); }
 }
-@keyframes shimmer { from { background-position: 0% 50%; } to { background-position: 100% 50%; } }
-@keyframes rippleOut { to { transform: translate(-50%, -50%) scale(1); opacity: 0; } }
 @keyframes nudge { 0%,100% { transform: translateX(4px); } 50% { transform: translateX(9px); } }
 @keyframes faqOpen { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 @keyframes dotPop { 0% { transform: scale(.4); opacity: 0; } 60% { transform: scale(1.18); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
 @keyframes haloOut { 0% { transform: scale(.6); opacity: .8; } 100% { transform: scale(1.9); opacity: 0; } }
-@keyframes haloPulse { 0%,100% { transform: scale(1); opacity: .55; } 50% { transform: scale(1.35); opacity: 0; } }
 @keyframes numRise { 0% { transform: translateY(18px) scale(.9); opacity: 0; } 100% { transform: none; opacity: 1; } }
-@keyframes footerSail { from { transform: translateX(0) rotate(-1deg); } to { transform: translateX(-46px) rotate(1.5deg); } }
 
-@keyframes bob { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-16px) rotate(1.5deg); } }
-@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255,143,107,.6); } 70% { box-shadow: 0 0 0 12px rgba(255,143,107,0); } 100% { box-shadow: 0 0 0 0 rgba(255,143,107,0); } }
-@keyframes rise { 0% { transform: translateY(0) translateX(0); opacity: 0; } 10% { opacity: .8; } 90% { opacity: .5; } 100% { transform: translateY(-115vh) translateX(30px); opacity: 0; } }
 @keyframes spin { to { transform: rotate(360deg); } }
-@keyframes floatY { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-@keyframes swayRot { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
-@keyframes caustics { from { transform: translateX(-3%) skewX(0deg); opacity: .6; } to { transform: translateX(3%) skewX(2.5deg); opacity: 1; } }
 @keyframes vtOut { to   { opacity: 0; transform: translateY(-16px) scale(.995); } }
 @keyframes vtIn  { from { opacity: 0; transform: translateY(22px) scale(1.004); } }
-@keyframes drawTrail { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 
 /* ---------- 27. Responsive ---------- */
 /* 案件一覧は 3列 → 2列 → 1列 */
@@ -1531,11 +1465,56 @@ body { transition: background-color 1.2s var(--ease); }
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
   [data-reveal] { opacity: 1 !important; transform: none !important; }
   .js .reveal-words span { opacity: 1 !important; transform: none !important; }
-  .hero__title .line > span, .hero__figure { transform: none !important; clip-path: none !important; }
+  .hero__title .line > span { transform: none !important; }
   /* 視差・寄りの演出は止める（画像は縁が見えないよう拡大だけ維持） */
   .hero__bg { transform: none !important; }
   .hero__layers { transform: scale(1.1) !important; }
   .hero__video { display: none; }
   .hero--cinematic::before { display: none; }
   @view-transition { navigation: none; }
+}
+
+/* ---------- 31. Print ----------
+   画面用の演出（スクロールで出現・固定ヘッダー・濃紺の地色）は
+   紙にすると読めない／インクを無駄に使うため、印刷時は素の文書に戻す。 */
+@media print {
+  /* 出現待ちの本文をすべて見せる */
+  .js [data-reveal], .js [data-reveal]:not(.is-visible),
+  .js .reveal-words, .js .reveal-words .ln > span,
+  .js .hero__title .line > span {
+    opacity: 1 !important; visibility: visible !important;
+    transform: none !important; clip-path: none !important;
+  }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+
+  /* 画面専用の部品は出さない */
+  .site-header, .nav__toggle, .to-top, .scroll-prog, .skip-link,
+  .footer-boat, .hero__video, .hero__vertical, .egg-toast,
+  .hero--cinematic::before, .hero::after, .page-hero::after { display: none !important; }
+
+  /* 濃い地色は白に。写真の敷き込みも外して文字を最優先に */
+  body { background: #fff; color: #000; }
+  .hero--cinematic, .section--deep, .cta-band, .creed, .site-footer,
+  .card--sea { background: #fff !important; color: #000 !important; }
+  .photo-bg, .hero__bg { display: none !important; }
+  .hero--cinematic .hero__title, .hero--cinematic .hero__sub,
+  .hero--cinematic .hero__facts dd, .hero--cinematic .hero__facts dt,
+  .hero--cinematic .hero__facts b, .hero--cinematic .hero__facts span,
+  .section--deep .section-title, .section--deep .lead, .section--deep .card h3,
+  .section--deep .card p, .cta-band h2, .cta-band p,
+  .creed__title, .creed__body, .site-footer h2, .footer-links a,
+  .footer-lede, .footer-bottom, .stat__label, .card--sea h3, .card--sea p {
+    color: #000 !important; text-shadow: none !important;
+  }
+  .stat__num, .price-row__value { color: #6b5327 !important; }
+  .brand__logo--light, .site-footer .brand__logo { filter: none !important; }
+  .hero--cinematic { padding: 1.5rem 0 2rem; }
+  .page-hero { padding: 1.5rem 0 2rem; }
+
+  /* 紙をまたいで切れると読みにくいものをまとめる */
+  .card, .sol, .info-card, .next-card, .faq-item, .tl-item,
+  .price-list, .point-list, .spec > div { break-inside: avoid; page-break-inside: avoid; }
+  h1, h2, h3 { break-after: avoid; page-break-after: avoid; }
+  .section, .cta-band { padding: 1.4rem 0; }
+  .card, .sol, .info-card, .next-card, .faq-item { box-shadow: none !important; }
 }

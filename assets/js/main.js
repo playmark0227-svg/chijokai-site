@@ -60,9 +60,6 @@
       timeline.style.setProperty("--track", (tr.height - 16) + "px");
     }
 
-    /* 深度メーター・背景トーン（定義後に有効化される） */
-    if (typeof updateExtras === "function") updateExtras(y);
-
     ticking = false;
   }
   function onScrollRaf() {
@@ -199,36 +196,6 @@
     revealables.forEach(function (el) { el.classList.add("is-visible"); });
   }
 
-  /* 数字はHTMLに直接記載（アニメーションなし） */
-
-  /* ---------- Card tilt（rAF でカーソルに即応） ---------- */
-  if (!reduce && window.matchMedia("(pointer:fine)").matches) {
-    $$(".tilt").forEach(function (card) {
-      var rect = null, raf = 0, mx = 0, my = 0;
-      card.addEventListener("mouseenter", function () {
-        rect = card.getBoundingClientRect();
-        card.classList.add("is-tilting");
-      });
-      card.addEventListener("mousemove", function (e) {
-        if (!rect) rect = card.getBoundingClientRect();
-        mx = (e.clientX - rect.left) / rect.width - 0.5;
-        my = (e.clientY - rect.top) / rect.height - 0.5;
-        if (!raf) raf = requestAnimationFrame(function () {
-          raf = 0;
-          card.style.transform = "perspective(800px) rotateX(" + (-my * 7).toFixed(2) +
-                                 "deg) rotateY(" + (mx * 9).toFixed(2) + "deg) translateY(-6px)";
-        });
-      });
-      card.addEventListener("mouseleave", function () {
-        card.classList.remove("is-tilting");
-        card.style.transform = "";
-        rect = null;
-      });
-    });
-  }
-
-  /* 装飾モチーフ（船・島）は廃止しました */
-
   /* パララックス対象とタイムラインを確定（初回計算はすべての定義後にまとめて実行） */
   paras = $$("[data-parallax]");
   timeline = $(".timeline");
@@ -238,7 +205,7 @@
     var pio = new IntersectionObserver(function (es) {
       es.forEach(function (e) { e.target.classList.toggle("anim-off", !e.isIntersecting); });
     }, { rootMargin: "250px 0px" });
-    $$(".portrait__ring, .footer-boat").forEach(function (el) { pio.observe(el); });
+    $$(".footer-boat").forEach(function (el) { pio.observe(el); });
   }
 
   /* =================================================================
@@ -339,11 +306,6 @@
       else if (hero.getBoundingClientRect().bottom > 0) v.play().catch(function () {});
     });
   })();
-
-  var meter = null, dots = [], meterSections = [];
-
-  /* ---- スクロールに応じて背景がわずかに深くなる ---- */
-  function updateExtras() { /* 背景トーンの変化・深度メーターは廃止 */ }
 
   /* すべての定義が揃ったところで初回計算（同期実行で初期値を確定） */
   readWrite();
@@ -486,6 +448,21 @@
       if (e.target.hasAttribute("aria-invalid")) clearError(e.target);
     });
   }
+
+  /* ---------- 印刷 ----------
+     よくあるご質問は <details> で畳んであるため、そのまま印刷すると
+     答えが出ない。印刷前にすべて開き、終わったら元の状態へ戻す。 */
+  (function printFriendlyDetails() {
+    var opened = [];
+    window.addEventListener("beforeprint", function () {
+      opened = $$("details:not([open])");
+      opened.forEach(function (d) { d.open = true; });
+    });
+    window.addEventListener("afterprint", function () {
+      opened.forEach(function (d) { d.open = false; });
+      opened = [];
+    });
+  })();
 
   /* ---------- Footer year ---------- */
   $$("[data-year]").forEach(function (el) { el.textContent = new Date().getFullYear(); });

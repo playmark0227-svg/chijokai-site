@@ -6,3 +6,9 @@ _打ち合わせ記録/
 # 未使用・候補の画像（ローカル保管。公開配信しない）
 assets/img/_unused/
 assets/img/_hero-candidates/
+
+# 差し替え前のストック写真（ローカル保管。公開配信しない）
+assets/img/_unsplash_backup/
+
+# エディタ・作業ツールのローカル設定
+.claude/

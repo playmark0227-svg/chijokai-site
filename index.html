@@ -11,23 +11,57 @@
 <meta property="og:locale" content="ja_JP">
 <meta property="og:title" content="知上会 ｜ 金融教育と資産形成サポート">
 <meta property="og:description" content="資産形成の基礎から、その後の運用まで。お金の不安をなくすための知識と、続けるためのサポートをご提供します。">
-<meta name="twitter:card" content="summary">
-<!-- 公開ドメイン確定後に canonical / og:url / og:image を設定してください
-<link rel="canonical" href="https://example.com/">
-<meta property="og:url" content="https://example.com/">
-<meta property="og:image" content="https://example.com/assets/img/ogp.png"> -->
-<link rel="stylesheet" href="assets/css/style.css">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://playmark0227-svg.github.io/chijokai-site/">
+<meta property="og:url" content="https://playmark0227-svg.github.io/chijokai-site/">
+<meta property="og:image" content="https://playmark0227-svg.github.io/chijokai-site/assets/img/ogp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="お金の知識が、これからの安心をつくる。｜株式会社知上会">
+<link rel="stylesheet" href="assets/css/style.css?v=4ee25335">
 <script>document.documentElement.className+=" js";/* main.js が届かなかった場合は js クラスを外し、演出前提で隠れている本文を必ず表示する */setTimeout(function(){if(!window.__chijoukaiReady){var r=document.documentElement;r.className=r.className.replace(/\bjs\b/,"")}},2500)</script>
-<link rel="icon" href="assets/img/logo-mark.png" type="image/png">
+<link rel="icon" href="assets/img/favicon.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "Organization",
-  "name": "知上会",
-  "alternateName": "CHIJOUKAI",
-  "description": "知識と知恵を高め、お金や詐欺の不安のない未来へ。資産形成の基礎から人生に寄り添う伴走サポートまで。",
-  "areaServed": "JP",
-  "knowsLanguage": ["ja"]
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://playmark0227-svg.github.io/chijokai-site/#organization",
+      "name": "株式会社知上会",
+      "alternateName": ["知上会", "CHIJOUKAI"],
+      "url": "https://playmark0227-svg.github.io/chijokai-site/",
+      "logo": "https://playmark0227-svg.github.io/chijokai-site/assets/img/logo-full.png",
+      "image": "https://playmark0227-svg.github.io/chijokai-site/assets/img/ogp.jpg",
+      "description": "知識と知恵を高め、お金や詐欺の不安のない未来へ。資産形成の基礎から人生に寄り添う伴走サポートまで。",
+      "email": "info@chijoukai.com",
+      "foundingDate": "2022-03-22",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "JP",
+        "addressRegion": "奈良県",
+        "addressLocality": "大和郡山市",
+        "streetAddress": "若槻町87-68"
+      },
+      "areaServed": "JP",
+      "knowsLanguage": ["ja"],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "email": "info@chijoukai.com",
+        "availableLanguage": ["ja"]
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://playmark0227-svg.github.io/chijokai-site/#website",
+      "url": "https://playmark0227-svg.github.io/chijokai-site/",
+      "name": "知上会",
+      "inLanguage": "ja",
+      "publisher": { "@id": "https://playmark0227-svg.github.io/chijokai-site/#organization" }
+    }
+  ]
 }
 </script>
 </head>
@@ -38,7 +72,7 @@
 <header class="site-header">
   <nav class="nav wrap" aria-label="メインナビゲーション">
     <a href="index.html" class="brand" aria-label="知上会 トップへ">
-      <img class="brand__logo" src="assets/img/logo-full.png" alt="知上会" width="600" height="215">
+      <picture><source srcset="assets/img/logo-full.webp" type="image/webp"><img decoding="async" class="brand__logo" src="assets/img/logo-full.png" alt="知上会" width="600" height="215"></picture>
     </a>
     <div class="nav__links" id="navLinks">
       <a href="index.html" aria-current="page">ホーム</a>
@@ -58,7 +92,7 @@
 <section class="hero hero--cinematic">
   <div class="hero__bg" aria-hidden="true">
     <div class="hero__layers">
-      <img src="assets/img/hero-ocean.jpg" alt="" width="1800" height="1004" fetchpriority="high">
+      <picture><source srcset="assets/img/hero-ocean.webp" type="image/webp"><img src="assets/img/hero-ocean.jpg" alt="" width="1800" height="1004" fetchpriority="high"></picture>
       <!-- 動画は既定では読み込まない。main.js が回線・画面幅・動きの設定を見てから
            読み込み、再生できたときだけ静止画の上にフェードインさせる。 -->
       <video class="hero__video" preload="none" muted loop playsinline
@@ -98,7 +132,7 @@
 </section>
 
 <!-- ============ 入口ゲート（個人／法人） ============ -->
-<section class="section" id="about" style="padding-top:clamp(2.6rem,6vw,4rem)">
+<section class="section section--tight-top" id="about">
   <div class="wrap">
     <span class="eyebrow" data-reveal lang="en">WHERE TO</span>
     <h2 class="section-title reveal-words">ご関心のある分野をお選びください</h2>
@@ -115,6 +149,7 @@
       <span class="tag">個人の方へ</span>
       <h3>お金の不安を、なくしたい</h3>
       <p>資産形成の基礎から、長期の運用を乗りこなすまで。生涯にわたって伴走します。伴走サポートの費用は0円です。</p>
+      <p class="gate__genres">資産形成の基礎／長期運用の伴走／質問への回答／情報提供／ラジオ ほか<small>伴走サポートは0円。セミナーと継続的な個別相談は有料です。</small></p>
       <span class="gate__go">資産形成サポートを見る <span class="arrow" aria-hidden="true">→</span></span>
     </a>
     <a href="solutions.html" class="card card--gate" data-reveal="right">
@@ -137,23 +172,14 @@
 
   <div class="wrap grid grid-3 grid--plain section-body">
     <article class="card" data-reveal data-reveal-delay="1">
-      <div class="card__icon">
-        <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M4 9l12-5 12 5-12 5z" fill="#1b4f6b"/><path d="M9 13v7c0 2 3 4 7 4s7-2 7-4v-7" stroke="#0a1c2e" stroke-width="2" fill="none"/><path d="M28 9v8" stroke="#b08d4f" stroke-width="2" stroke-linecap="round"/></svg>
-      </div>
       <h3>学ぶ｜金融教育</h3>
       <p>基礎知識から、長期の資産形成を乗りこなすまで。「お金の不安」を「わかる」に変える、体系立てた学びを土台に。</p>
     </article>
     <article class="card" data-reveal data-reveal-delay="2">
-      <div class="card__icon">
-        <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><circle cx="11" cy="12" r="4" stroke="#0a1c2e" stroke-width="2"/><circle cx="22" cy="14" r="3.2" stroke="#1b4f6b" stroke-width="2"/><path d="M4 26c0-4 3-6 7-6s7 2 7 6M17 26c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="#b08d4f" stroke-width="2" stroke-linecap="round"/></svg>
-      </div>
       <h3>伴走する｜寄り添う</h3>
       <p>導入して終わりではなく、その先を。ラジオ・情報提供・日々の連絡で、生涯にわたって伴走し続けます。</p>
     </article>
     <article class="card" data-reveal data-reveal-delay="3">
-      <div class="card__icon">
-        <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M6 20l6-8 5 6 4-6 5 8" stroke="#1b4f6b" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="7" r="3" fill="#b08d4f"/><path d="M4 26h24" stroke="#0a1c2e" stroke-width="2" stroke-linecap="round"/></svg>
-      </div>
       <h3>拡げる｜ご縁を繋ぐ</h3>
       <p>その人にとってベストな案件を厳選してご紹介。省エネ・法務・決済・社会貢献まで、事業の課題も一緒に。</p>
     </article>
@@ -164,15 +190,15 @@
 <section class="section section--tint section--feature">
   <div class="wrap founder">
     <div class="portrait portrait--zoom" data-reveal="left">
-      <img src="assets/img/portrait.jpg" alt="知上会 代表 堀之内" width="560" height="747"
-           onerror="this.remove()" loading="lazy">
+      <picture><source srcset="assets/img/portrait.webp" type="image/webp"><img decoding="async" src="assets/img/portrait.jpg" alt="知上会 代表 堀之内" width="560" height="747"
+           onerror="this.remove()" loading="lazy"></picture>
     </div>
     <div data-reveal="right">
       <span class="eyebrow" lang="en">OUR STORY</span>
       <h2 class="section-title">詐欺に遭う人を、一人でも減らしたい</h2>
       <p class="lead">薬剤師として歩むなかで、かつて金融詐欺に何度も遭った経験が、すべての原点です。「なぜ、この分野の学びが世の中にないのか」——その問いから、知上会は始まりました。</p>
       <p class="p-sub">アメリカでの金融教育との出会いを経て、8年前に活動を開始。知識と知恵さえあれば、人は詐欺に引っかかりにくくなり、豊かに生きられる。その体験を、一人でも多くの方に届けたいと考えています。</p>
-      <a href="story.html" class="btn btn--sea" style="margin-top:1.6rem">物語を読む <span class="arrow" aria-hidden="true">→</span></a>
+      <a href="story.html" class="btn btn--sea u-mt-2">物語を読む <span class="arrow" aria-hidden="true">→</span></a>
     </div>
   </div>
 </section>
@@ -184,19 +210,19 @@
     <h2 class="section-title reveal-words">資産形成のサポート</h2>
     <p class="lead" data-reveal data-reveal-delay="1">「これがベスト」を常に探し続け、始めたあとも一生涯サポート。お金のことだけでなく、生き方の壁にも寄り添います。</p>
   </div>
-  <div class="narrow section-body">
-    <article class="card" data-reveal>
+  <div class="wrap section-body">
+    <article class="card card--solo" data-reveal>
       <span class="tag tag--free">伴走サポート 0円</span>
       <h3>資産形成の伴走サポート</h3>
       <p>基礎知識から、実際に長期の資産形成を乗りこなすまで。質問への回答や情報提供、日々の連絡で、あなたの「これから」に寄り添い続けます。</p>
     </article>
   </div>
-  <div class="wrap center" style="margin-top:2rem"><a href="service.html" class="btn btn--primary">サポートの詳細を見る <span class="arrow" aria-hidden="true">→</span></a></div>
+  <div class="wrap u-mt-3"><a href="service.html" class="btn btn--primary">サポートの詳細を見る <span class="arrow" aria-hidden="true">→</span></a></div>
 </section>
 
 <!-- ============ 数字 ============ -->
 <section class="section section--deep has-photo-bg">
-  <div class="photo-bg" aria-hidden="true"><img src="assets/img/sea-light.jpg" alt="" width="1125" height="1500" loading="lazy"></div>
+  <div class="photo-bg" aria-hidden="true"><picture><source srcset="assets/img/sea-light.webp" type="image/webp"><img decoding="async" src="assets/img/sea-light.jpg" alt="" width="1125" height="1500" loading="lazy"></picture></div>
     <div class="wrap">
     <span class="eyebrow" data-reveal lang="en">NUMBERS</span>
     <h2 class="section-title reveal-words">数字で見る知上会</h2>
@@ -214,7 +240,7 @@
   <div class="wrap split">
     <div class="split__media" data-reveal="left">
       <figure class="media-card media-card--photo">
-        <img src="assets/img/radio-mic.jpg" alt="収録用のマイクとパソコンが置かれたデスク" width="787" height="1400" loading="lazy">
+        <picture><source srcset="assets/img/radio-mic.webp" type="image/webp"><img decoding="async" src="assets/img/radio-mic.jpg" alt="収録用のマイクとパソコンが置かれたデスク" width="787" height="1400" loading="lazy"></picture>
         <figcaption class="media-card__cap">毎日配信中</figcaption>
       </figure>
     </div>
@@ -238,7 +264,7 @@
 
 <!-- ============ CTA ============ -->
 <section class="cta-band has-photo-bg">
-  <div class="photo-bg" aria-hidden="true"><img src="assets/img/dive-diver.jpg" alt="" width="1200" height="900" loading="lazy"></div>
+  <div class="photo-bg" aria-hidden="true"><picture><source srcset="assets/img/dive-diver.webp" type="image/webp"><img decoding="async" src="assets/img/dive-diver.jpg" alt="" width="1200" height="900" loading="lazy"></picture></div>
     <div class="wrap">
     <h2 data-reveal>まずはご相談ください</h2>
     <p data-reveal data-reveal-delay="1">相談は無料。お金のこと、事業のこと、生き方のこと。ご状況をうかがったうえで、最適な進め方をご提案します。</p>
@@ -252,13 +278,13 @@
 <footer class="site-footer">
   <div class="wrap footer-grid">
     <div>
-      <div class="brand" style="margin-bottom:1rem">
-        <img class="brand__logo brand__logo--light" src="assets/img/logo-full.png" alt="知上会" width="600" height="215">
+      <div class="brand">
+        <picture><source srcset="assets/img/logo-full.webp" type="image/webp"><img decoding="async" class="brand__logo brand__logo--light" src="assets/img/logo-full.png" alt="知上会" width="600" height="215"></picture>
       </div>
       <p class="footer-lede">知識と知恵を高め、お金や詐欺の不安のない未来へ。一人ひとりに、生涯にわたって寄り添います。</p>
     </div>
     <nav aria-label="フッターメニュー">
-      <h4>メニュー</h4>
+      <h2>メニュー</h2>
       <ul class="footer-links">
         <li><a href="index.html">ホーム</a></li>
         <li><a href="story.html">代表の想い</a></li>
@@ -268,7 +294,7 @@
       </ul>
     </nav>
     <nav aria-label="ご相談・その他">
-      <h4>ご相談</h4>
+      <h2>ご相談</h2>
       <ul class="footer-links">
         <li><a href="contact.html">無料相談フォーム</a></li>
         <li><a href="service.html#faq">よくあるご質問</a></li>
@@ -311,6 +337,6 @@
 
 <button class="to-top" aria-label="ページ上部へ戻る"><svg viewBox="0 0 24 24" width="22" fill="none" aria-hidden="true"><path d="M6 15l6-6 6 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 
-<script src="assets/js/main.js" defer></script>
+<script src="assets/js/main.js?v=3f051b5a" defer></script>
 </body>
 </html>
