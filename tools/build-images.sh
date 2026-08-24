@@ -51,7 +51,7 @@ for src in "$IMG"/*.jpg; do
   cap=$(max_width_for "$name")
   if [ "$w" -gt "$cap" ]; then
     tmp=$(mktemp -t chijoukai).jpg
-    sips -s format jpeg -Z "$cap" "$src" --out "$tmp" >/dev/null
+    sips -s format jpeg --resampleWidth "$cap" "$src" --out "$tmp" >/dev/null
     cwebp -quiet -q "$(quality_for "$name")" -m 6 -sharp_yuv "$tmp" -o "$out"
     rm -f "$tmp"
   else
