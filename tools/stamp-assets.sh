@@ -17,8 +17,8 @@ css_v=$(shasum -a 256 assets/css/style.css | cut -c1-8)
 js_v=$(shasum -a 256 assets/js/main.js   | cut -c1-8)
 
 for f in *.html; do
-  perl -0pi -e "s{href=\"assets/css/style\.css(\?v=[0-9a-f]+)?\"}{href=\"assets/css/style.css?v=$css_v\"}g" "$f"
-  perl -0pi -e "s{src=\"assets/js/main\.js(\?v=[0-9a-f]+)?\"}{src=\"assets/js/main.js?v=$js_v\"}g" "$f"
+  perl -0pi -e "s{href=\"((?:/chijokai-site/)?)assets/css/style\.css(\?v=[0-9a-f]+)?\"}{href=\"\${1}assets/css/style.css?v=$css_v\"}g" "$f"
+  perl -0pi -e "s{src=\"((?:/chijokai-site/)?)assets/js/main\.js(\?v=[0-9a-f]+)?\"}{src=\"\${1}assets/js/main.js?v=$js_v\"}g" "$f"
 done
 
 echo "style.css?v=$css_v / main.js?v=$js_v を全ページに反映しました"

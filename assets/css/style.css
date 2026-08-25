@@ -72,17 +72,15 @@ input, textarea, select { font: inherit; }
   --on-deep-label: #9fb3c2;  /* ラベル・eyebrow */
 
   /* Accent — くすんだ真鍮色。彩度を落として上品に */
-  --sand:   #e8dcc8;
   --gold:   #b08d4f;
   --gold-2: #c9a86a;
   --gold-ink: #7d6438; /* 真鍮色を明色面の文字に使うとき（--gold は面・罫線用で文字には暗さが足りない） */
-  --coral:  #b5714f;
   --coral-2:#96593c;
 
   /* Ink */
   --ink:    #1a2b38;
   --ink-2:  #45596a;
-  --muted:  #5c6b77;   /* 紙色・薄地・写真を薄く敷いた地のいずれでも AA(4.5:1) を満たす濃さ */
+  --muted:  #57656f;   /* 紙色・薄地（--foam-2）のいずれでも AA(4.5:1) を余裕をもって満たす濃さ */
   --line:   #e2e0db;
   --white:  #ffffff;
 
@@ -91,15 +89,10 @@ input, textarea, select { font: inherit; }
   --r-s:  4px;
   --r-m:  6px;
   --r-l:  10px;
-  /* 旧トークンはエイリアスとして維持 */
-  --radius:   var(--r-m);
-  --radius-s: var(--r-s);
-  --radius-l: var(--r-l);
 
   /* Spacing */
   --sp-sec:    clamp(4.5rem, 8vw, 6.8rem);
   --sp-sec-lg: clamp(6rem, 12vw, 10rem);
-  --sp-head:   clamp(2rem, 4vw, 3rem);
 
   /* ホバーで浮く距離。2/3/4/5/6/8px と散っていたのを2段階に集約した。 */
   --lift-sm: 2px;   /* ボタンなど小さい要素 */
@@ -118,7 +111,7 @@ input, textarea, select { font: inherit; }
      文字の左端と枠からの余白を全ページで揃える */
   --cell-pad-x:  clamp(1.3rem, 2.2vw, 1.85rem);
   --cell-pad-y:  clamp(1.5rem, 2.4vw, 2rem);
-  --cell-radius: 10px;
+  --cell-radius: var(--r-l);
   --cell-rule:   44px;                /* 上端に置く真鍮色のアクセント線の長さ */
   --cell-line:   var(--line);
   --cell-line-hover: rgba(27, 79, 107, .30);
@@ -191,8 +184,6 @@ p, li, dd, figcaption,
 .lead, .hero__sub, .page-hero p, .creed__body { word-break: auto-phrase; }
 /* 長いURLやメールアドレスだけ、枠を割らないように折る（英単語は割らない） */
 .prose a, .spec dd, .form__note a, .footer-links a { overflow-wrap: break-word; }
-/* 絶対に途中で切りたくない語（型番など） */
-.nb { white-space: nowrap; }
 
 .eyebrow {
   display: inline-flex; align-items: center; gap: .7em;
@@ -204,7 +195,6 @@ p, li, dd, figcaption,
   content: ""; width: 20px; height: 1px;
   background: var(--ink-3);
 }
-.eyebrow--center { justify-content: center; }
 
 .section-title {
   font-size: clamp(1.7rem, 3.2vw, 2.5rem);
@@ -221,7 +211,7 @@ p, li, dd, figcaption,
 .section-body { margin-top: clamp(2.6rem, 5vw, 4.2rem); }
 
 /* 数字の幅を固定（カウントアップ時のガタつき防止） */
-.stat__num, .tl-item .yr, [data-count] { font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
+.stat__num, .tl-item .yr { font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
 
 /* ---------- 05. Buttons ---------- */
 .btn {
@@ -252,7 +242,7 @@ p, li, dd, figcaption,
   box-shadow: inset 0 0 0 1px rgba(26,43,56,.28);
 }
 .btn--ghost:hover { background: rgba(26,43,56,.05); box-shadow: inset 0 0 0 1px rgba(26,43,56,.5); }
-.btn--lg { padding: 1.05em 2.1em; font-size: 1.05rem; }
+.btn--lg { font-size: 1.05rem; }
 .btn .arrow { transition: transform .3s var(--ease); }
 .btn:hover .arrow { transform: translateX(4px); }
 
@@ -323,7 +313,7 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle span::before,
 body[data-page="home"] .site-header:not(.scrolled) .nav__toggle span::after { background: #fff; }
 body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="true"] span { background: transparent; }
 /* モバイルメニューを開いたときは白パネルなので文字を戻す */
-@media (max-width: 720px) {
+@media (max-width: 960px) {
   body[data-page="home"] .site-header:not(.scrolled) .nav__links.open a { color: var(--ink-2); }
   body[data-page="home"] .site-header:not(.scrolled) .nav__links.open a:hover,
   body[data-page="home"] .site-header:not(.scrolled) .nav__links.open a[aria-current="page"] { color: var(--deep); background: rgba(27,79,107,.10); }
@@ -538,9 +528,9 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 .grid-3 { grid-template-columns: repeat(3, 1fr); }
 .grid-4 { grid-template-columns: repeat(4, 1fr); }
 
-/* セルの基本形：紙面のような白い面＋ヘアライン＋左端に揃えた真鍮色の短い罫。
+/* カードの基本形：紙面のような白い面＋ヘアライン＋左端に揃えた真鍮色の短い罫。
    余白は --cell-pad-* に統一し、文字は必ず左寄せ。 */
-.cell, .card {
+.card {
   position: relative; overflow: hidden; text-align: left;
   background-color: var(--white);
   background-image: linear-gradient(90deg, var(--gold), var(--gold-2));
@@ -561,8 +551,8 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 /* 1枚だけ置くカード。見出しと左端を揃えたいので、中央寄せではなく幅だけ絞る */
 .card--solo { max-width: 820px; }
 
-/* 余白を広めに取りたいセル（フォーム枠など） */
-.cell--roomy { padding: clamp(1.6rem, 3vw, 2.3rem); background-position: clamp(1.6rem, 3vw, 2.3rem) 0; }
+/* 余白を広めに取りたいカード（フォーム枠など） */
+.card--roomy { padding: clamp(1.6rem, 3vw, 2.3rem); background-position: clamp(1.6rem, 3vw, 2.3rem) 0; }
 
 /* 連番（グリッド内での並び順を数字で示す） */
 .grid-3 > .card, .grid-4 > .card { counter-increment: cardnum; }
@@ -680,8 +670,6 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 }
 .stat__num .unit { font-size: .5em; margin-left: .1em; }
 .stat__label { margin-top: .6rem; font-size: .9rem; color: var(--on-deep-body); }
-.section--tint .stat__num { color: var(--sea-ink); }
-.section--tint .stat__label { color: var(--ink-2); }
 
 /* ---------- 12. Reveal animations ---------- */
 .js [data-reveal]:not(.is-visible) { opacity: 0; transition: opacity .8s var(--ease), transform .8s var(--ease); }
@@ -704,11 +692,9 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 .js .info-card[data-reveal].is-visible {
   transition: transform .45s var(--ease), box-shadow .45s var(--ease), border-color .45s var(--ease), opacity .8s var(--ease);
 }
-[data-reveal-delay="1"] { transition-delay: .08s; }
-[data-reveal-delay="2"] { transition-delay: .16s; }
-[data-reveal-delay="3"] { transition-delay: .24s; }
-[data-reveal-delay="4"] { transition-delay: .32s; }
-[data-reveal-delay="5"] { transition-delay: .40s; }
+/* 出現の時差は main.js が付ける（IntersectionObserver 側で data-reveal-delay を読む）。
+   CSS の transition-delay では、より詳細度の高い transition ショートハンドに
+   常に打ち消されて効かなかった。 */
 
 /* 見出しの出現：行ごとにマスクして下から立ち上げる。
    以前は1文字ずつ inline-block の span に割っていたが、それだと
@@ -752,7 +738,7 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   z-index: 2;
 }
 .tl-item__dot svg { width: 20px; height: 20px; }
-.tl-item h3 { color: var(--deep); font-size: 1.16rem; margin-bottom: .3rem; }
+.tl-item h3 { font-family: var(--font-serif); font-weight: 500; color: var(--deep); font-size: 1.2rem; margin-bottom: .3rem; }
 .tl-item .yr { font-size: .8rem; font-weight: 800; color: var(--sea-ink); letter-spacing: .1em; }
 .tl-item p { color: var(--ink-2); font-size: .97rem; }
 
@@ -793,7 +779,6 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 
 /* ---------- 15. Feature split ---------- */
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.5rem, 5vw, 4rem); align-items: center; }
-.split--rev .split__media { order: 2; }
 .split__media { position: relative; }
 .media-card {
   border-radius: var(--r-l); overflow: hidden; box-shadow: var(--shadow);
@@ -803,7 +788,6 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 .list-check { margin-top: 1.4rem; display: grid; gap: .8rem; }
 .list-check li { display: flex; gap: .7rem; align-items: flex-start; color: var(--ink-2); }
 .list-check li svg { width: 22px; height: 22px; flex: none; margin-top: .28em; }
-.section--deep .list-check li { color: var(--on-deep-body); }
 
 /* ---------- 16. Founder / Quote ---------- */
 .founder { display: grid; grid-template-columns: .8fr 1.2fr; gap: clamp(1.5rem, 5vw, 3.5rem); align-items: center; }
@@ -1019,8 +1003,8 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 .channel-link svg { width: 18px; height: 18px; flex: none; }
 .channel-link:hover { transform: translateY(calc(var(--lift-sm) * -1)); box-shadow: var(--shadow); border-color: var(--cell-line-hover); }
 /* URL 未設定のあいだは押せない見た目にし、「準備中」を添える */
-.channel-link[aria-disabled="true"] { color: var(--muted); box-shadow: none; cursor: default; }
-.channel-link[aria-disabled="true"]:hover { transform: none; box-shadow: none; border-color: var(--cell-line); }
+.channel-link--disabled { color: var(--muted); box-shadow: none; cursor: default; }
+.channel-link--disabled:hover { transform: none; box-shadow: none; border-color: var(--cell-line); }
 .channel-link small {
   margin-left: .1em; padding: .15em .55em; border-radius: 999px;
   background: var(--foam-2); color: var(--muted);
@@ -1232,7 +1216,6 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 .cta-band :focus-visible,
 .site-footer :focus-visible,
 .hero :focus-visible { outline-color: var(--aqua); }
-.card:focus-within::before { opacity: 1; }
 a.card:focus-visible, .next-card:focus-visible { transform: translateY(calc(var(--lift) * -1)); box-shadow: var(--shadow-lift); }
 ::selection { background: rgba(176,141,79,.26); color: var(--deep); }
 
@@ -1302,8 +1285,6 @@ a.card:focus-visible, .next-card:focus-visible { transform: translateY(calc(var(
 .portrait { transition: transform .7s var(--ease), box-shadow .7s var(--ease); }
 .portrait:hover { transform: translateY(calc(var(--lift) * -1)) scale(1.02); box-shadow: var(--shadow-lift); }
 
-/* ---- 29-15. スクロールで海が深くなる（body 背景） ---- */
-body { transition: background-color 1.2s var(--ease); }
 
 /* =====================================================================
    30. Photography — 写真レイヤー
@@ -1432,14 +1413,21 @@ body { transition: background-color 1.2s var(--ease); }
 
 @media (max-width: 940px) {
   .founder { grid-template-columns: 1fr; }
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .rail { grid-template-columns: repeat(2, 1fr); }
+  .rail > .card { border-bottom: 1px solid var(--line); }
+  .rail > .card:nth-child(2n) { border-right: 0; }
+  .rail > .card:nth-last-child(-n+2) { border-bottom: 0; }
   .portrait { max-width: 360px; margin-inline: auto; }
-  .split, .split--rev .split__media { grid-template-columns: 1fr; order: 0; }
+  .split { grid-template-columns: 1fr; }
   .grid-4 { grid-template-columns: repeat(2, 1fr); }
   .stats { grid-template-columns: repeat(2, 1fr); }
   .spec > div { grid-template-columns: 1fr; gap: .2rem; }
   .contact-grid { grid-template-columns: 1fr; }
 }
-@media (max-width: 720px) {
+/* ナビは 960px 以下でハンバーガーに切り替える。
+   720px 基準だと 721〜960px のタブレット帯で6項目が収まらず、右端で切れていた。 */
+@media (max-width: 960px) {
   .nav__links {
     position: fixed; inset: 74px 12px auto 12px; flex-direction: column; align-items: stretch; gap: .3rem;
     background: rgba(255,255,255,.97); backdrop-filter: blur(12px); padding: 1rem; border-radius: var(--r-l);
@@ -1451,13 +1439,20 @@ body { transition: background-color 1.2s var(--ease); }
   .nav__links a { padding: .8em 1em; }
   .nav__cta { margin: .4rem 0 0; }
   .nav__toggle { display: grid; place-items: center; }
+}
+@media (max-width: 720px) {
   .grid-2, .grid-3, .grid-4, .next-read { grid-template-columns: 1fr; }
   .rail { grid-template-columns: 1fr; }
   .rail > .card { border-right: 0; border-bottom: 1px solid var(--line); }
   .rail > .card:last-child { border-bottom: 0; }
   .form-row { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
-  .stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 520px) {
+  /* 縦積みになったCTAは幅を揃える（不揃いな2枚が段違いに見えるのを防ぐ） */
+  .hero__cta { width: 100%; }
+  .hero__cta .btn { width: 100%; }
 }
 
 /* ---------- 28. Reduced motion ---------- */
@@ -1507,6 +1502,13 @@ body { transition: background-color 1.2s var(--ease); }
     color: #000 !important; text-shadow: none !important;
   }
   .stat__num, .price-row__value { color: #6b5327 !important; }
+  .section--deep .eyebrow, .creed .eyebrow, .hero--cinematic .hero__eyebrow,
+  .section--deep .p-sub, .cta-band .p-sub,
+  .section--deep .price-row__label, .section--deep .point-row,
+  .section--deep .price-list__note, .section--deep .callout,
+  .section--deep .callout strong, .section--deep .callout b,
+  .section--deep .list-check li,
+  .hero--cinematic .btn--ghost { color: #000 !important; }
   .brand__logo--light, .site-footer .brand__logo { filter: none !important; }
   .hero--cinematic { padding: 1.5rem 0 2rem; }
   .page-hero { padding: 1.5rem 0 2rem; }

@@ -11,7 +11,12 @@
      各ページの <head> にある保険（一定時間これが立たなければ js クラスを外す）と対になっている。
      main.js の配信に失敗しても本文が透明のまま消えないようにするため。 */
   window.__chijoukaiReady = true;
-  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var mqReduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var reduce = mqReduce.matches;
+  if (mqReduce.addEventListener) mqReduce.addEventListener("change", function (e) {
+    reduce = e.matches;
+    if (reduce) { var hv = document.querySelector(".hero__video"); if (hv) hv.pause(); }
+  });
   var $  = function (s, c) { return (c || document).querySelector(s); };
   var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
 
@@ -25,7 +30,6 @@
   var header = $(".site-header");
   var prog = document.createElement("div"); prog.className = "scroll-prog"; document.body.appendChild(prog);
   var toTop = $(".to-top");
-  var paras = [];      // パララックス対象
   var timeline = null; // story.html の経歴タイムライン
   var vh = window.innerHeight || 800;
   var ticking = false;
@@ -39,21 +43,8 @@
     prog.style.width = (h > 0 ? (y / h) * 100 : 0) + "%";
     if (toTop) toTop.classList.toggle("show", y > 600);
 
-    /* パララックス：ビューポート中心からの相対量（累積しないので画面外に飛ばない） */
-    var mid = vh / 2;
-    for (var i = 0; i < paras.length; i++) {
-      var el = paras[i];
-      var host = el.closest(".section, .cta-band, .hero, .page-hero");
-      if (!host) continue;
-      var r = host.getBoundingClientRect();
-      var rel = (r.top + r.height / 2) - mid;
-      var sp = parseFloat(el.dataset.parallax) || 0.15;
-      var t = Math.max(-48, Math.min(48, -rel * sp));
-      el.style.transform = "translate3d(0," + t.toFixed(1) + "px,0)";
-    }
-
-    /* 経歴タイムラインの線を伸ばす */
-    if (timeline) {
+    /* 経歴タイムラインの線を伸ばす（動きを抑える設定では初期化時に全表示済み） */
+    if (timeline && !reduce) {
       var tr = timeline.getBoundingClientRect();
       var p = (vh * 0.72 - tr.top) / tr.height;
       timeline.style.setProperty("--p", Math.max(0, Math.min(1, p)).toFixed(3));
@@ -78,7 +69,6 @@
     if (!links || !toggle) return;
     links.classList.remove("open");
     toggle.setAttribute("aria-expanded", "false");
-    toggle.setAttribute("aria-label", "メニューを開く");
     if (focusToggle) toggle.focus();
   }
   if (toggle && links) {
@@ -86,7 +76,6 @@
       e.stopPropagation();
       var open = links.classList.toggle("open");
       toggle.setAttribute("aria-expanded", open ? "true" : "false");
-      toggle.setAttribute("aria-label", open ? "メニューを閉じる" : "メニューを開く");
       if (open) { var first = links.querySelector("a"); if (first) first.focus(); }
     });
     $$(".nav__links a").forEach(function (a) { a.addEventListener("click", function () { closeNav(false); }); });
@@ -95,6 +84,12 @@
     });
     document.addEventListener("click", function (e) {
       if (links.classList.contains("open") && !links.contains(e.target) && !toggle.contains(e.target)) closeNav(false);
+    });
+    /* Tab でパネルの外に抜けたら閉じる（背後のコンテンツに隠れフォーカスが残らないように） */
+    links.addEventListener("focusout", function (e) {
+      if (!links.classList.contains("open")) return;
+      var to = e.relatedTarget;
+      if (to && !links.contains(to) && !toggle.contains(to)) closeNav(false);
     });
   }
 
@@ -109,7 +104,9 @@
   }
 
   function splitLines(el) {
-    if (el.dataset.raw == null) el.dataset.raw = el.textContent;
+    /* 見出しに <br> 等の子要素が入っている場合は分割しない（マークアップを壊さない） */
+    if (el.children.length && !el.querySelector(".ln")) { el.classList.add("is-split", "is-visible"); return; }
+    if (el.dataset.raw == null) el.dataset.raw = el.textContent.replace(/\s+/g, " ").trim();
     var text = el.dataset.raw;
     if (!text) return;
     el.textContent = text;                       /* 素に戻して自然に折らせる */
@@ -122,13 +119,17 @@
 
     var range = document.createRange();
     var lines = [], cur = "", top = null;
-    for (var i = 0; i < text.length; i++) {
-      range.setStart(node, i); range.setEnd(node, i + 1);
+    /* サロゲートペア（絵文字など）を跨いで Range を切らないよう、コードポイント単位で進める */
+    for (var i = 0; i < text.length;) {
+      var cp = text.codePointAt(i);
+      var len = cp > 0xFFFF ? 2 : 1;
+      range.setStart(node, i); range.setEnd(node, i + len);
       var r = range.getBoundingClientRect();
       if (!r.height) { bail(el, text); return; }  /* 計測不能 */
       var t = Math.round(r.top);
       if (top !== null && t !== top) { lines.push(cur); cur = ""; }
-      cur += text.charAt(i); top = t;
+      cur += text.substr(i, len); top = t;
+      i += len;
     }
     if (cur) lines.push(cur);
 
@@ -161,8 +162,8 @@
     /* 書体が確定してから測る。Web フォント読み込み前に測ると折り位置がずれる */
     var runSplit = function () { wordEls.forEach(splitLines); };
     if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(runSplit);
-      setTimeout(runSplit, 1200);      /* fonts.ready が返らない環境の保険 */
+      var fontsTimer = setTimeout(runSplit, 1200);   /* fonts.ready が返らない環境の保険 */
+      document.fonts.ready.then(function () { clearTimeout(fontsTimer); runSplit(); });
     } else {
       runSplit();
     }
@@ -188,7 +189,13 @@
   if ("IntersectionObserver" in window && !reduce) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
-        if (e.isIntersecting) { e.target.classList.add("is-visible"); io.unobserve(e.target); }
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        /* data-reveal-delay="1〜5" は 80ms 刻みの時差。CSS の transition-delay は
+           transition ショートハンドに打ち消されるため、ここで待ってから表示する */
+        var d = +(e.target.dataset.revealDelay || 0) * 80;
+        if (d) setTimeout(function () { e.target.classList.add("is-visible"); }, d);
+        else e.target.classList.add("is-visible");
       });
     }, { threshold: 0.16, rootMargin: "0px 0px -8% 0px" });
     revealables.forEach(function (el) { io.observe(el); });
@@ -196,9 +203,10 @@
     revealables.forEach(function (el) { el.classList.add("is-visible"); });
   }
 
-  /* パララックス対象とタイムラインを確定（初回計算はすべての定義後にまとめて実行） */
-  paras = $$("[data-parallax]");
+  /* タイムラインを確定（初回計算はすべての定義後にまとめて実行） */
   timeline = $(".timeline");
+  /* 動きを抑える設定では、航路の線は最初からすべて表示する */
+  if (timeline && reduce) timeline.style.setProperty("--p", "1");
 
   /* ---------- 画面外のアニメーションを停止（軽量化） ---------- */
   if ("IntersectionObserver" in window && !reduce) {
@@ -321,11 +329,16 @@
 
   var form = $("#contactForm");
   if (form) {
+    /* JS 検証が使えるときだけブラウザ標準の検証を切る。
+       main.js が届かない環境では、標準検証が空送信を防いでくれる。 */
+    form.setAttribute("novalidate", "");
     /* ソリューション一覧から来た場合、相談内容を引き継ぐ（?topic=…） */
     (function prefillTopic() {
       var m = /[?&]topic=([^&]+)/.exec(window.location.search);
       if (!m) return;
-      var raw = decodeURIComponent(m[1].replace(/\+/g, " "));
+      var raw;
+      try { raw = decodeURIComponent(m[1].replace(/\+/g, " ")); }
+      catch (_) { return; }   /* 不正な %エンコードは黙って無視 */
       var sel = $("#topic"), msg = $("#message");
       if (!sel) return;
       if (raw === "radio") {
@@ -396,7 +409,7 @@
 
       function done() {
         if (btn) btn.disabled = true;
-        form.setAttribute("aria-busy", "true");
+        form.removeAttribute("aria-busy");
         if (ok) {
           ok.classList.add("show");
           ok.setAttribute("tabindex", "-1");
@@ -415,13 +428,23 @@
         fetch(FORM_ENDPOINT, { method: "POST", body: data, headers: { Accept: "application/json" } })
           .then(function (res) {
             if (!res.ok) throw new Error("送信に失敗しました");
+            /* 成功メッセージは mailto 用の文言なので、自動送信の場合は差し替える */
+            var okText = ok && ok.querySelector("span");
+            if (okText) okText.textContent = "送信しました。内容を確認のうえ、折り返しご連絡いたします。";
             done();
           })
           .catch(function () {
             if (btn) btn.disabled = false;
             form.removeAttribute("aria-busy");
-            showError(document.getElementById("message"),
-              "送信できませんでした。お手数ですが " + MAIL_TO + " へ直接ご連絡ください。");
+            /* 通信エラーは入力欄の誤りではないので、フォーム全体の通知として出す */
+            var fail = form.querySelector(".form-fail");
+            if (!fail) {
+              fail = document.createElement("p");
+              fail.className = "field__err form-fail";
+              fail.setAttribute("role", "alert");
+              form.appendChild(fail);
+            }
+            fail.textContent = "送信できませんでした。お手数ですが " + MAIL_TO + " へ直接ご連絡ください。";
           });
         return;
       }
@@ -485,6 +508,7 @@
   if (brand) {
     brand.addEventListener("click", function (e) {
       taps++;
+      if (taps >= 2) e.preventDefault();   /* 連打中はページ遷移でカウンタが消えないように */
       clearTimeout(tapTimer);
       tapTimer = setTimeout(function () { taps = 0; }, 800);
       if (taps >= 5) {
