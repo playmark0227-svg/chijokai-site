@@ -12,3 +12,6 @@ assets/img/_unsplash_backup/
 
 # エディタ・作業ツールのローカル設定
 .claude/
+
+# 差し替え前の案件カード画像（ローカル保管。公開配信しない）
+assets/img/_replaced/
