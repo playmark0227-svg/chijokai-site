@@ -512,6 +512,15 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   background: linear-gradient(90deg, var(--gold), var(--gold-2));
 }
 
+/* 代表の想いページのビジョン。濃紺の理念のすぐ後ろに置くので、
+   明色の面で受けて対比させる。本文は理念（.creed__body）と同じ調子。 */
+.vision-block { background: var(--foam-2); border-bottom: 1px solid var(--line); }
+.vision-block + .section--feature { padding-top: var(--sp-sec-lg); }
+.vision-block__body { margin-top: clamp(1.4rem, 3vw, 2rem); max-width: var(--measure-lead); }
+.vision-block__body p { color: var(--ink-2); font-size: 1rem; line-height: 2.1; }
+.vision-block__body p + p { margin-top: 1rem; }
+.vision-block__body strong { color: var(--deep); font-weight: 700; }
+
 /* ---------- 09. Sections ---------- */
 .section { padding: var(--sp-sec) 0; }
 .section--feature { padding: var(--sp-sec-lg) 0; }
@@ -543,7 +552,7 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 }
 
 /* 背景が変わらない連続セクションは上余白を圧縮 */
-.section + .section:not(.section--tint):not(.section--deep) { padding-top: calc(var(--sp-sec) * .7); }
+.section + .section:not(.section--tint):not(.section--deep):not(.vision-block) { padding-top: calc(var(--sp-sec) * .7); }
 
 /* ---------- 10. Cards ---------- */
 /* 同じ行のカードは高さを揃える（align-items: start だと中身の量で枠がバラバラになる） */

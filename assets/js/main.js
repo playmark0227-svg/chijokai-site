@@ -206,7 +206,10 @@
   /* タイムラインを確定（初回計算はすべての定義後にまとめて実行） */
   timeline = $(".timeline");
   /* 動きを抑える設定では、航路の線は最初からすべて表示する */
-  if (timeline && reduce) timeline.style.setProperty("--p", "1");
+  if (timeline && reduce) {
+    timeline.style.setProperty("--p", "1");
+    timeline.style.setProperty("--track", (timeline.getBoundingClientRect().height - 16) + "px");
+  }
 
   /* ---------- 画面外のアニメーションを停止（軽量化） ---------- */
   if ("IntersectionObserver" in window && !reduce) {
