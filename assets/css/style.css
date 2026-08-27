@@ -488,6 +488,30 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   .hero__vertical { display: none; }
 }
 
+/* ---------- 08. Vision band ----------
+   表紙のすぐ下に置く1行の帯。濃紺の表紙から明るい本編へ移る継ぎ目で、
+   ビジョンだけを大きく見せる。セクションではないので上下の余白は控えめに。 */
+.vision {
+  background: var(--foam-2);
+  border-bottom: 1px solid var(--line);
+  padding: clamp(2.6rem, 6vw, 3.8rem) 0;
+  text-align: center;
+}
+.vision__lead {
+  font-family: var(--font-serif); font-weight: 500;
+  font-size: clamp(1.12rem, 3vw, 1.85rem);
+  line-height: 1.85; letter-spacing: .05em; color: var(--deep);
+  margin: 0; max-width: 30em; margin-inline: auto;
+  text-wrap: balance; word-break: auto-phrase;
+}
+/* 鉤括弧の途中で改行されると読みにくいので、引用部分は折らない */
+.vision__q { white-space: nowrap; }
+.vision__lead::before {
+  content: ""; display: block; width: 52px; height: 2px;
+  margin: 0 auto clamp(1.1rem, 2.4vw, 1.6rem);
+  background: linear-gradient(90deg, var(--gold), var(--gold-2));
+}
+
 /* ---------- 09. Sections ---------- */
 .section { padding: var(--sp-sec) 0; }
 .section--feature { padding: var(--sp-sec-lg) 0; }
@@ -991,7 +1015,9 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 .section--deep .callout strong, .section--deep .callout b { color: #fff; }
 
 /* 外部の配信サービスへの動線（ラジオ等） */
-.channel-links { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.5rem; }
+.channel-title { margin-top: 1.6rem; font-size: .9rem; color: var(--ink-2); }
+.channel-title b { font-family: var(--font-serif); font-weight: 500; font-size: 1.08rem; color: var(--deep); letter-spacing: .04em; }
+.channel-links { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: .9rem; }
 .channel-link {
   display: inline-flex; align-items: center; gap: .5em;
   padding: .7em 1.2em; border-radius: 999px;
@@ -1506,6 +1532,8 @@ a.card:focus-visible, .next-card:focus-visible { transform: translateY(calc(var(
     color: #000 !important; text-shadow: none !important;
   }
   .stat__num, .price-row__value { color: #6b5327 !important; }
+  .vision { background: #fff !important; }
+  .vision__lead { color: #000 !important; }
   .section--deep .eyebrow, .creed .eyebrow, .hero--cinematic .hero__eyebrow,
   .section--deep .p-sub, .cta-band .p-sub,
   .section--deep .price-row__label, .section--deep .point-row,
