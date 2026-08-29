@@ -1024,9 +1024,7 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 .section--deep .callout strong, .section--deep .callout b { color: #fff; }
 
 /* 外部の配信サービスへの動線（ラジオ等） */
-.channel-title { margin-top: 1.6rem; font-size: .9rem; color: var(--ink-2); }
-.channel-title b { font-family: var(--font-serif); font-weight: 500; font-size: 1.08rem; color: var(--deep); letter-spacing: .04em; }
-.channel-links { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: .9rem; }
+.channel-links { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.5rem; }
 .channel-link {
   display: inline-flex; align-items: center; gap: .5em;
   padding: .7em 1.2em; border-radius: 999px;
@@ -1035,16 +1033,7 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   font-size: .88rem; font-weight: 700; color: var(--deep); letter-spacing: .02em;
   transition: transform .3s var(--ease), box-shadow .3s var(--ease), border-color .3s var(--ease);
 }
-.channel-link svg { width: 18px; height: 18px; flex: none; }
 .channel-link:hover { transform: translateY(calc(var(--lift-sm) * -1)); box-shadow: var(--shadow); border-color: var(--cell-line-hover); }
-/* URL 未設定のあいだは押せない見た目にし、「準備中」を添える */
-.channel-link--disabled { color: var(--muted); box-shadow: none; cursor: default; }
-.channel-link--disabled:hover { transform: none; box-shadow: none; border-color: var(--cell-line); }
-.channel-link small {
-  margin-left: .1em; padding: .15em .55em; border-radius: 999px;
-  background: var(--foam-2); color: var(--muted);
-  font-size: .74em; font-weight: 700; letter-spacing: .04em;
-}
 
 /* 企業理念（代表の想いページ） */
 .creed {
@@ -1108,8 +1097,6 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 .spec > div:last-child { border-bottom: 0; }
 .spec dt { font-weight: 800; color: var(--deep); font-size: .92rem; }
 .spec dd { color: var(--ink-2); font-size: .95rem; }
-/* 値が未確定の項目 */
-.spec dd .tbd { color: var(--muted); font-style: normal; }
 
 /* 次に読む */
 .next-read { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.4rem; }
@@ -1556,8 +1543,8 @@ a.card:focus-visible, .next-card:focus-visible { transform: translateY(calc(var(
 
   /* 紙をまたいで切れると読みにくいものをまとめる */
   .card, .sol, .info-card, .next-card, .faq-item, .tl-item,
-  .price-list, .point-list, .spec > div { break-inside: avoid; page-break-inside: avoid; }
+  .price-list, .point-list, .spec > div, .channel-links { break-inside: avoid; page-break-inside: avoid; }
   h1, h2, h3 { break-after: avoid; page-break-after: avoid; }
   .section, .cta-band { padding: 1.4rem 0; }
-  .card, .sol, .info-card, .next-card, .faq-item { box-shadow: none !important; }
+  .card, .sol, .info-card, .next-card, .faq-item, .channel-link { box-shadow: none !important; }
 }
