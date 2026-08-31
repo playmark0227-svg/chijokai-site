@@ -27,13 +27,14 @@ max_width_for() {
   esac
 }
 
-# 画質。sea-reef は下層ページの見出し背景にしか使っておらず、
-# CSS で不透明度10%まで落として敷いている（.page-hero .photo-bg img）。
-# 素の画質を保つ意味がないので、思い切って落とす。
+# 画質。下層ページの見出し背景（.page-hero .photo-bg img）は CSS で
+# 不透明度10%まで落として敷いているので、素の画質を保つ意味がない。
+# 濃色セクションの背景も暗幕が重なるため、そこそこ落として構わない。
 quality_for() {
   case "$1" in
-    sea-reef) echo 40 ;;
-    *)        echo 78 ;;
+    sea-reef|coast-palms) echo 40 ;;   # 見出し背景（不透明度10%）
+    rock-arch)            echo 45 ;;   # 濃色セクション背景（暗幕あり・岩肌で重い）
+    *)                    echo 78 ;;
   esac
 }
 
