@@ -106,10 +106,12 @@ input, textarea, select { font: inherit; }
      さらに em はフォントサイズ基準なので、字数を揃えても px は揃わない。
      リード(1rem)と補足(.95rem)に同じ em を与えると右端が5%ずれ、
      「なぜここで改行？」に見える。段落側は rem にして px を固定する。 */
-  --measure-title: 15em;    /* 見出し：15字（見出しは単独なので em でよい） */
-  --measure-lead:  40rem;   /* リード文：640px ≒ 40字 */
-  --measure-body:  40rem;   /* 本文：リードと必ず同じ幅にして右端を揃える */
-  --measure-note:  30rem;   /* 注記・フッター */
+  --measure-title: 15em;      /* 見出し単独で使う旧トークン（表紙の見出しのみ） */
+  --measure-col:    37.5rem;  /* 600px。見出しも本文もこの1本の列で組み、右端を揃える */
+  --measure-col-lg: 45rem;    /* 720px。理念など、大きな文字で組む列 */
+  --measure-lead:  var(--measure-col);
+  --measure-body:  var(--measure-col);
+  --measure-note:  30rem;     /* 注記・フッター */
 
   /* セル（カード類）の共通ジオメトリ
      カード・ゲート・次に読む・案内・ソリューション・料金表で同じ値を使い、
@@ -212,14 +214,13 @@ p, li, dd, figcaption,
   font-weight: 500; letter-spacing: .03em; line-height: 1.55;
   margin: 1.1rem 0 0;
   color: var(--deep);
-  max-width: var(--measure-title);
+  max-width: var(--measure-col);
 }
 .center .section-title { max-width: none; }
 /* 段組みの中（カラム幅がすでに狭い）では、折り返し幅の制限を外して
    カラム幅そのものに任せる。二重に狭めると右側だけ余白が残る。 */
-.founder .lead, .founder .p-sub, .founder .section-title,
-.split .lead, .split .p-sub, .split .section-title,
-.card .lead, .card .p-sub { max-width: none; }
+.founder .lead, .founder .p-sub, .founder .list-check, .founder .section-title,
+.split .lead, .split .p-sub, .split .list-check, .split .section-title { max-width: none; }
 .section-title .accent { color: var(--ocean); font-style: normal; }
 .lead { font-size: 1rem; line-height: 2.05; color: var(--ink-2); max-width: var(--measure-lead); margin-top: 1.4rem; }
 .center { text-align: center; }
@@ -844,7 +845,7 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   background: linear-gradient(160deg, var(--sky), var(--aqua-2));
   aspect-ratio: 4/3; display: grid; place-items: center; position: relative;
 }
-.list-check { margin-top: 1.4rem; display: grid; gap: .8rem; }
+.list-check { margin-top: 1.4rem; display: grid; gap: .8rem; max-width: var(--measure-body); }
 .list-check li { display: flex; gap: .7rem; align-items: flex-start; color: var(--ink-2); }
 .list-check li svg { width: 22px; height: 22px; flex: none; margin-top: .28em; }
 
@@ -873,7 +874,7 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   font-family: var(--font-serif); font-weight: 500;
   font-size: clamp(1.12rem, 2.3vw, 1.5rem); line-height: 2.05; letter-spacing: .04em;
   color: var(--deep); position: relative;
-  max-width: var(--measure-lead); margin-inline: auto;
+  max-width: 34em; margin-inline: auto;   /* 中央揃えなので列幅ではなく字数で決める */
   text-wrap: pretty; word-break: auto-phrase;
 }
 .quote cite {
@@ -914,13 +915,20 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 
 /* ---------- 19. Forms ---------- */
 .form { display: grid; gap: 1.1rem; }
-.form-row { display: grid; gap: 1.1rem; grid-template-columns: 1fr 1fr; }
-.field { display: grid; gap: .45rem; }
+/* 2列に置いても、入力欄が自分の既定幅（size属性ぶん）より縮めるようにする。
+   minmax(0,1fr) を使わないと、狭い画面で入力欄が縮まずフォームごと画面から
+   はみ出していた。 */
+.form-row { display: grid; gap: 1.1rem; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.field { display: grid; gap: .45rem; min-width: 0; }
+@media (max-width: 560px) {
+  .form-row { grid-template-columns: 1fr; }
+}
 .field label { font-weight: 800; color: var(--deep); font-size: .92rem; }
 .field label .req { color: var(--coral-2); margin-left: .2em; }
 .field input, .field textarea, .field select {
   padding: .85em 1em; border-radius: var(--r-s); border: 2px solid var(--line); background: #fff;
   color: var(--ink); transition: border-color .25s, box-shadow .25s;
+  width: 100%; min-width: 0; box-sizing: border-box;
 }
 .field input:focus, .field textarea:focus, .field select:focus {
   outline: none; border-color: var(--sea-2); box-shadow: var(--ring);
@@ -1075,7 +1083,7 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 .creed__title {
   font-family: var(--font-serif); font-weight: 500;
   font-size: clamp(1.7rem, 4.6vw, 3rem); line-height: 1.5; letter-spacing: .04em;
-  color: #fff; margin: 1.2rem 0 0; max-width: var(--measure-title);
+  color: #fff; margin: 1.2rem 0 0; max-width: var(--measure-col-lg);
 }
 .creed__title::after {
   content: ""; display: block; width: 56px; height: 2px;
@@ -1083,7 +1091,7 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   background: linear-gradient(90deg, var(--gold-2), rgba(201,168,106,.18));
 }
 .creed__body {
-  margin-top: clamp(1.4rem, 3vw, 2rem); max-width: var(--measure-lead);
+  margin-top: clamp(1.4rem, 3vw, 2rem); max-width: var(--measure-col-lg);
   color: var(--on-deep-body); font-size: 1rem; line-height: 2.1;
 }
 
@@ -1177,7 +1185,7 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 }
 .page-hero h1 {
   font-size: clamp(1.9rem, 4.2vw, 3rem); font-weight: 500; line-height: 1.5;
-  color: var(--deep); margin-top: 1rem; max-width: var(--measure-title);
+  color: var(--deep); margin-top: 1rem; max-width: var(--measure-col);
 }
 .page-hero p { color: var(--ink-2); margin-top: 1.6rem; max-width: var(--measure-lead); line-height: 2.05; }
 .breadcrumb { display: flex; gap: .5em; font-family: var(--font-en); font-size: .72rem; letter-spacing: .1em; color: var(--crumb-ink); margin-bottom: 2.2rem; }
@@ -1410,6 +1418,21 @@ a.card:focus-visible, .next-card:focus-visible { transform: translateY(calc(var(
       rgba(236,235,231,.44) 70%,
       rgba(236,235,231,.14) 100%),
     linear-gradient(180deg, rgba(236,235,231,.5), rgba(236,235,231,0) 34%, rgba(236,235,231,.42) 100%);
+}
+/* 画面が狭いとセクションが縦に伸び、横長の写真は横の2割ほどしか映らず
+   ただの単色に見えてしまう。狭い画面では見出しの後ろの帯として置き、
+   写真が写真として分かる高さに収める。 */
+@media (max-width: 860px) {
+  .section--tint.has-photo-bg .photo-bg { inset: 0 0 auto 0; height: 46%; }
+  .section--tint.has-photo-bg .photo-bg::after {
+    background:
+      linear-gradient(100deg,
+        rgba(236,235,231,.92) 0%,
+        rgba(236,235,231,.80) 42%,
+        rgba(236,235,231,.40) 76%,
+        rgba(236,235,231,.16) 100%),
+      linear-gradient(180deg, rgba(236,235,231,.42), rgba(236,235,231,.10) 40%, rgba(236,235,231,1) 100%);
+  }
 }
 .page-hero .photo-bg::after {
   content: ""; position: absolute; inset: 0;
