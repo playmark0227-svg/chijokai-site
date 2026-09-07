@@ -81,6 +81,8 @@ input, textarea, select { font: inherit; }
   --ink:    #1a2b38;
   --ink-2:  #45596a;
   --muted:  #57656f;   /* 紙色・薄地（--foam-2）のいずれでも AA(4.5:1) を余裕をもって満たす濃さ */
+  /* パンくずは 11.5px と小さく、写真の上に乗るぶん --muted では AA を割る */
+  --crumb-ink: #47545f;
   --line:   #e2e0db;
   --white:  #ffffff;
 
@@ -100,11 +102,14 @@ input, textarea, select { font: inherit; }
 
   /* 行長（日本語の1行あたり字数）。
      ch は「0」の字送りで、明朝では 0.59em・角ゴでは 0.675em にしかならず、
-     22ch と書いても実際は約13字だった。em にして意図を数字どおりにする。 */
-  --measure-title: 15em;   /* 見出し：15字 */
-  --measure-lead:  34em;   /* リード文：34字 */
-  --measure-body:  40em;   /* 本文：40字（日本語の可読域は35〜45字） */
-  --measure-note:  30em;   /* 注記・フッター */
+     22ch と書いても実際は約13字だった。em にして意図を数字どおりにする。
+     さらに em はフォントサイズ基準なので、字数を揃えても px は揃わない。
+     リード(1rem)と補足(.95rem)に同じ em を与えると右端が5%ずれ、
+     「なぜここで改行？」に見える。段落側は rem にして px を固定する。 */
+  --measure-title: 15em;    /* 見出し：15字（見出しは単独なので em でよい） */
+  --measure-lead:  40rem;   /* リード文：640px ≒ 40字 */
+  --measure-body:  40rem;   /* 本文：リードと必ず同じ幅にして右端を揃える */
+  --measure-note:  30rem;   /* 注記・フッター */
 
   /* セル（カード類）の共通ジオメトリ
      カード・ゲート・次に読む・案内・ソリューション・料金表で同じ値を使い、
@@ -123,6 +128,9 @@ input, textarea, select { font: inherit; }
   --ring: 0 0 0 3px rgba(27, 79, 107, .22);
 
   --maxw: 1180px;
+  /* 本文と画面の縁とのあいだ（左右合計）。狭い画面では従来どおり、
+     広い画面ではしっかり空ける */
+  --gutter: clamp(2.4rem, 8vw, 6rem);
   --ease: cubic-bezier(.22, .61, .36, 1);
   --ease-back: cubic-bezier(.34, 1.56, .64, 1);
 
@@ -147,8 +155,11 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-.wrap { width: min(100% - 2.4rem, var(--maxw)); margin-inline: auto; }
-.narrow { width: min(100% - 2.4rem, 820px); margin-inline: auto; }
+/* 紙の縁の余白。画面が広いときほど広く取る。
+   従来は一律 2.4rem（片側19px）で、1200px前後の画面では文字が画面の縁に
+   貼りついて見えていた（「右からも左からも余白がなくなっている」）。 */
+.wrap { width: min(100% - var(--gutter), var(--maxw)); margin-inline: auto; }
+.narrow { width: min(100% - var(--gutter), 820px); margin-inline: auto; }
 
 section { position: relative; }
 main:focus { outline: none; }
@@ -204,6 +215,11 @@ p, li, dd, figcaption,
   max-width: var(--measure-title);
 }
 .center .section-title { max-width: none; }
+/* 段組みの中（カラム幅がすでに狭い）では、折り返し幅の制限を外して
+   カラム幅そのものに任せる。二重に狭めると右側だけ余白が残る。 */
+.founder .lead, .founder .p-sub, .founder .section-title,
+.split .lead, .split .p-sub, .split .section-title,
+.card .lead, .card .p-sub { max-width: none; }
 .section-title .accent { color: var(--ocean); font-style: normal; }
 .lead { font-size: 1rem; line-height: 2.05; color: var(--ink-2); max-width: var(--measure-lead); margin-top: 1.4rem; }
 .center { text-align: center; }
@@ -354,10 +370,16 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   transition: transform .7s cubic-bezier(.22,.61,.36,1);
   will-change: transform;
 }
+/* 表紙の写真と動画。
+   帆船は画像の右寄り（横 78〜88%）にいる。中央基準で切り出すと、
+   横長でない画面ではちょうど帆船が画面外に出てしまい、
+   「右に何かいるのは分かるが何か分からない」状態だった。
+   基準を右に寄せて、どの画面比でも帆船が残るようにする。
+   画面が十分に横長なときは切り出し自体が起きないので、見えかたは変わらない。 */
 .hero__bg img,
 .hero__video {
   position: absolute; inset: 0;
-  width: 100%; height: 100%; object-fit: cover; object-position: center 58%;
+  width: 100%; height: 100%; object-fit: cover; object-position: 82% 58%;
 }
 /* 動画は再生できたときだけ静止画の上に重ねる。
    読み込めない・再生できない・動きを抑える設定・細い回線では
@@ -506,6 +528,10 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 }
 /* 鉤括弧の途中で改行されると読みにくいので、引用部分は折らない */
 .vision__q { white-space: nowrap; }
+/* 途中で改行されると読みにくい語（人名・社名・固有名詞）を包む。
+   word-break: auto-phrase は Safari が未対応で、文節を無視して
+   どこでも折り返してしまうため、要所は明示的に守る。 */
+.nw { white-space: nowrap; }
 .vision__lead::before {
   content: ""; display: block; width: 52px; height: 2px;
   margin: 0 auto clamp(1.1rem, 2.4vw, 1.6rem);
@@ -1003,7 +1029,10 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 .section--deep .price-list__note { color: var(--on-deep-muted); }
 
 /* 段落の補助スタイル（リード文のあとに続く一段落）— 旧インライン指定の置き換え */
-.p-sub { margin-top: 1rem; color: var(--ink-2); font-size: .95rem; line-height: 2; }
+/* リード文のすぐ下に来る補足。折り返し幅はリードと必ず同じにする。
+   ここに幅制限が無かったため、上の段落だけが手前で折り返し、
+   「こんなに余白があるのに、なぜここで改行するのか」と見えていた。 */
+.p-sub { margin-top: 1rem; color: var(--ink-2); font-size: .95rem; line-height: 2; max-width: var(--measure-body); }
 .section--deep .p-sub, .cta-band .p-sub { color: var(--on-deep-body); }
 
 /* 目立たせたい注記（料金の但し書きなど） */
@@ -1151,7 +1180,7 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   color: var(--deep); margin-top: 1rem; max-width: var(--measure-title);
 }
 .page-hero p { color: var(--ink-2); margin-top: 1.6rem; max-width: var(--measure-lead); line-height: 2.05; }
-.breadcrumb { display: flex; gap: .5em; font-family: var(--font-en); font-size: .72rem; letter-spacing: .1em; color: var(--muted); margin-bottom: 2.2rem; }
+.breadcrumb { display: flex; gap: .5em; font-family: var(--font-en); font-size: .72rem; letter-spacing: .1em; color: var(--crumb-ink); margin-bottom: 2.2rem; }
 .breadcrumb ol { display: flex; gap: .5em; list-style: none; margin: 0; padding: 0; }
 .breadcrumb a:hover { color: var(--sea-ink); }
 
@@ -1364,10 +1393,33 @@ a.card:focus-visible, .next-card:focus-visible { transform: translateY(calc(var(
 .section--deep .photo-bg img { opacity: .92; filter: saturate(1) brightness(1); }
 .cta-band .photo-bg img { opacity: .94; filter: saturate(1.04) brightness(1); }
 /* 明色セクション用：うっすら */
-.page-hero .photo-bg img { opacity: .10; filter: saturate(.55) contrast(.95); }
+/* 下層ページの見出し帯。
+   以前は opacity .10 まで落としていたが、それでは「画像が入っていない」
+   ようにしか見えなかった（先方指摘）。写真がきちんと見える濃さまで戻し、
+   そのぶん文字が乗る左側だけを紙色のグラデーションで締める。 */
+.page-hero .photo-bg img { opacity: .28; filter: saturate(.62) contrast(.96); }
+/* 薄地セクションに写真を敷くとき。見出し帯と同じ考え方で、
+   文字が乗る左側は地色で締め、右側は写真をそのまま見せる。 */
+.section--tint.has-photo-bg .photo-bg img { opacity: .30; filter: saturate(.62) contrast(.96); }
+.section--tint.has-photo-bg .photo-bg::after {
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(100deg,
+      rgba(236,235,231,.95) 0%,
+      rgba(236,235,231,.86) 38%,
+      rgba(236,235,231,.44) 70%,
+      rgba(236,235,231,.14) 100%),
+    linear-gradient(180deg, rgba(236,235,231,.5), rgba(236,235,231,0) 34%, rgba(236,235,231,.42) 100%);
+}
 .page-hero .photo-bg::after {
   content: ""; position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(255,255,255,.1), rgba(255,255,255,0) 40%);
+  background:
+    linear-gradient(100deg,
+      rgba(250,249,246,.94) 0%,
+      rgba(250,249,246,.80) 34%,
+      rgba(250,249,246,.32) 66%,
+      rgba(250,249,246,.06) 100%),
+    linear-gradient(180deg, rgba(250,249,246,.55), rgba(250,249,246,0) 38%);
 }
 /* 濃色セクション：見出し・本文が乗る上帯と、カードが乗る下帯だけを締め、
    中央の水平線はできるだけ素の明るさで見せる */
@@ -1388,8 +1440,13 @@ a.card:focus-visible, .next-card:focus-visible { transform: translateY(calc(var(
 }
 
 /* ---- 30-4. ソリューション：カード上部の写真帯 ---- */
+/* 案件カードの写真帯。
+   高さを 200px に固定していたため、カードが 2 列になって幅が広がると
+   画像の上下が 2 割ほど切れ、ロゴが入った写真（SWA Pay など）は
+   肝心のところが欠けていた。素材はすべて約 16:9 なので、
+   高さではなく比率で持たせて、どの列数でも切らずに収める。 */
 .sol__photo {
-  position: relative; overflow: hidden; height: 200px; flex: none;
+  position: relative; overflow: hidden; aspect-ratio: 800 / 446; flex: none;
   background: var(--foam-2);
   border-bottom: 1px solid var(--line);
 }

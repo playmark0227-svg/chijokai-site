@@ -103,33 +103,62 @@
     el.classList.add("is-split", "is-visible");
   }
 
+  /* 中身がテキストと単純な span だけか（<br> や入れ子の要素が無いか）を見る。
+     span だけなら、折り返しを決めているのは中の nowrap 指定なので、
+     それを活かしたまま行に割ることができる。 */
+  function simpleInline(el) {
+    for (var i = 0; i < el.children.length; i++) {
+      var c = el.children[i];
+      if (c.tagName !== "SPAN" || c.children.length) return false;
+    }
+    return true;
+  }
+
   function splitLines(el) {
-    /* 見出しに <br> 等の子要素が入っている場合は分割しない（マークアップを壊さない） */
-    if (el.children.length && !el.querySelector(".ln")) { el.classList.add("is-split", "is-visible"); return; }
+    /* <br> や入れ子の要素が入っている見出しは、マークアップを壊さないよう分割しない */
+    if (el.children.length && !el.querySelector(".ln") && !simpleInline(el)) {
+      el.classList.add("is-split", "is-visible"); return;
+    }
+    /* 初回に「素のHTML」を控えておく。中の <span class="nw"> は
+       改行してほしくない語のまとまりなので、復元して折り位置に反映させる。 */
+    if (el.dataset.rawHtml == null && !el.querySelector(".ln")) el.dataset.rawHtml = el.innerHTML;
     if (el.dataset.raw == null) el.dataset.raw = el.textContent.replace(/\s+/g, " ").trim();
     var text = el.dataset.raw;
     if (!text) return;
-    el.textContent = text;                       /* 素に戻して自然に折らせる */
-    var node = el.firstChild;
-    if (!node) return;
+    /* 素に戻して、ブラウザに自然に折らせる（nowrap の塊はそのまま維持される） */
+    if (el.dataset.rawHtml != null) el.innerHTML = el.dataset.rawHtml;
+    else el.textContent = text;
 
     /* まだレイアウトされていない（幅ゼロ・非表示）なら分割しない */
     var box = el.getBoundingClientRect();
     if (!box.width || !box.height) { bail(el, text); return; }
 
+    /* テキストノードを順に集め、通し位置と対応づける */
+    var chunks = [];
+    (function walk(n) {
+      for (var c = n.firstChild; c; c = c.nextSibling) {
+        if (c.nodeType === 3) chunks.push(c);
+        else if (c.nodeType === 1) walk(c);
+      }
+    })(el);
+    if (!chunks.length) { bail(el, text); return; }
+
     var range = document.createRange();
     var lines = [], cur = "", top = null;
     /* サロゲートペア（絵文字など）を跨いで Range を切らないよう、コードポイント単位で進める */
-    for (var i = 0; i < text.length;) {
-      var cp = text.codePointAt(i);
-      var len = cp > 0xFFFF ? 2 : 1;
-      range.setStart(node, i); range.setEnd(node, i + len);
-      var r = range.getBoundingClientRect();
-      if (!r.height) { bail(el, text); return; }  /* 計測不能 */
-      var t = Math.round(r.top);
-      if (top !== null && t !== top) { lines.push(cur); cur = ""; }
-      cur += text.substr(i, len); top = t;
-      i += len;
+    for (var ci = 0; ci < chunks.length; ci++) {
+      var node = chunks[ci], s = node.nodeValue;
+      for (var i = 0; i < s.length;) {
+        var cp = s.codePointAt(i);
+        var len = cp > 0xFFFF ? 2 : 1;
+        range.setStart(node, i); range.setEnd(node, i + len);
+        var r = range.getBoundingClientRect();
+        if (!r.height) { bail(el, text); return; }  /* 計測不能 */
+        var t = Math.round(r.top);
+        if (top !== null && t !== top) { lines.push(cur); cur = ""; }
+        cur += s.substr(i, len); top = t;
+        i += len;
+      }
     }
     if (cur) lines.push(cur);
 
