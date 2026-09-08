@@ -109,7 +109,15 @@
   function simpleInline(el) {
     for (var i = 0; i < el.children.length; i++) {
       var c = el.children[i];
-      if (c.tagName !== "SPAN" || c.children.length) return false;
+      /* <wbr> は折り返し候補の目印。中身を持たないので分割の邪魔にならない */
+      if (c.tagName === "WBR") continue;
+      if (c.tagName !== "SPAN") return false;
+      /* span の中に span（.accent > .nw など）が入っている程度なら許容する */
+      for (var j = 0; j < c.children.length; j++) {
+        var g = c.children[j];
+        if (g.tagName !== "WBR" && g.tagName !== "SPAN") return false;
+        if (g.children.length) return false;
+      }
     }
     return true;
   }

@@ -171,13 +171,10 @@ h1, h2 {
   font-family: var(--font-serif);
   line-height: 1.42; letter-spacing: .04em; font-weight: 600;
   font-feature-settings: "palt" 1;
-  /* 意味のまとまりで改行させる。未対応ブラウザは通常の折り返しに戻るだけ。 */
-  word-break: auto-phrase;
 }
 h3, h4 {
   line-height: 1.6; letter-spacing: .03em; font-weight: 600;
   font-feature-settings: "palt" 1;
-  word-break: auto-phrase;
 }
 /* 見出しは各行の長さを均す（balance）。
    pretty は「最終行が極端に短くなるのを防ぐ」本文向けの値で、
@@ -193,9 +190,23 @@ p, li, dd, dt, summary { line-break: strict; }
 p, li, dd, figcaption,
 .lead, .hero__sub, .page-hero p, .card p, .sol__body p, .creed__body,
 .faq-item > p, .bridge-note p { text-wrap: pretty; }
-/* リード文は意味のまとまりで折り返す */
-.lead, .hero__sub, .page-hero p, .creed__body { word-break: auto-phrase; }
-/* 長いURLやメールアドレスだけ、枠を割らないように折る（英単語は割らない） */
+/* ---- 和文の折り返し位置 ----
+   word-break: auto-phrase（文節で折る）は Chrome 系しか対応しておらず、
+   Safari では語の途中で改行されてしまう（「お伝えす／る」など）。
+   そこで文節の切れ目を HTML 側に <wbr> として持たせ、
+   ここでは「<wbr> のあるところだけで折る」を指定する。
+   これでブラウザや画面幅によらず、いつも文節で折り返る。
+   <wbr> は tools/typeset.py が入れる（原稿を変えたら実行し直すこと）。 */
+h1, h2, h3, h4, h5, h6,
+p, li, dd, dt, summary, figcaption, blockquote, cite,
+.lead, .hero__sub, .page-hero p, .creed__body, .card p, .sol__body p {
+  word-break: keep-all;
+  /* ここで overflow-wrap: break-word を足すと、次の行に送るべき語を
+     いまの行に詰めこもうとして「見つかりません／でした」のように
+     語の途中で割れる。文節が枠に収まることは tools/typeset.py 側で
+     担保しているので、ここでは折り返しを <wbr> の位置だけに限る。 */
+}
+/* 長いURLやメールアドレスは、どこでも折ってよい */
 .prose a, .spec dd, .form__note a, .footer-links a { overflow-wrap: break-word; }
 
 .eyebrow {
@@ -525,13 +536,13 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   font-size: clamp(1.12rem, 3vw, 1.85rem);
   line-height: 1.85; letter-spacing: .05em; color: var(--deep);
   margin: 0; max-width: 30em; margin-inline: auto;
-  text-wrap: balance; word-break: auto-phrase;
+  text-wrap: balance;
 }
 /* 鉤括弧の途中で改行されると読みにくいので、引用部分は折らない */
 .vision__q { white-space: nowrap; }
-/* 途中で改行されると読みにくい語（人名・社名・固有名詞）を包む。
-   word-break: auto-phrase は Safari が未対応で、文節を無視して
-   どこでも折り返してしまうため、要所は明示的に守る。 */
+/* 人名など、途中で改行されるとまずい短い語を包む。
+   文節での折り返しは <wbr> に任せているが、姓と名のあいだのような
+   「文節の切れ目ではあるが、切ってほしくない」場所だけをここで守る。 */
 .nw { white-space: nowrap; }
 .vision__lead::before {
   content: ""; display: block; width: 52px; height: 2px;
@@ -758,7 +769,7 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
 
 /* 見出しの出現：行ごとにマスクして下から立ち上げる。
    以前は1文字ずつ inline-block の span に割っていたが、それだと
-   word-break: auto-phrase も line-break: strict も無効になり、
+   <wbr> による文節の区切りも line-break: strict も無効になり、
    「お選びく／ださい」のような語中改行や、行頭に落ちる句読点が発生していた。
    いまは “ブラウザが正しく折った行” をあとから包んでいるので組版が壊れない。 */
 .js .reveal-words { visibility: hidden; }
@@ -875,7 +886,7 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   font-size: clamp(1.12rem, 2.3vw, 1.5rem); line-height: 2.05; letter-spacing: .04em;
   color: var(--deep); position: relative;
   max-width: 34em; margin-inline: auto;   /* 中央揃えなので列幅ではなく字数で決める */
-  text-wrap: pretty; word-break: auto-phrase;
+  text-wrap: pretty;
 }
 .quote cite {
   display: block; margin-top: 1.4rem; font-style: normal;
@@ -1184,7 +1195,10 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   background: var(--paper); border-bottom: 1px solid var(--line);
 }
 .page-hero h1 {
-  font-size: clamp(1.9rem, 4.2vw, 3rem); font-weight: 500; line-height: 1.5;
+  /* 下限は「プライバシーポリシー」のような、途中で折れない10字の語が
+     320px の画面でも1行に収まる大きさにしてある。
+     610px を超えると 4.2vw のほうが大きくなるので、広い画面の見えかたは変わらない。 */
+  font-size: clamp(1.6rem, 4.2vw, 3rem); font-weight: 500; line-height: 1.5;
   color: var(--deep); margin-top: 1rem; max-width: var(--measure-col);
 }
 .page-hero p { color: var(--ink-2); margin-top: 1.6rem; max-width: var(--measure-lead); line-height: 2.05; }
