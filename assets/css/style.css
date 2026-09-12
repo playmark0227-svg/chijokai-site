@@ -1416,10 +1416,11 @@ a.card:focus-visible, .next-card:focus-visible { transform: translateY(calc(var(
 .cta-band .photo-bg img { opacity: .94; filter: saturate(1.04) brightness(1); }
 /* 明色セクション用：うっすら */
 /* 下層ページの見出し帯。
-   以前は opacity .10 まで落としていたが、それでは「画像が入っていない」
-   ようにしか見えなかった（先方指摘）。写真がきちんと見える濃さまで戻し、
-   そのぶん文字が乗る左側だけを紙色のグラデーションで締める。 */
-.page-hero .photo-bg img { opacity: .28; filter: saturate(.62) contrast(.96); }
+   写真全体に白い幕をかけると、文字のない右側まで写真が霞んでしまう
+   （「白いスモークがかかりすぎて見にくい」と先方指摘）。
+   写真はほぼそのままの濃さで敷き、紙色の下地は文字ブロックの後ろにだけ置く
+   （.page-hero.has-photo-bg > .wrap::before）。 */
+.page-hero .photo-bg img { opacity: .9; filter: saturate(.9); }
 /* 薄地セクションに写真を敷くとき。見出し帯と同じ考え方で、
    文字が乗る左側は地色で締め、右側は写真をそのまま見せる。 */
 .section--tint.has-photo-bg .photo-bg img { opacity: .30; filter: saturate(.62) contrast(.96); }
@@ -1448,15 +1449,45 @@ a.card:focus-visible, .next-card:focus-visible { transform: translateY(calc(var(
       linear-gradient(180deg, rgba(236,235,231,.42), rgba(236,235,231,.10) 40%, rgba(236,235,231,1) 100%);
   }
 }
-.page-hero .photo-bg::after {
-  content: ""; position: absolute; inset: 0;
-  background:
-    linear-gradient(100deg,
-      rgba(250,249,246,.94) 0%,
-      rgba(250,249,246,.80) 34%,
-      rgba(250,249,246,.32) 66%,
-      rgba(250,249,246,.06) 100%),
-    linear-gradient(180deg, rgba(250,249,246,.55), rgba(250,249,246,0) 38%);
+/* ナビが帯の上に横並びになる幅（961px〜）だけ、ヘッダーの後ろを紙色でうすく締める。
+   それより狭いとナビは地色つきのドロワーに畳まれるので、写真をそのまま見せる。 */
+.page-hero .photo-bg::after { content: ""; position: absolute; inset: 0; }
+@media (min-width: 961px) {
+  .page-hero .photo-bg::after {
+    background: linear-gradient(180deg,
+      rgba(250,249,247,.86) 0, rgba(250,249,247,.78) 60px,
+      rgba(250,249,247,.40) 100px, rgba(250,249,247,0) 150px);
+  }
+}
+/* 文字ブロックの後ろにだけ敷く紙色の下地。
+   帯の左端から、本文の列（600px）の330px先までを覆う。右端は320pxかけて
+   写真に溶かす。濃さの落ち方は始まりと終わりをなだらかにした S 字（smoothstep）で、
+   直線的に落とすと濃い写真との境目が縦の線に見えてしまうのを避けている。
+   上端は64pxでぼかす。
+   文字がのる所は不透明度 .82 で、写真はうっすら透けたまま、どの写真・
+   どの画面幅でも文字は AA（4.5:1）を満たす（4ページ×4幅で実測）。
+   狭い画面では本文が横いっぱいになるため下地も全幅になり、
+   写真は見出しの上の余白に帯として見える。 */
+/* 写真が透ける分、いちばん淡い英字ラベル（--muted）はここだけパンくずと同じ濃さに */
+.page-hero.has-photo-bg .eyebrow { color: var(--crumb-ink); }
+.page-hero.has-photo-bg > .wrap { position: relative; }
+.page-hero.has-photo-bg > .wrap::before {
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  top: -64px; bottom: -200px;
+  left: calc((100% - 100vw) / 2);
+  width: calc((100vw - 100%) / 2 + var(--measure-col) + 330px);
+  background: linear-gradient(90deg,
+    rgba(250,249,247,.82) calc(100% - 320px),
+    rgba(250,249,247,.80) calc(100% - 290px),
+    rgba(250,249,247,.72) calc(100% - 250px),
+    rgba(250,249,247,.60) calc(100% - 210px),
+    rgba(250,249,247,.45) calc(100% - 170px),
+    rgba(250,249,247,.30) calc(100% - 130px),
+    rgba(250,249,247,.16) calc(100% - 90px),
+    rgba(250,249,247,.05) calc(100% - 50px),
+    rgba(250,249,247,0) 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, rgba(0,0,0,.35) 24px, #000 64px);
+          mask-image: linear-gradient(180deg, transparent 0, rgba(0,0,0,.35) 24px, #000 64px);
 }
 /* 濃色セクション：見出し・本文が乗る上帯と、カードが乗る下帯だけを締め、
    中央の水平線はできるだけ素の明るさで見せる */
@@ -1613,7 +1644,7 @@ a.card:focus-visible, .next-card:focus-visible { transform: translateY(calc(var(
   body { background: #fff; color: #000; }
   .hero--cinematic, .section--deep, .cta-band, .creed, .site-footer,
   .card--sea { background: #fff !important; color: #000 !important; }
-  .photo-bg, .hero__bg { display: none !important; }
+  .photo-bg, .hero__bg, .page-hero > .wrap::before { display: none !important; }
   .hero--cinematic .hero__title, .hero--cinematic .hero__sub,
   .hero--cinematic .hero__facts dd, .hero--cinematic .hero__facts dt,
   .hero--cinematic .hero__facts b, .hero--cinematic .hero__facts span,
