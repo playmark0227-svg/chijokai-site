@@ -186,26 +186,22 @@ h1, h2, h3, h4,
 /* 本文は約物を詰めすぎると読みにくいので palt は掛けず、
    行頭・行末の禁則だけを効かせる。 */
 p, li, dd, dt, summary { line-break: strict; }
-/* 本文は最終行の泣き別れだけ防ぐ */
-p, li, dd, figcaption,
-.lead, .hero__sub, .page-hero p, .card p, .sol__body p, .creed__body,
-.faq-item > p, .bridge-note p { text-wrap: pretty; }
+/* 本文には text-wrap: pretty を掛けない。
+   Safari では行を組み直す処理が文節での折り返しと重なって、
+   行が早く折れる・同じ文字が二重に描かれる、といった崩れが出た（先方の画面）。 */
 /* ---- 和文の折り返し位置 ----
+   見出しと短いラベルだけ、文節（HTML に入れた <wbr> の位置）で折る。
    word-break: auto-phrase（文節で折る）は Chrome 系しか対応しておらず、
-   Safari では語の途中で改行されてしまう（「お伝えす／る」など）。
-   そこで文節の切れ目を HTML 側に <wbr> として持たせ、
-   ここでは「<wbr> のあるところだけで折る」を指定する。
-   これでブラウザや画面幅によらず、いつも文節で折り返る。
-   <wbr> は tools/typeset.py が入れる（原稿を変えたら実行し直すこと）。 */
-h1, h2, h3, h4, h5, h6,
-p, li, dd, dt, summary, figcaption, blockquote, cite,
-.lead, .hero__sub, .page-hero p, .creed__body, .card p, .sol__body p {
+   Safari では見出しが語の途中で割れていたため、<wbr> で位置を持たせている。
+   本文は、ふつうの日本語組版（どこでも折れて、句読点などの禁則だけ守る）。
+   本文まで文節で折ると、行の右が文節ひとつ分ずつ空いてガタガタになる。
+   <wbr> は tools/typeset.py が入れる（原稿を変えたら実行し直すこと）。
+   ここで指定する範囲と、typeset.py の PHRASE_TAGS / PHRASE_CLASSES は揃えること。 */
+h1, h2, h3, h4, h5, h6, summary, dt,
+.eyebrow, .breadcrumb, .gate__genres, .vision__lead {
   word-break: keep-all;
-  /* ここで overflow-wrap: break-word を足すと、次の行に送るべき語を
-     いまの行に詰めこもうとして「見つかりません／でした」のように
-     語の途中で割れる。文節が枠に収まることは tools/typeset.py 側で
-     担保しているので、ここでは折り返しを <wbr> の位置だけに限る。 */
 }
+
 /* 長いURLやメールアドレスは、どこでも折ってよい */
 .prose a, .spec dd, .form__note a, .footer-links a { overflow-wrap: break-word; }
 
@@ -886,7 +882,7 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   font-size: clamp(1.12rem, 2.3vw, 1.5rem); line-height: 2.05; letter-spacing: .04em;
   color: var(--deep); position: relative;
   max-width: 34em; margin-inline: auto;   /* 中央揃えなので列幅ではなく字数で決める */
-  text-wrap: pretty;
+  text-wrap: balance;   /* 中央揃えなので行の長さを均す */
 }
 .quote cite {
   display: block; margin-top: 1.4rem; font-style: normal;

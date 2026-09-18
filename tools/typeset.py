@@ -15,6 +15,13 @@
 #  CSS 側は word-break: keep-all で「<wbr> のあるところだけで折る」ようにする。
 #  これならブラウザに関係なく、どの画面幅でも文節で折り返る。
 #
+#  ただし文節で折るのは「見出しと短いラベル」だけ（PHRASE_TAGS / PHRASE_CLASSES）。
+#  本文まで文節で折ると、行の右が文節ひとつ分ずつ空いてガタガタになるうえ、
+#  Safari では text-wrap: pretty と重なって、行が早く折れたり、
+#  同じ文字が二重に描かれたりする崩れが出た。本文はふつうの日本語組版
+#  （どこでも折れて、句読点などの禁則だけ守る）にして、
+#  人名・社名とダッシュ・スラッシュまわりだけを綴じる。
+#
 #  文節の判定には budoux（Google 製の日本語分割器）を使う。
 #  導入していない場合は、助詞・句読点をもとにした簡易ルールに切り替わる。
 #
@@ -231,29 +238,134 @@ def refine(chunks):
     return merged
 
 
+# 文節で折る（<wbr> を入れる）要素。CSS の「和文の折り返し位置」と同じ範囲にすること。
+PHRASE_TAGS = {"h1", "h2", "h3", "h4", "h5", "h6", "summary", "dt"}
+PHRASE_CLASSES = {"eyebrow", "breadcrumb", "gate__genres", "vision__lead"}
+NORMAL_TAGS = set()      # 文節で折る要素の中でも、ふつうに折らせたい子要素があればここに
+VOID_TAGS = {"area", "base", "br", "col", "embed", "hr", "img", "input",
+             "link", "meta", "param", "source", "track", "wbr"}
+
+# 本文のなかでも、行をまたいで割れると困る固有名詞。
+# 文字のあいだに WORD JOINER を入れて、途中では折れないようにする。
+NO_SPLIT_NAMES = ["堀之内", "知上会"]
+
+
+def bind_names(text):
+    for w in NO_SPLIT_NAMES:
+        text = text.replace(w, WORD_JOINER.join(w))
+    return text
+
+
+ARROWS = "→←↗↘"
+
+
+def glue_only(text):
+    """本文用：折り返しの印は入れず、折ってほしくない所だけ綴じる"""
+    if not text.strip():
+        return text
+    if text.strip()[0] in ARROWS:
+        i = len(text) - len(text.lstrip())
+        text = text[:i] + WORD_JOINER + text[i:]
+    safe, store = protect_entities(text)
+    return restore_entities(bind_names(glue(safe)), store, text)
+
+
+# 段落の最後が「す。」のような1〜2文字だけの行（泣き別れ）にならないよう、
+# 最後の3文字を綴じて、まとめて次の行へ送る。熟語の途中（漢字と漢字のあいだ）で
+# 綴じ目が来るときだけ、最大5文字まで広げる。綴じる量を小さくしているのは、
+# 前の行が早く終わる（右が空く）のを最小限にするため。
+# CSS の text-wrap: pretty でも防げるが、Safari では崩れの原因になったため使わない。
+BLOCK_TAGS = {"p", "li", "dd", "figcaption", "blockquote"}
+TAIL_MIN, TAIL_MAX = 3, 5
+KANJI = re.compile(r"[一-龥々〆ヵヶ]")
+
+
+def bind_tail(text, split=None):
+    lead = re.match(r"^\s*", text).group(0)
+    trail = re.search(r"\s*$", text).group(0)
+    core = text[len(lead):len(text) - len(trail)] if trail else text[len(lead):]
+    # 目に見える1文字ずつに分ける（実体参照は1文字、WORD JOINER は数えない）
+    units = re.findall(r"&[a-zA-Z#][a-zA-Z0-9]*;|\u2060|.", core, re.S)
+    visible = [u for u in units if u != WORD_JOINER]
+    if len(visible) < TAIL_MIN * 3 or not JP.search(core):
+        return text
+    chars = [CHAR_ENTITIES.get(u, u) if len(u) > 1 else u for u in visible]
+    n = len(chars)
+    k = TAIL_MIN
+    while k < TAIL_MAX and KANJI.match(chars[n - k - 1]) and KANJI.match(chars[n - k]):
+        k += 1
+    if KANJI.match(chars[n - k - 1]) and KANJI.match(chars[n - k]):
+        k = TAIL_MIN
+    # 後ろから k 文字ぶんを探し、そのあいだに WORD JOINER を入れる
+    seen, cut = 0, len(units)
+    while cut > 0 and seen < k:
+        cut -= 1
+        if units[cut] != WORD_JOINER:
+            seen += 1
+    tail = [u for u in units[cut:] if u != WORD_JOINER]
+    return lead + "".join(units[:cut]) + WORD_JOINER.join(tail) + trail
+
+
 def typeset(html, split):
     """HTML のテキストノードだけを処理する（タグ・属性・コメントは触らない）"""
     html = html.replace("<wbr>", "").replace("<wbr/>", "").replace("<wbr />", "")
     html = html.replace(WORD_JOINER, "")
     out = []
     skip = None
+    stack = []   # (タグ名, "phrase" / "normal" / None)
+    blocks = []  # 開いている段落ごとの「最後のテキストの位置」
+
+    def mode():
+        for _, m in reversed(stack):
+            if m:
+                return m
+        return "normal"
+
     for m in re.finditer(r"<!--.*?-->|<[^>]*>|[^<]+", html, re.S):
         seg = m.group(0)
-        if seg.startswith("<!--"):
+        if seg.startswith("<!"):
             out.append(seg)
             continue
         if seg.startswith("<"):
-            tm = re.match(r"</?\s*([a-zA-Z0-9]+)", seg)
+            tm = re.match(r"<(/?)\s*([a-zA-Z0-9]+)", seg)
             if tm:
-                tag = tm.group(1).lower()
-                if seg.startswith("</"):
+                closing, tag = tm.group(1) == "/", tm.group(2).lower()
+                self_closing = seg.rstrip().endswith("/>")
+                if closing:
                     if skip == tag:
                         skip = None
-                elif skip is None and tag in SKIP_TAGS and not seg.rstrip().endswith("/>"):
-                    skip = tag
+                    if tag in BLOCK_TAGS and blocks:
+                        idx = blocks.pop()
+                        if idx is not None and mode() == "normal":
+                            out[idx] = bind_tail(out[idx], split)
+                    for i in range(len(stack) - 1, -1, -1):
+                        if stack[i][0] == tag:
+                            del stack[i:]
+                            break
+                else:
+                    if skip is None and tag in SKIP_TAGS and not self_closing:
+                        skip = tag
+                    if tag in BLOCK_TAGS and not self_closing:
+                        blocks.append(None)
+                    if tag not in VOID_TAGS and not self_closing:
+                        cm = re.search(r'\bclass\s*=\s*"([^"]*)"', seg)
+                        classes = set(cm.group(1).split()) if cm else set()
+                        if tag in PHRASE_TAGS or classes & PHRASE_CLASSES:
+                            stack.append((tag, "phrase"))
+                        elif tag in NORMAL_TAGS:
+                            stack.append((tag, "normal"))
+                        else:
+                            stack.append((tag, None))
             out.append(seg)
             continue
-        out.append(seg if skip else insert_wbr(seg, split))
+        if skip:
+            out.append(seg)
+        elif mode() == "phrase":
+            out.append(insert_wbr(seg, split))
+        else:
+            if blocks and seg.strip():
+                blocks[-1] = len(out)
+            out.append(glue_only(seg))
     return "".join(out)
 
 
