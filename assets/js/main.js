@@ -573,6 +573,42 @@
   });
 
 
+  /* ---------- 表紙の写真を数枚、ゆっくり切り替える ---------- */
+  (function () {
+    var box = document.querySelector(".photo-bg--slides");
+    if (!box) return;
+    var slides = [].slice.call(box.querySelectorAll(".slide"));
+    if (slides.length < 2 || reduce) return;          // 動きを抑える設定では1枚目のまま
+    function load(s) {
+      [].forEach.call(s.querySelectorAll("[data-srcset]"), function (e) { e.srcset = e.getAttribute("data-srcset"); e.removeAttribute("data-srcset"); });
+      [].forEach.call(s.querySelectorAll("img[data-src]"), function (e) { e.src = e.getAttribute("data-src"); e.removeAttribute("data-src"); });
+    }
+    function ready(s) { var im = s.querySelector("img"); return im && im.complete && im.naturalWidth > 0; }
+    var cur = 0, timer = 0, inView = true;
+    function schedule(ms) {
+      clearTimeout(timer);
+      if (inView && !document.hidden) timer = setTimeout(next, ms || 6500);
+    }
+    function next() {
+      var n = (cur + 1) % slides.length;
+      if (!ready(slides[n])) { load(slides[n]); schedule(800); return; }   // まだ読み込み中なら少し待つ
+      slides[n].classList.add("is-on", "is-zoom");
+      slides[cur].classList.remove("is-on");
+      var prev = slides[cur];
+      setTimeout(function () { prev.classList.remove("is-zoom"); }, 1900);  // 消えきってから元の大きさへ
+      cur = n;
+      load(slides[(cur + 1) % slides.length]);                              // 次の1枚を先に読んでおく
+      schedule();
+    }
+    requestAnimationFrame(function () { slides[0].classList.add("is-zoom"); });
+    window.addEventListener("load", function () { setTimeout(function () { load(slides[1]); }, 600); });
+    document.addEventListener("visibilitychange", function () { schedule(); });
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) { inView = es[0].isIntersecting; schedule(); }).observe(box);
+    }
+    schedule(7000);                                                          // 1枚目は見出しが出そろうまで少し長め
+  })();
+
   /* console 署名（隠し） */
   try {
     console.log("%c知上会 — 金融教育・資産形成サポート", "color:#1b4f6b;font-size:15px;font-weight:bold;");

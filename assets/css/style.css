@@ -1448,6 +1448,21 @@ a.card:focus-visible, .next-card:focus-visible { transform: translateY(calc(var(
   content: ""; position: absolute; inset: 0;
   background: rgba(250,249,247,.6);
 }
+/* 表紙の写真は、ページごとに3枚をゆっくり切り替える（先方の写真を多く見せるため）。
+   1枚目は HTML に is-on 付きで置いてあるので、JavaScript が動かない環境や
+   動きを抑える設定では、その1枚が静かに表示されるだけになる。 */
+/* <picture> はサイト全体で display: contents（枠を持たない）なので、
+   重ね方と透明度は中の img に指定する。 */
+.photo-bg--slides .slide img {
+  position: absolute; inset: 0; opacity: 0;
+  object-position: var(--pos, 50% 50%);
+  transition: opacity 1.8s var(--ease);
+}
+.photo-bg--slides .slide.is-on img { opacity: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  .photo-bg--slides .slide img { transition: opacity 1.8s var(--ease), transform 9s linear; }
+  .photo-bg--slides .slide.is-zoom img { transform: scale(1.12); }
+}
 /* 白を薄くした分、帯の中の文字は濃紺にする。
    本文・パンくず・英字ラベルを --ink（#1a2b38）に。見出しはもともと --deep。
    4ページ×4幅で、写真のいちばん暗い所に文字が重なっても AA（4.5:1）以上。 */
