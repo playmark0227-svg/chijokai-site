@@ -3,7 +3,7 @@
 配信している画像は **①先方提供の実写 ②提供元の紹介資料 ③Unsplash の写真 ④AI生成画像** の4種類です。
 差し替えるときは、**同じファイル名で上書きして `bash tools/build-images.sh` を実行**すれば反映されます。
 
-最終更新：2026年8月28日
+最終更新：2026年9月22日
 
 ---
 
@@ -16,11 +16,35 @@
 | `portrait.jpg` | トップ「詐欺に遭う人を、一人でも減らしたい」／代表の想い |
 | `founder-talk.jpg` | 資産形成サポート「お金の話を、する相手がいない」 |
 | `founder-phone.jpg` | お問い合わせ 案内カラム |
-| `sea-light.jpg` | トップ「数字で見る知上会」／資産形成サポートのページ見出し／法人の方へ「なぜ初期負担を抑えられるのか」 |
-| `sea-cave.jpg` | お問い合わせのページ見出し／資産形成サポートの濃色セクション |
-| `sea-reef.jpg` | 法人の方へ・代表の想いのページ見出し（不透明度10%の地） |
-| `lesson-sea.jpg` | 代表の想い「詐欺について、知っておいてほしいこと」 |
-| `dive-diver.jpg` | 全ページのCTA帯 |
+| `founder-point.jpg` | 資産形成サポートの表紙（1枚目） |
+| `founder-call.jpg` | 資産形成サポートの表紙 |
+| `founder-standing.jpg` | 代表の想いの表紙 |
+| `divers-slope.jpg` | 代表の想いの表紙（1枚目） |
+| `cave-glow.jpg` | 代表の想いの表紙 |
+| `bay-islands.jpg` | 代表の想いの表紙 |
+| `diver-boat.jpg` | 代表の想いの表紙／トップ |
+| `diver-wall.jpg` | 代表の想い 本文 |
+| `sea-horizon.jpg` | 資産形成サポートの表紙 |
+| `diver-rays.jpg` | 資産形成サポートの表紙 |
+| `rock-arch.jpg` | 資産形成サポートの表紙／法人の方へ 本文 |
+| `inlet-clouds.jpg` | 法人の方への表紙（1枚目）／資産形成サポート 本文 |
+| `reef-rays.jpg` | 法人の方への表紙 |
+| `diver-cliff.jpg` | 法人の方への表紙 |
+| `sea-cave.jpg` | 法人の方への表紙／資産形成サポート 本文 |
+| `sunset-friends.jpg` | お問い合わせの表紙（1枚目） |
+| `rays-school.jpg` | お問い合わせの表紙 |
+| `coast-palms.jpg` | お問い合わせの表紙 |
+| `hero-ocean.jpg` | トップの大見出し |
+| `sunset-sea.jpg` | 全ページのCTA帯 |
+
+下層4ページの表紙は、3〜5枚をゆっくり入れ替えるスライドです（2026年9月22日）。
+ページごとに1枚目の系統を変えてあります（人＋海／商談／空と入り江／夕日）。
+`founder-point` `founder-standing` は `_unused/` から戻したもの、
+`founder-call` は新規に書き出したものです。オフィスの3枚は、白い幕（60%）の下でも
+人物が見えるよう、書き出すときに少しだけ締めています。
+
+> `sea-light.jpg` は `rays-school.jpg` と同一の写真でした（名前違いの二重登録）。
+> 2026年9月22日に `rays-school.jpg` へ一本化しています。
 
 使わなかったご提供分は `_unused/` に退避しています（公開対象外）。
 

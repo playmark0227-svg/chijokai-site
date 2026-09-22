@@ -93,6 +93,344 @@
     });
   }
 
+  /* ---------- 改行の見張り ----------
+     「変な改行」をこう決めて、描画された行を測って直す。
+
+       1. 早すぎる改行（いちばん困る）
+          行の右にすき間が残っているのに、次の行へ送られている状態。
+          和文は一文字ごとに折り返せるので、すき間が空くのは
+          「折り返さない塊」（人名・語尾のまとまり・見出しの文節）が
+          まるごと押し出されたとき。文字が左に固まって見える。
+       2. 泣き別れ
+          最後の行に一〜二文字しか残らない状態。
+       3. 行頭・行末の禁則は CSS（line-break: strict）に任せる。
+
+     直し方は「もとの組み方をできるだけ残したまま、必要な要素だけ
+     折り返しをひと段階ずつ許す」。段階は次の5つ。
+
+       0 そのまま
+       1 語尾のまとまり（文末3文字の接着）だけ外す
+       2 接着（人名などの見えない継ぎ目）を全部外す
+       3 見出しの「文節で折る」指定を外し、nowrap の語は空白で区切る
+       4 nowrap と &nbsp; を完全に解く
+       5 メールアドレスや URL のような長い英数字も途中で折る
+
+     実際に描かれた行を測ってから決めるので、画面の幅・比率・
+     文字サイズ・書体の読み込み具合が変わっても、その場に合わせて効く。 */
+  var lineGuard = (function () {
+    var HEAD = { H1: 1, H2: 1, H3: 1, H4: 1, H5: 1, H6: 1, SUMMARY: 1, DT: 1 };
+    var INLINE = {
+      A: 1, ABBR: 1, B: 1, BDI: 1, BR: 1, CITE: 1, CODE: 1, EM: 1, I: 1, MARK: 1,
+      Q: 1, S: 1, SMALL: 1, SPAN: 1, STRONG: 1, SUB: 1, SUP: 1, TIME: 1, U: 1, WBR: 1
+    };
+    var WJ = /⁠/g;
+    var MAX = 5;
+    var memo = (typeof WeakMap === "function") ? new WeakMap() : null;
+
+    function state(el) {
+      if (memo) {
+        var s = memo.get(el);
+        if (!s) { s = { html: el.innerHTML, level: 0 }; memo.set(el, s); }
+        return s;
+      }
+      if (el.dataset.lbRaw == null) { el.dataset.lbRaw = el.innerHTML; el.dataset.lbLevel = "0"; }
+      return { html: el.dataset.lbRaw, level: +el.dataset.lbLevel || 0 };
+    }
+    function remember(el, level) {
+      if (memo) { var s = memo.get(el); if (s) s.level = level; }
+      else el.dataset.lbLevel = String(level);
+    }
+
+    /* 中身が文字と行内要素だけか。
+       中に「行を切る要素」（display が block の <small> など）が入っていると、
+       そこで行が終わるのは当たり前なので、見張りの対象から外す。 */
+    function inlineOnly(el) {
+      for (var i = 0; i < el.children.length; i++) {
+        var c = el.children[i];
+        if (!INLINE[c.tagName]) return false;
+        if (c.tagName !== "BR" && c.tagName !== "WBR") {
+          var disp = getComputedStyle(c).display;
+          if (disp !== "contents" && disp !== "ruby" && disp.indexOf("inline") !== 0) return false;
+        }
+        if (!inlineOnly(c)) return false;
+      }
+      return true;
+    }
+
+    function targets(root) {
+      var list = (root || document).querySelectorAll(
+        "p, li, dd, dt, figcaption, blockquote, h1, h2, h3, h4, h5, h6, summary, .eyebrow"
+      );
+      var out = [];
+      for (var i = 0; i < list.length; i++) {
+        var el = list[i];
+        if (el.classList.contains("reveal-words")) continue;   /* 行マスク側で面倒を見る */
+        if (el.closest(".honeypot")) continue;
+        if (!el.firstChild || !el.textContent.trim()) continue;
+        if (!inlineOnly(el)) continue;
+        out.push(el);
+      }
+      return out;
+    }
+
+    /* 描画された行を取り出す。
+       Range の矩形は「行ごと」ではなく「中の要素ごと」にまとまって返るので、
+       <strong> などが入っていると順番が前後する。上端が近いものを
+       集めてから並べ直さないと、同じ行を別の行と数えてしまう。 */
+    function lines(el, cs) {
+      var rg = document.createRange();
+      rg.selectNodeContents(el);
+      var rects = rg.getClientRects(), out = [], i, j, r, hit;
+      var lh = parseFloat(cs.lineHeight);
+      if (!lh) lh = (parseFloat(cs.fontSize) || 16) * 1.6;
+      for (i = 0; i < rects.length; i++) {
+        r = rects[i];
+        if (!r.height || !r.width) continue;
+        hit = null;
+        for (j = 0; j < out.length; j++) {
+          if (Math.abs(r.top - out[j].top) < lh * 0.55) { hit = out[j]; break; }
+        }
+        if (hit) {
+          if (r.right > hit.right) hit.right = r.right;
+          if (r.left < hit.left) hit.left = r.left;
+        } else {
+          out.push({ top: r.top, left: r.left, right: r.right });
+        }
+      }
+      out.sort(function (a, b) { return a.top - b.top; });
+      return out;
+    }
+
+    /* 悪さの点数。0 なら文句なし。数字は「文字いくつ分おかしいか」に近い。 */
+    function score(el) {
+      var cs = getComputedStyle(el);
+      var ta = cs.textAlign;
+      /* 中央揃え・右揃えは「左に固まる」が起きない。
+         text-wrap: balance / pretty はブラウザが行の長さを均すので触らない。 */
+      if (ta === "center" || ta === "right" || ta === "end") return null;
+      if (/balance|pretty/.test(cs.textWrap || cs.textWrapStyle || "")) return null;
+      if (/^pre/.test(cs.whiteSpace) || cs.whiteSpace === "nowrap") return null;
+      var box = el.getBoundingClientRect();
+      if (!box.width || !box.height) return null;
+      /* 登場演出の拡大・縮小（transform: scale）が掛かっている最中でも
+         正しく測れるよう、実寸との比で目盛りを合わせる。 */
+      var sc = el.offsetWidth ? box.width / el.offsetWidth : 1;
+      if (!sc || !isFinite(sc)) sc = 1;
+      var em = (parseFloat(cs.fontSize) || 16) * sc;
+      var right = box.right - (parseFloat(cs.paddingRight) || 0) * sc - (parseFloat(cs.borderRightWidth) || 0) * sc;
+      var left = box.left + (parseFloat(cs.paddingLeft) || 0) * sc + (parseFloat(cs.borderLeftWidth) || 0) * sc;
+      var L = lines(el, cs);
+      if (L.length < 2) return { bad: 0, lines: L.length };
+      var width = right - left;
+      if (width <= 0) return null;
+      /* 見出しと短いラベルは文節の切れ目で折る設計なので、
+         ある程度のすき間は「わざと」。本文は一文字ごとに折り返せるので、
+         一文字分を超えて空いていれば不自然。 */
+      /* 文節でしか折らない組み方（word-break: keep-all）の見出し・ラベルは、
+         文節ひとつ分のすき間は「わざと」なので、ゆるめに見る。 */
+      var head = HEAD[el.tagName] === 1 || el.classList.contains("eyebrow") || cs.wordBreak === "keep-all";
+      /* 和文は禁則処理のぶん、一〜二文字ぶんのすき間はどうしても出る。
+         そこを超えたぶんだけを「変」と数え、大きく空くほど強く嫌う。 */
+      var tol = head ? Math.max(2.5, width * 0.18 / em) : Math.max(1.4, width * 0.04 / em);
+      /* 書き手が入れた <br> の行は、そこで改行するのが意図なので数えない */
+      var lh = parseFloat(cs.lineHeight) || em * 1.6;
+      var brs = el.getElementsByTagName("br"), forced = [], bi, br;
+      for (bi = 0; bi < brs.length; bi++) {
+        br = brs[bi].getBoundingClientRect();
+        if (br.height || br.top) forced.push(br.top);
+      }
+      var bad = 0, i, gap, last, fi, skip;
+      for (i = 0; i < L.length - 1; i++) {
+        skip = false;
+        for (fi = 0; fi < forced.length; fi++) {
+          if (Math.abs(forced[fi] - L[i].top) < lh * 0.55) { skip = true; break; }
+        }
+        if (skip) continue;
+        gap = (right - L[i].right) / em;
+        if (gap > tol) bad += Math.pow(gap - tol, 1.5);
+      }
+      /* 泣き別れ。一文字だけ残るのは避けたいが、
+         「左に大きく固まる」よりは軽い扱いにする。 */
+      last = (L[L.length - 1].right - L[L.length - 1].left) / em;
+      if (last < 1.6) bad += 1.0;
+      else if (last < 2.4) bad += 0.4;
+      return { bad: bad, lines: L.length };
+    }
+
+    function textNodes(el) {
+      var out = [];
+      (function walk(n) {
+        for (var c = n.firstChild; c; c = c.nextSibling) {
+          if (c.nodeType === 3) out.push(c);
+          else if (c.nodeType === 1) walk(c);
+        }
+      })(el);
+      return out;
+    }
+
+    /* level の段階ぶんだけ折り返しを許して組み直す */
+    function relax(el, level) {
+      var s = state(el), i, j;
+      /* 逃がし弁は要素側の指定で付ける（CSS の指定に確実に勝たせるため）。
+         中の要素に付けたぶんは innerHTML を戻せば一緒に消える。 */
+      el.style.wordBreak = "";
+      el.style.overflowWrap = "";
+      el.innerHTML = s.html;                 /* いつも「もとの組み方」から始める */
+      if (!level) return;
+      var nodes = textNodes(el);
+      if (level === 1) {
+        /* 文末3文字を離さないための接着だけを外す（12文字ぶんを見る） */
+        var budget = 12;
+        for (i = nodes.length - 1; i >= 0 && budget > 0; i--) {
+          var v = nodes[i].nodeValue, take = Math.min(budget, v.length);
+          nodes[i].nodeValue = v.slice(0, v.length - take) + v.slice(v.length - take).replace(WJ, "");
+          budget -= take;
+        }
+      } else {
+        for (i = 0; i < nodes.length; i++) {
+          if (nodes[i].nodeValue.indexOf("⁠") >= 0) nodes[i].nodeValue = nodes[i].nodeValue.replace(WJ, "");
+        }
+      }
+      if (level >= 3) {
+        /* 文節でしか折らない指定（word-break: keep-all）を外す */
+        if (getComputedStyle(el).wordBreak === "keep-all") el.style.wordBreak = "normal";
+        var fixed = el.querySelectorAll(".nw, .vision__q");
+        for (i = 0; i < fixed.length; i++) {
+          var f = fixed[i];
+          /* .nw は「ここでは絶対に切らない」という書き手の指定なので、
+             どの段階でも中身は割らない（空白のところで分けるだけ）。 */
+          if (level >= 4 && !f.classList.contains("nw")) { f.style.whiteSpace = "normal"; continue; }
+          /* 「代表取締役 堀之内 渉」のような並びは、語のまとまりは保ったまま
+             空白のところだけ折れるようにする */
+          var parts = f.textContent.split(/(\s+)/);
+          if (parts.length < 3) continue;
+          var frag = document.createDocumentFragment();
+          for (j = 0; j < parts.length; j++) {
+            if (!parts[j]) continue;
+            if (/^\s+$/.test(parts[j])) frag.appendChild(document.createTextNode(" "));
+            else {
+              var sp = document.createElement("span");
+              sp.className = f.className;
+              sp.textContent = parts[j];
+              frag.appendChild(sp);
+            }
+          }
+          f.parentNode.replaceChild(frag, f);
+        }
+        if (level >= 4) {
+          /* CSS で nowrap が掛かっている語も、ここまで来たら解く */
+          var all = el.getElementsByTagName("*");
+          for (i = 0; i < all.length; i++) {
+            var acs = getComputedStyle(all[i]);
+            if (acs.whiteSpace === "nowrap" && !all[i].classList.contains("nw")) all[i].style.whiteSpace = "normal";
+            /* inline-flex などの「かたまりの箱」は途中で折れないので、
+               中身が文字だけのものに限って、ふつうの行内要素に戻す */
+            if (!all[i].children.length && acs.display.indexOf("inline") === 0 && acs.display !== "inline") {
+              all[i].style.display = "inline";
+            }
+          }
+          /* 切りたくない場所に入れた空白（&nbsp;）も、ここまで来たら普通の空白にする */
+          nodes = textNodes(el);
+          for (i = 0; i < nodes.length; i++) {
+            if (nodes[i].nodeValue.indexOf(" ") >= 0) nodes[i].nodeValue = nodes[i].nodeValue.replace(/ /g, " ");
+          }
+        }
+        /* メールアドレスや URL のような長い英数字も、最後の手段として途中で折る。
+           CSS の overflow-wrap では「次の行に入るなら送る」ままなので、
+           区切りのよい位置（@ . - / の直後）に折り返し候補を入れて行を埋める。 */
+        if (level >= 5) {
+          el.style.overflowWrap = "anywhere";
+          nodes = textNodes(el);
+          var LONG = /[A-Za-z0-9][A-Za-z0-9@._\-\/:+]{7,}/g;
+          for (i = 0; i < nodes.length; i++) {
+            var v = nodes[i].nodeValue;
+            LONG.lastIndex = 0;
+            if (!LONG.test(v)) continue;
+            LONG.lastIndex = 0;
+            var frag2 = document.createDocumentFragment(), m, pos = 0, piece, k;
+            while ((m = LONG.exec(v))) {
+              if (m.index > pos) frag2.appendChild(document.createTextNode(v.slice(pos, m.index)));
+              piece = "";
+              for (k = 0; k < m[0].length; k++) {
+                piece += m[0].charAt(k);
+                if ((/[@._\-\/:+]/.test(m[0].charAt(k)) && piece.length >= 3) || piece.length >= 8) {
+                  frag2.appendChild(document.createTextNode(piece));
+                  frag2.appendChild(document.createElement("wbr"));
+                  piece = "";
+                }
+              }
+              if (piece) frag2.appendChild(document.createTextNode(piece));
+              pos = m.index + m[0].length;
+            }
+            if (pos < v.length) frag2.appendChild(document.createTextNode(v.slice(pos)));
+            nodes[i].parentNode.replaceChild(frag2, nodes[i]);
+          }
+        }
+      }
+    }
+
+    /* 見張りを止めて素の組み方を確かめたいときは URL に ?lb=off を付ける（確認用） */
+    var OFF = /[?&]lb=off(&|$)/.test(location.search);
+
+    /* 要素ひとつを見て、いちばん素直に収まる段階に組み替える */
+    function fix(el) {
+      if (OFF) return 0;
+      var s = state(el);
+      if (s.level) relax(el, 0);             /* 前回ゆるめていたら、まず戻す */
+      var base = score(el);
+      if (!base) { remember(el, 0); return 0; }
+      if (base.bad <= 0.01) { remember(el, 0); return 0; }
+      /* 直せる余地（接着・nowrap・文節指定）が無ければ、これ以上は触らない */
+      if (el.textContent.indexOf("⁠") < 0 && !el.querySelector(".nw, .vision__q") &&
+          !(HEAD[el.tagName] === 1 || el.classList.contains("eyebrow"))) { remember(el, 0); return 0; }
+      var bestScore = base.bad, best = 0, lv, cur;
+      for (lv = 1; lv <= MAX; lv++) {
+        relax(el, lv);
+        cur = score(el);
+        if (!cur) break;
+        /* もとの組み方から離れるほど、わずかに不利にする。
+           同じくらいの見た目なら、書き手の意図どおりの組み方を選ぶ。 */
+        var v = cur.bad + lv * 0.12;
+        if (v < bestScore - 0.01) { bestScore = v; best = lv; }
+        if (cur.bad <= 0.01) break;
+      }
+      relax(el, best);
+      remember(el, best);
+      return best;
+    }
+
+    var list = null, timer = 0, lastW = -1;
+    function runAll() {
+      if (!list) list = targets();
+      lastW = document.documentElement.clientWidth;
+      for (var i = 0; i < list.length; i++) {
+        if (!list[i].isConnected) continue;
+        try { fix(list[i]); } catch (e) { /* 1要素の失敗で全体を止めない */ }
+      }
+    }
+    /* 幅が変わったときだけ測り直す（スマホでアドレスバーが伸び縮みしても走らせない） */
+    function schedule() {
+      if (document.documentElement.clientWidth === lastW) return;
+      clearTimeout(timer);
+      timer = setTimeout(function () { list = null; runAll(); }, 160);
+    }
+
+    return { fix: fix, runAll: runAll, schedule: schedule };
+  })();
+
+  /* 書体が確定してから一度測り、あとは幅が変わるたびに測り直す */
+  (function () {
+    var run = function () { lineGuard.runAll(); };
+    if (document.fonts && document.fonts.ready) {
+      var t = setTimeout(run, 1200);      /* fonts.ready が返らない環境の保険 */
+      document.fonts.ready.then(function () { clearTimeout(t); run(); });
+    } else {
+      run();
+    }
+    window.addEventListener("resize", lineGuard.schedule, { passive: true });
+    window.addEventListener("orientationchange", lineGuard.schedule);
+  })();
+
   /* ---------- 見出しの行マスク ----------
      一度そのままのテキストに戻してブラウザに正しく折らせ、
      できあがった「行」を span で包み直す。
@@ -136,6 +474,8 @@
     /* 素に戻して、ブラウザに自然に折らせる（nowrap の塊はそのまま維持される） */
     if (el.dataset.rawHtml != null) el.innerHTML = el.dataset.rawHtml;
     else el.textContent = text;
+    /* 行に割る前に、この幅で変な改行にならないところまでゆるめておく */
+    try { lineGuard.fix(el); } catch (e) {}
 
     /* まだレイアウトされていない（幅ゼロ・非表示）なら分割しない */
     var box = el.getBoundingClientRect();

@@ -540,6 +540,9 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
    文節での折り返しは <wbr> に任せているが、姓と名のあいだのような
    「文節の切れ目ではあるが、切ってほしくない」場所だけをここで守る。 */
 .nw { white-space: nowrap; }
+/* ここで指定した nowrap や keep-all は、その幅でどうしても行の右が
+   大きく空いてしまうときだけ、assets/js/main.js の「改行の見張り」が
+   要素側の指定で一時的に外す（必要な要素・必要な幅のときだけ）。 */
 .vision__lead::before {
   content: ""; display: block; width: 52px; height: 2px;
   margin: 0 auto clamp(1.1rem, 2.4vw, 1.6rem);
@@ -976,8 +979,12 @@ body[data-page="home"] .site-header:not(.scrolled) .nav__toggle[aria-expanded="t
   overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
 }
 
-/* 指で押す部分は 44x44px 以上を確保する（フッター・パンくず・案件リンク） */
-.footer-links a, .breadcrumb a, .sol__link, .gate__go, .form__note a {
+/* 指で押す部分は 44x44px 以上を確保する（フッター・パンくず・案件リンク）。
+   文の途中に出てくるリンク（.form__note a など）はここに入れない。
+   inline-flex にすると語のまとまりが折り返せない塊になり、
+   行の右が大きく空いてしまう。文中リンクは行の高さで押しやすさを担保する
+   （WCAG 2.5.8 も、文中のリンクは対象サイズの例外としている）。 */
+.footer-links a, .breadcrumb a, .sol__link, .gate__go {
   display: inline-flex; align-items: center; min-height: 44px;
 }
 .footer-links { gap: .1rem; }
