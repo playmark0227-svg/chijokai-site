@@ -249,11 +249,24 @@
         gap = (right - L[i].right) / em;
         if (gap > tol) bad += Math.pow(gap - tol, 1.5);
       }
-      /* 泣き別れ。一文字だけ残るのは避けたいが、
-         「左に大きく固まる」よりは軽い扱いにする。 */
-      last = (L[L.length - 1].right - L[L.length - 1].left) / em;
-      if (last < 1.6) bad += 1.0;
-      else if (last < 2.4) bad += 0.4;
+      /* 泣き別れ。<br> で区切られたまとまりごとに、終わりの行が
+         一〜三文字だけ残っていないかを見る。
+         ただし「左に大きく固まる」よりは軽い扱いにする。 */
+      var segStart = 0, isForced;
+      for (i = 0; i < L.length; i++) {
+        isForced = false;
+        for (fi = 0; fi < forced.length; fi++) {
+          if (Math.abs(forced[fi] - L[i].top) < lh * 0.55) { isForced = true; break; }
+        }
+        if (!isForced && i !== L.length - 1) continue;
+        if (i > segStart) {                       /* 2行以上あるまとまりだけ */
+          last = (L[i].right - L[i].left) / em;
+          if (last < 1.6) bad += 1.8;        /* 一文字だけ残るのは避ける（ただし大きなすき間よりは軽い） */
+          else if (last < 2.6) bad += 0.5;
+          else if (last < 3.6) bad += 0.25;
+        }
+        segStart = i + 1;
+      }
       return { bad: bad, lines: L.length };
     }
 
@@ -341,7 +354,9 @@
         if (level >= 5) {
           el.style.overflowWrap = "anywhere";
           nodes = textNodes(el);
-          var LONG = /[A-Za-z0-9][A-Za-z0-9@._\-\/:+]{7,}/g;
+          /* 英単語（Instagram など）は絶対に割らない。
+             @ や . を含む連なり（メールアドレス・URL）だけを対象にする。 */
+          var LONG = /[A-Za-z0-9][A-Za-z0-9@._\-\/:+]*[@.\/:][A-Za-z0-9@._\-\/:+]{3,}/g;
           for (i = 0; i < nodes.length; i++) {
             var v = nodes[i].nodeValue;
             LONG.lastIndex = 0;
@@ -353,7 +368,8 @@
               piece = "";
               for (k = 0; k < m[0].length; k++) {
                 piece += m[0].charAt(k);
-                if ((/[@._\-\/:+]/.test(m[0].charAt(k)) && piece.length >= 3) || piece.length >= 8) {
+                /* 折ってよいのは区切り記号の直後だけ（語の途中では折らない） */
+                if (/[@._\-\/:+]/.test(m[0].charAt(k)) && piece.length >= 3 && k < m[0].length - 1) {
                   frag2.appendChild(document.createTextNode(piece));
                   frag2.appendChild(document.createElement("wbr"));
                   piece = "";
