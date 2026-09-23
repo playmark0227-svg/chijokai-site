@@ -4,7 +4,7 @@ name: Deploy static site to Pages
 #   1. data/solutions.json から「法人の方へ」の案件一覧を書き出し
 #   2. 書き出した HTML をリポジトリにも戻し（手元と公開物をそろえるため）
 #   3. サイトに必要なファイルだけを GitHub Pages へ公開する
-#      （data/・tools/・Markdown は公開しない）
+#      （data/・tools/・worker/・Markdown は公開しない）
 on:
   push:
     branches: [main]
@@ -65,7 +65,7 @@ jobs:
           mkdir -p _site
           rsync -a --delete \
             --exclude '.git' --exclude '.github' --exclude '.gitignore' --exclude '_site' \
-            --exclude 'data/' --exclude 'tools/' --exclude '*.md' --exclude '__pycache__/' \
+            --exclude 'data/' --exclude 'tools/' --exclude 'worker/' --exclude '*.md' --exclude '__pycache__/' \
             ./ _site/
 
       - uses: actions/configure-pages@v5

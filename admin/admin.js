@@ -3,18 +3,22 @@
 
    しくみ
      ・案件の中身は data/solutions.json にだけ持つ。
-     ・この画面は GitHub の API で JSON を読み、編集して、
-       JSON と新しい画像を「1回のコミット」でリポジトリに書き込む。
+     ・この画面で JSON を読み、編集して、JSON と新しい画像を「1回のコミット」でリポジトリに書き込む。
+       書き込み方は2通り。
+         Google でログイン（ふだん使う）… 中継（worker/ の Cloudflare Worker）が Google のログインを確かめ、
+             許可したアカウントのときだけ、中継が預かっている GitHub の鍵で書き込む。
+         合言葉でログイン（制作担当の予備）… GitHub のトークンで、この画面から直接 GitHub の API に書き込む。
      ・その push をきっかけに GitHub Actions が tools/build-solutions.py を実行し、
        solutions.html を書き出して公開する（1〜2分）。
      ・公開されたページの data-rev（JSON の SHA-256 先頭12桁）を見て、反映を確かめる。
 
    守っていること
-     ・合言葉（GitHub のトークン）はページのどこにも保存しない（メモリだけ）。
+     ・Google のパスワードはこの画面には一切来ない（Google の画面で入れる）。
+     ・ログインのしるし（中継が発行・8時間）と合言葉は、ページのどこにも保存しない（メモリだけ）。
        このページは他の案件サイトと同じオリジンにあり、保存すると読まれうるため。
-       記憶はブラウザのパスワード保存機能に任せる（ログイン欄をそのための形にしてある）。
+       合言葉の記憶はブラウザのパスワード保存機能に任せる（ログイン欄をそのための形にしてある）。
      ・書き込む直前に「土台にするコミットでの JSON」が読み込んだときと同じか確かめ、
-       違えば上書きせずに止める（ref の更新は fast-forward のみ）。
+       違えば上書きせずに止める（ref の更新は fast-forward のみ。中継も同じ手順）。
      ・下書き（localStorage）は他のページからも書けるので、復元前に確認し、
        画像名・画像の中身・タグの色を検査してから使う。
 
@@ -36,8 +40,16 @@
     maxFileBytes: 25 * 1024 * 1024,
     limits: { title: 60, label: 40, alt: 160, body: 1200, topic: 60, tag: 24, tags: 6 },
     deployTimeoutMs: 8 * 60 * 1000,
-    deployPollMs: 8000
+    deployPollMs: 8000,
+    /* Google でログイン。値は tools/admin-google.py で入れる（手で直すなら index.html の CSP もそろえる）。
+       どちらかが空のあいだは、合言葉でのログインだけになる。 */
+    googleClientId: "",
+    relay: "",
+    loginHint: "info@chijoukai.com",
+    maxPublishBytes: 9 * 1024 * 1024      /* 中継に1回で送れる大きさ（画像込み）。中継側の上限より少し小さく */
   };
+  var GOOGLE_ON = !!(CONFIG.googleClientId && /^https:\/\/|^http:\/\/localhost[:/]/.test(CONFIG.relay));
+  var RELAY = CONFIG.relay.replace(/\/+$/, "");
   var LEGACY_TOKEN_KEY = "chijoukai-admin-token";   /* 以前の版が保存していた場所（起動時に消す） */
   var DRAFT_KEY = "chijoukai-admin-draft:" + CONFIG.owner + "/" + CONFIG.repo;
   var FIELDS = ["id", "visible", "title", "label", "image", "alt", "body", "tags", "topic"];
@@ -50,8 +62,10 @@
   var NAMES = { title: "案件名", label: "英字の小見出し", image: "画像", alt: "画像の説明", body: "説明文", topic: "お問い合わせに引き継ぐ名前", id: "ページ内リンク名", tags: "タグ" };
 
   var S = {
-    mode: null,        // "github"（本番）| "demo"（お試し：書き込まない）
-    token: null,       // メモリにだけ持つ
+    mode: null,        // "google"（中継経由）| "github"（合言葉で直接）| "demo"（お試し：書き込まない）
+    token: null,       // 合言葉。メモリにだけ持つ
+    session: null,     // 中継が発行したログインのしるし。メモリにだけ持つ
+    email: "",         // Google でログインしたアカウント
     base: null,        // { doc, items, raw, sha } 最後に読み込んだ／公開した時点の内容
     items: [],         // 編集中の内容（各要素に内部用の _key を持たせる）
     images: {},        // この画面で選んだ画像 name -> { bytes, url, w, h, note, committed }
@@ -265,6 +279,171 @@
   }
 
   /* =================================================================
+     中継（Google でログインしたとき）
+     ================================================================= */
+  function relay(path, opts) {
+    opts = opts || {};
+    var headers = {};
+    if (S.session && !opts.noAuth) headers.Authorization = "Bearer " + S.session;
+    if (opts.body) headers["Content-Type"] = "application/json";
+    return fetch(RELAY + path, {
+      method: opts.method || "GET",
+      headers: headers,
+      body: opts.body || undefined,
+      cache: "no-store",
+      credentials: "omit",
+      referrerPolicy: "no-referrer"
+    }).catch(function () {
+      var e = new Error("インターネットにつながっていないか、管理画面の中継に接続できません。通信のよい場所でもう一度お試しください。");
+      e.status = 0;
+      throw e;
+    }).then(function (res) {
+      return res.text().then(function (text) {
+        var data = null;
+        try { data = text ? JSON.parse(text) : null; } catch (e) { data = null; }
+        if (!res.ok) {
+          var code = data && data.error || "";
+          var err = new Error(data && data.message || "中継でエラーが起きました（" + res.status + "）。少し待ってからやり直してください。");
+          err.status = res.status;
+          err.code = code;
+          err.session = res.status === 401;                   /* ログインし直せば続けられる */
+          err.conflict = code === "conflict";
+          throw err;
+        }
+        return data;
+      });
+    });
+  }
+  function startSession(credential) {
+    return relay("/api/session", { method: "POST", body: JSON.stringify({ credential: credential }), noAuth: true }).then(function (r) {
+      if (!r || !r.session) throw new Error("ログインできませんでした。もう一度お試しください。");
+      S.session = r.session;
+      S.email = r.email || "";
+    });
+  }
+  /* 公開：JSON と新しい画像を中継に渡す。中継が土台の JSON を確かめてから1回のコミットで書く。
+     返事が来ないまま切れても、送り直せば中継が「もう届いている」と答えるので二重にはならない。 */
+  function publishViaRelay(json, images, message) {
+    var body = JSON.stringify({
+      baseSha: S.base.sha,
+      json: json,
+      message: message,
+      images: images.map(function (n) { return { name: n, b64: toB64(S.images[n].bytes) }; })
+    });
+    if (body.length > CONFIG.maxPublishBytes) {
+      return Promise.reject(new Error("新しい画像が多すぎて、一度に公開できません。画像を入れた案件のうち、いくつかを「サイトに出す」をオフにして先に公開し、残りをあとから公開してください。"));
+    }
+    var attempt = 0;
+    function run() {
+      attempt += 1;
+      return relay("/api/publish", { method: "POST", body: body }).catch(function (e) {
+        var passing = e.status === 0 || ((e.status === 502 || e.status === 503 || e.status === 504) && (!e.code || e.code === "github_error"));
+        if (passing && attempt < 4) return wait(1500 * attempt).then(run);
+        throw e;
+      });
+    }
+    return run();
+  }
+
+  /* ---------- Google のログイン部品（accounts.google.com/gsi/client） ---------- */
+  var gis = { ready: null, waiter: null, busy: false };
+  function loadGis() {
+    if (gis.ready) return gis.ready;
+    gis.ready = new Promise(function (resolve, reject) {
+      if (window.google && window.google.accounts && window.google.accounts.id) { resolve(); return; }
+      var s = document.createElement("script");
+      s.src = "https://accounts.google.com/gsi/client";
+      s.async = true;
+      s.onload = function () { resolve(); };
+      s.onerror = function () { reject(new Error("Google のログイン部品を読み込めませんでした。通信を確かめて、ページを再読み込みしてください。")); };
+      document.head.appendChild(s);
+    }).then(function () {
+      window.google.accounts.id.initialize({
+        client_id: CONFIG.googleClientId,
+        callback: function (res) { if (gis.waiter && res && res.credential) gis.waiter(res.credential); },
+        auto_select: false,
+        cancel_on_tap_outside: true,
+        context: "signin",
+        ux_mode: "popup",
+        itp_support: true,
+        login_hint: CONFIG.loginHint || undefined
+      });
+    }).catch(function (e) { gis.ready = null; throw e; });
+    return gis.ready;
+  }
+  function renderGoogleButton(el) {
+    el.textContent = "";
+    window.google.accounts.id.renderButton(el, {
+      type: "standard", theme: "outline", size: "large", text: "signin_with", shape: "pill",
+      logo_alignment: "left", locale: "ja", width: Math.max(200, Math.min(320, el.clientWidth || 320))
+    });
+  }
+  function setGoogleStatus(msg) {
+    var p = $("#google-status");
+    p.textContent = msg || ""; p.hidden = !msg;
+  }
+  /* ログイン画面の「Google でログイン」 */
+  function googleLogin(credential) {
+    if (S.mode || gis.busy) return;          /* 続けて押されても1回だけ */
+    gis.busy = true;
+    showLoginError("");
+    setGoogleStatus("ログインを確かめています…");
+    startSession(credential).then(function () {
+      S.mode = "google";
+      setGoogleStatus("案件の一覧を読み込んでいます…");
+      return load();
+    }).catch(function (err) {
+      S.session = null; S.email = ""; S.mode = null;
+      $("#app").hidden = true; $("#bar-actions").hidden = true; $("#login").hidden = false;
+      showLoginError(err.message);
+      setStatus("", "");
+    }).then(function () { gis.busy = false; setGoogleStatus(""); });
+  }
+  /* ログインの期限が切れたとき、編集内容を消さずにログインし直してもらう */
+  function reauthGoogle(msg) {
+    var d = $("#dlg-google"), cancel = $("#dlg-google-cancel"), errP = $("#dlg-google-error");
+    $("#dlg-google-body").textContent = (msg ? msg + " " : "") + "編集した内容はそのまま残っています。ログインし直すと、続けて進めます。";
+    errP.hidden = true;
+    return new Promise(function (resolve) {
+      var done = false;
+      function finish(v) {
+        if (done) return;
+        done = true;
+        gis.waiter = googleLogin;
+        cancel.removeEventListener("click", onCancel);
+        d.removeEventListener("cancel", onEsc);
+        if (d.open) d.close();
+        resolve(v);
+      }
+      function onCancel() { finish(false); }
+      function onEsc(e) { e.preventDefault(); finish(false); }
+      gis.waiter = function (credential) {
+        errP.hidden = true;
+        var before = S.email;
+        startSession(credential).then(function () {
+          if (before && S.email !== before) toast("別のアカウント（" + S.email + "）でログインし直しました。");
+          finish(true);
+        }).catch(function (e) { errP.textContent = e.message; errP.hidden = false; });
+      };
+      cancel.addEventListener("click", onCancel);
+      d.addEventListener("cancel", onEsc);
+      d.showModal();
+      loadGis().then(function () { renderGoogleButton($("#dlg-google-btn")); })
+        .catch(function (e) { errP.textContent = e.message; errP.hidden = false; });
+    });
+  }
+  /* 中継への問い合わせを、ログインが切れていたらログインし直してから、もう一度だけ行う */
+  function withSession(fn) {
+    return fn().catch(function (e) {
+      if (S.mode !== "google" || !e.session) throw e;
+      return reauthGoogle(e.message).then(function (ok) {
+        if (!ok) { var c = new Error("ログインし直すまで、この操作はできません。"); c.cancelled = true; throw c; }
+        return fn();
+      });
+    });
+  }
+
+  /* =================================================================
      データ
      ================================================================= */
   function normalizeItem(it) {
@@ -398,13 +577,14 @@
   }
 
   /* ---------- 下書きの自動保存（うっかり閉じても消えないように） ---------- */
+  function writes() { return S.mode === "google" || S.mode === "github"; }   /* 本当に公開するモード（お試しでない） */
   function draftItem(it) {
     var p = plainItem(it), b = baseByKey(it._key);
     p._baseId = b ? b.id : null;    /* 読み込み直したときに、元のどの案件かを突き合わせる */
     return p;
   }
   function saveDraft() {
-    if (!S.base || S.mode !== "github") return;
+    if (!S.base || !writes()) return;
     try {
       if (!isDirty()) { localStorage.removeItem(DRAFT_KEY); return; }
       var draft = { v: 2, baseSha: S.base.sha, savedAt: Date.now(), items: S.items.map(draftItem), images: {} };
@@ -431,7 +611,7 @@
   /* 下書きは同じオリジンの他のページからも書けるので、確認してから・検査してから使う */
   function restoreDraft() {
     var d = takeDraft();
-    if (!d || S.mode !== "github") return Promise.resolve();
+    if (!d || !writes()) return Promise.resolve();
     var when = new Date(+d.savedAt || Date.now());
     var whenText = (when.getMonth() + 1) + "月" + when.getDate() + "日 " + when.getHours() + ":" + ("0" + when.getMinutes()).slice(-2);
     if (d.baseSha !== S.base.sha) {
@@ -1032,22 +1212,29 @@
     }
 
     S.busy = true;
+    stopWatch();          /* 前回の反映確認は打ち切る（失敗したときの表示を上書きさせない） */
     lockUi(true);
     setStatus("公開しています…", "busy");
-    var files = [{ path: CONFIG.dataPath, bytes: bytes }].concat(images.map(function (n) {
-      return { path: CONFIG.imgDir + n, bytes: S.images[n].bytes };
-    }));
     var message = commitMessage(ch);
-    var mySha;
+    var send;
 
-    gitBlobSha(bytes).then(function (sha) {
-      mySha = sha;
-      return commitWithRetry(files, message, S.base.sha, mySha);
-    }).then(function () {
-      finishPublished(json, mySha, snapshot, images);
+    if (S.mode === "google") {
+      /* 中継が書き込み、書いた JSON の blob 名（sha）と反映確認用の rev を返す */
+      send = publishViaRelay(json, images, message);
+    } else {
+      var files = [{ path: CONFIG.dataPath, bytes: bytes }].concat(images.map(function (n) {
+        return { path: CONFIG.imgDir + n, bytes: S.images[n].bytes };
+      }));
+      send = gitBlobSha(bytes).then(function (mySha) {
+        return commitWithRetry(files, message, S.base.sha, mySha).then(function () { return { sha: mySha }; });
+      });
+    }
+
+    send.then(function (r) {
+      finishPublished(json, r.sha, snapshot, images);
       clearDraft();
       saveDraft();          /* 公開中にしていた編集（まだ公開していない分）があれば残す */
-      return sha256hex(bytes).then(function (h) { watchDeploy(h.slice(0, 12)); });
+      return (r.rev ? Promise.resolve(r.rev) : sha256hex(bytes).then(function (h) { return h.slice(0, 12); })).then(watchDeploy);
     }).catch(function (e) {
       S.busy = false;
       lockUi(false);
@@ -1063,7 +1250,12 @@
         });
         return;
       }
-      if (e.status === 401 || e.status === 403) {
+      if (S.mode === "google" && e.session) {
+        setStatus("公開できませんでした（ログインの期限切れ）", "error");
+        reauthGoogle(e.message).then(function (ok) { if (ok) doPublish(changes()); else refreshStatus(); });
+        return;
+      }
+      if (S.mode === "github" && (e.status === 401 || e.status === 403)) {
         setStatus("公開できませんでした（合言葉）", "error");
         reauth(e.message).then(function (ok) { if (ok) doPublish(changes()); else refreshStatus(); });
         return;
@@ -1098,6 +1290,11 @@
     });
   }
 
+  function stopWatch() {
+    var w = S.watch;
+    w.gen += 1;
+    clearInterval(w.timer); w.timer = 0; w.check = null;
+  }
   /* 反映の確認：公開ページの data-rev が、いま公開した JSON と同じになるのを待つ */
   function watchDeploy(rev) {
     var w = S.watch, gen = ++w.gen, started = Date.now();
@@ -1184,10 +1381,12 @@
     return "";
   }
   function logout(message) {
-    S.token = null; S.mode = null; S.base = null; S.items = []; S.images = {};
-    clearInterval(S.watch.timer); S.watch.timer = 0; S.watch.check = null; S.watch.gen += 1;
+    S.token = null; S.session = null; S.email = ""; S.mode = null; S.base = null; S.items = []; S.images = {};
+    stopWatch();
     $("#app").hidden = true; $("#bar-actions").hidden = true; $("#login").hidden = false;
     $("#token").value = "";
+    /* 次に開いたとき、Google が自動で同じアカウントを選ばないように */
+    if (window.google && window.google.accounts && window.google.accounts.id) window.google.accounts.id.disableAutoSelect();
     showLoginError(message || "");
   }
   function showLoginError(msg) {
@@ -1202,6 +1401,11 @@
           if (!r.ok) throw new Error("data/solutions.json を読み込めませんでした。");
           return r.text();
         }).then(function (raw) { return { raw: raw, sha: "demo" }; })
+      : S.mode === "google"
+      ? withSession(function () { return relay("/api/solutions"); }).then(function (r) {
+          if (!r || typeof r.raw !== "string" || !/^[0-9a-f]{40}$/.test(r.sha || "")) throw new Error("案件のデータを読み込めませんでした。少し待ってからやり直してください。");
+          return { raw: r.raw, sha: r.sha };
+        })
       : gh(R()).then(function (repo) {
           /* 読むだけの合言葉で入ってしまい、全部編集してから公開で失敗するのを防ぐ */
           if (repo && repo.permissions && repo.permissions.push === false) {
@@ -1216,10 +1420,12 @@
       S.lastDeleted = null;
       $("#login").hidden = true; $("#app").hidden = false; $("#bar-actions").hidden = false;
       $("#link-site").href = CONFIG.site + "solutions.html";
+      $("#btn-logout").textContent = S.email ? "ログアウト（" + S.email + "）" : "ログアウト";
       return restoreDraft();
     }).then(function () {
       S.selected = S.items[0] ? S.items[0]._key : null;
       renderList(); fillEditor(); initPreview(); refreshStatus();
+      if (S.watch.check) S.watch.check(false);   /* 反映の確認中なら、その表示にすぐ戻す */
     });
   }
 
@@ -1303,5 +1509,16 @@
   try { localStorage.removeItem(LEGACY_TOKEN_KEY); sessionStorage.removeItem(LEGACY_TOKEN_KEY); } catch (e) {}
   bindTop();
   bindEditor();
+  /* 中継の設定が済んでいれば「Google でログイン」を主にし、合言葉は制作担当向けにたたむ */
+  if (GOOGLE_ON) {
+    $("#login").classList.add("login--google");
+    $("#google-wrap").hidden = false;
+    $("#token-box").open = false;
+    $("#google-hint").textContent = CONFIG.loginHint || "管理用のアカウント";
+    gis.waiter = googleLogin;
+    setGoogleStatus("ログインの準備をしています…");
+    loadGis().then(function () { setGoogleStatus(""); renderGoogleButton($("#google-btn")); })
+      .catch(function (e) { setGoogleStatus(""); showLoginError(e.message); });
+  }
   if (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) $("#demo-wrap").hidden = false;
 })();

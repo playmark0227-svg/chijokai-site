@@ -36,20 +36,28 @@ bash tools/stamp-assets.sh
 追加・編集・並べ替え・非公開・削除・画像の差し替えができます。
 
 ```
-管理画面 ──(GitHub API で1コミット)──▶ data/solutions.json ＋ 新しい画像
-                                          │ push をきっかけに GitHub Actions
-                                          ▼
+管理画面 ──「Google でログイン」──▶ 中継（worker/・Cloudflare Worker）
+                                     │ Google のログインを確かめ、許可したアカウントだけ
+                                     ▼ GitHub API で1コミット
+                      data/solutions.json ＋ 新しい画像
+                                     │ push をきっかけに GitHub Actions
+                                     ▼
                       tools/build-solutions.py が solutions.html を書き出し
                       （カード・件数・WebP・文節の改行）→ リポジトリに戻して公開
 ```
 
-- **ログイン**：GitHub の fine-grained トークン（管理画面では「合言葉」と表記）を使います。
-  リポジトリがこのアカウントにあるため、**発行は制作担当が行い、先方にお渡しします**
-  （対象は `chijokai-site` だけ・権限は **Contents: Read and write** だけ・有効期限は90日程度）。
-  手順は管理画面のログイン欄の「制作担当向け」にあります。classic トークン（`ghp_`）は受け付けません。
-- **合言葉は保存しない**：`playmark0227-svg.github.io` はほかの案件サイトと同じオリジンなので、
-  ページはトークンを localStorage などに残しません（メモリだけ）。記憶はブラウザのパスワード保存機能に任せます。
-  知上会の独自ドメインに移したら、この制限は緩められます。
+- **ログイン（ふだん）**：「Google でログイン」。使えるのは `worker/wrangler.jsonc` の
+  `ALLOWED_EMAILS`（いまは `info@chijoukai.com`）だけです。Google のパスワードは Google の画面で入れるので、
+  管理画面や中継には届きません。GitHub の鍵は中継が秘密の値として預かり、ブラウザには渡しません。
+  中継は `data/solutions.json` と `assets/img/sol-*.jpg` しか書き込みません。
+  **初回の設定（Google Cloud・Cloudflare）は [`worker/README.md`](worker/README.md) の手順で制作担当が行います。**
+  設定が済むまでは、下の「合言葉」でのログインだけが表示されます。
+- **ログイン（制作担当の予備）**：GitHub の fine-grained トークン（管理画面では「合言葉」と表記）でも入れます。
+  中継が止まったときなどの予備です（対象は `chijokai-site` だけ・権限は **Contents: Read and write** だけ・
+  有効期限は90日程度）。手順は管理画面のログイン欄の「制作担当向け」にあります。classic トークン（`ghp_`）は受け付けません。
+- **ログイン情報は保存しない**：`playmark0227-svg.github.io` はほかの案件サイトと同じオリジンなので、
+  ページは中継のログインのしるし（8時間有効）もトークンも localStorage などに残しません（メモリだけ）。
+  ページを開き直したら、もう一度「Google でログイン」を押します。
 - **「サイトに出さない」の意味**：一覧に表示しないだけです。リポジトリは public なので、
   JSON と画像は誰でも見られます。社外秘の内容は入れない運用にしてください。
 - **反映**：保存から 1〜2 分。公開ページの `data-rev`（JSON の SHA-256 先頭12桁）を見て、
@@ -102,13 +110,15 @@ POST 先の URL を入れるだけで、自動送信に切り替わります（H
 
 ## 独自ドメインに移すとき
 
-`chijoukai.com` などに移す場合は、次の4か所を新しいURLに置き換えます。
+`chijoukai.com` などに移す場合は、次の場所を新しいURLに置き換えます。
 
 1. 各HTMLの `<link rel="canonical">` と `<meta property="og:url">`、`og:image`
 2. `sitemap.xml` の各 `<loc>`
 3. `robots.txt` の `Sitemap:` 行
 4. `index.html` の構造化データ（JSON-LD）内の URL
 5. `admin/admin.js` の `CONFIG.site` と、`admin/index.html` の CSP（`connect-src`）
+6. `worker/wrangler.jsonc` の `ALLOWED_ORIGINS` に新しいオリジンを足して `npx wrangler deploy`、
+   Google Cloud の OAuth クライアントの「承認済みの JavaScript 生成元」にも足す
 
 あわせてリポジトリ直下に `CNAME` ファイル（中身はドメイン名のみ）を置き、
 DNS を GitHub Pages に向けてください。

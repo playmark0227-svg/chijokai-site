@@ -4,13 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<meta name="referrer" content="no-referrer">
-<!-- 管理画面は GitHub のトークンを扱うので、読み込めるものを必要最小限に絞る -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'self' https://api.github.com https://playmark0227-svg.github.io; frame-src 'self' blob: data:; base-uri 'self'; form-action 'none'; object-src 'none'">
+<!-- Google のログインボタンは、どのサイトに置かれているかをこの値で確かめる（no-referrer だと動かない） -->
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<!-- 管理画面はログインの情報を扱うので、読み込める先・送れる先を必要最小限に絞る。
+     accounts.google.com は「Google でログイン」の部品。中継（Worker）の URL は tools/admin-google.py が connect-src に足す -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/style; img-src 'self' blob: data:; connect-src 'self' https://api.github.com https://playmark0227-svg.github.io https://accounts.google.com/gsi/; frame-src 'self' blob: data: https://accounts.google.com/gsi/; base-uri 'self'; form-action 'none'; object-src 'none'">
 <title>管理画面 ｜ 取り扱っている案件 ｜ 知上会</title>
 <link rel="icon" href="../assets/img/favicon.png" type="image/png">
-<link rel="stylesheet" href="admin.css">
-<script src="admin.js" defer></script>
+<link rel="stylesheet" href="admin.css?v=780c17e8">
+<script src="admin.js?v=84d41e82" defer></script>
 </head>
 <body>
 
@@ -39,29 +41,42 @@
   <div class="login__card">
     <h1>管理画面にログイン</h1>
     <p class="login__lead">「法人の方へ」ページの案件一覧を、ここから追加・編集・並べ替えできます。<br>「公開する」を押すと、1〜2分でサイトに反映されます。</p>
-    <form id="login-form" novalidate>
-      <!-- パスワード保存機能（Safari のキーチェーンなど）が「どのサイトの何の鍵か」を覚えるための欄 -->
-      <input type="text" class="visually-hidden" name="username" id="login-user" value="知上会 管理画面" autocomplete="username" readonly tabindex="-1" aria-hidden="true">
-      <label for="token">合言葉（アクセストークン）</label>
-      <input type="password" id="token" name="password" spellcheck="false" autocomplete="current-password" autocapitalize="off" placeholder="github_pat_…" aria-describedby="token-note">
-      <p class="login__note" id="token-note">制作担当からお渡しした <code>github_pat_</code> で始まる文字列です。ブラウザに「パスワードを保存しますか」と聞かれたら保存しておくと、次回から自動で入ります。</p>
-      <p class="login__error" id="login-error" role="alert" hidden></p>
-      <button type="submit" class="btn btn--primary btn--block" id="btn-login">ログイン</button>
-    </form>
-    <div class="help">
-      <p class="help__note">合言葉はパスワードと同じです。人に送ったり、メールやメモに貼ったりしないでください。このページは合言葉を GitHub 以外には送らず、ページの中にも残しません（閉じると消えます）。有効期限が切れたら「ログインできません」と出るので、制作担当に新しいものをご依頼ください。</p>
-      <details>
-        <summary>制作担当向け：合言葉（トークン）の発行手順</summary>
-        <ol>
-          <li>リポジトリ <code>chijokai-site</code> を持つ GitHub アカウントで<a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">新しい fine-grained トークンの作成画面</a>を開く。</li>
-          <li>Token name に <code>知上会 管理画面（堀之内さん）</code> など、誰に渡したか分かる名前を入れる。Expiration は <b>90日</b> 程度にする（無期限にしない）。</li>
-          <li>Repository access は <b>Only select repositories</b> で <code>chijokai-site</code> だけを選ぶ。</li>
-          <li>Permissions → Repository permissions の <b>Contents</b> を <b>Read and write</b> にする（ほかは付けない）。</li>
-          <li>Generate token で表示された文字列を、安全な方法で先方に渡す。渡した相手と期限を控えておき、期限前に作り直す。</li>
-        </ol>
-        <p class="help__note">この管理画面は、ほかの案件サイトと同じアドレス（playmark0227-svg.github.io）の下にあります。そのため、ページがトークンをブラウザに保存することはしていません。知上会の独自ドメインに移ったら、この制限は緩められます。</p>
-      </details>
+
+    <!-- Google でログイン（中継の設定が済むと表示される） -->
+    <div class="login__google" id="google-wrap" hidden>
+      <div class="gbtn" id="google-btn" aria-live="polite"></div>
+      <p class="login__status" id="google-status" role="status" hidden></p>
+      <p class="login__note">管理用の Google アカウント（<span id="google-hint">info@chijoukai.com</span>）でログインしてください。パスワードは Google の画面にだけ入れます。この管理画面がパスワードを見たり、残したりすることはありません。</p>
     </div>
+
+    <p class="login__error" id="login-error" role="alert" hidden></p>
+
+    <details class="login__alt" id="token-box" open>
+      <summary id="token-summary">制作担当向け：合言葉（アクセストークン）でログイン</summary>
+      <form id="login-form" novalidate>
+        <!-- パスワード保存機能（Safari のキーチェーンなど）が「どのサイトの何の鍵か」を覚えるための欄 -->
+        <input type="text" class="visually-hidden" name="username" id="login-user" value="知上会 管理画面" autocomplete="username" readonly tabindex="-1" aria-hidden="true">
+        <label for="token">合言葉（アクセストークン）</label>
+        <input type="password" id="token" name="password" spellcheck="false" autocomplete="current-password" autocapitalize="off" placeholder="github_pat_…" aria-describedby="token-note">
+        <p class="login__note" id="token-note">制作担当からお渡しした <code>github_pat_</code> で始まる文字列です。ブラウザに「パスワードを保存しますか」と聞かれたら保存しておくと、次回から自動で入ります。</p>
+        <button type="submit" class="btn btn--primary btn--block" id="btn-login">ログイン</button>
+      </form>
+      <div class="help">
+        <p class="help__note">合言葉はパスワードと同じです。人に送ったり、メールやメモに貼ったりしないでください。このページは合言葉を GitHub 以外には送らず、ページの中にも残しません（閉じると消えます）。有効期限が切れたら「ログインできません」と出るので、制作担当に新しいものをご依頼ください。</p>
+        <details>
+          <summary>合言葉（トークン）の発行手順</summary>
+          <ol>
+            <li>リポジトリ <code>chijokai-site</code> を持つ GitHub アカウントで<a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">新しい fine-grained トークンの作成画面</a>を開く。</li>
+            <li>Token name に <code>知上会 管理画面（堀之内さん）</code> など、誰に渡したか分かる名前を入れる。Expiration は <b>90日</b> 程度にする（無期限にしない）。</li>
+            <li>Repository access は <b>Only select repositories</b> で <code>chijokai-site</code> だけを選ぶ。</li>
+            <li>Permissions → Repository permissions の <b>Contents</b> を <b>Read and write</b> にする（ほかは付けない）。</li>
+            <li>Generate token で表示された文字列を、安全な方法で先方に渡す。渡した相手と期限を控えておき、期限前に作り直す。</li>
+          </ol>
+          <p class="help__note">この管理画面は、ほかの案件サイトと同じアドレス（playmark0227-svg.github.io）の下にあります。そのため、ページがトークンをブラウザに保存することはしていません。知上会の独自ドメインに移ったら、この制限は緩められます。</p>
+        </details>
+      </div>
+    </details>
+
     <p class="login__demo" id="demo-wrap" hidden>
       <button type="button" class="btn btn--text" id="btn-demo">お試しモード（保存はせず、操作だけ試す）</button>
     </p>
@@ -210,6 +225,19 @@
     <div class="dialog__actions">
       <button type="button" class="btn btn--ghost" id="dlg-token-cancel">あとで</button>
       <button type="button" class="btn btn--primary" id="dlg-token-ok">入れ直して公開する</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Google でログインし直す（編集内容はそのまま） -->
+<dialog class="dialog" id="dlg-google" aria-labelledby="dlg-google-title">
+  <div class="dialog__inner">
+    <h2 id="dlg-google-title">もう一度ログインしてください</h2>
+    <p id="dlg-google-body">ログインの有効期限が切れました。編集した内容はそのまま残っています。</p>
+    <div class="gbtn" id="dlg-google-btn"></div>
+    <p class="login__error" id="dlg-google-error" role="alert" hidden></p>
+    <div class="dialog__actions">
+      <button type="button" class="btn btn--ghost" id="dlg-google-cancel">あとで</button>
     </div>
   </div>
 </dialog>

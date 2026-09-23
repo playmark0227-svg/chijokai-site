@@ -18,3 +18,8 @@ assets/img/_replaced/
 
 # Python のキャッシュ
 __pycache__/
+
+# 管理画面の中継（worker/）の道具と、手元用の秘密の値
+worker/node_modules/
+worker/.wrangler/
+worker/.dev.vars*
