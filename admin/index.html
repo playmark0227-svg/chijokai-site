@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<!-- 管理画面は GitHub のトークンを扱うので、読み込めるものを必要最小限に絞る -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'self' https://api.github.com https://playmark0227-svg.github.io; frame-src 'self' blob: data:; base-uri 'self'; form-action 'none'; object-src 'none'">
+<title>管理画面 ｜ 取り扱っている案件 ｜ 知上会</title>
+<link rel="icon" href="../assets/img/favicon.png" type="image/png">
+<link rel="stylesheet" href="admin.css">
+<script src="admin.js" defer></script>
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar__brand">
+    <img src="../assets/img/logo-full.png" alt="知上会" width="600" height="215">
+    <span class="bar__title">管理画面 <span class="bar__sep" aria-hidden="true">／</span> 法人の方へ「取り扱っている案件」</span>
+  </div>
+  <div class="bar__actions" id="bar-actions" hidden>
+    <span class="bar__status" id="status" role="status" aria-live="polite"></span>
+    <button type="button" class="btn btn--ghost" id="btn-discard" disabled>変更を取り消す</button>
+    <button type="button" class="btn btn--primary" id="btn-publish" disabled>変更を公開する</button>
+    <button type="button" class="btn btn--text" id="btn-menu" aria-haspopup="true" aria-expanded="false" aria-controls="menu">その他</button>
+    <div class="menu" id="menu" role="menu" hidden>
+      <button type="button" role="menuitem" id="btn-discard-menu">公開していない変更を取り消す</button>
+      <button type="button" role="menuitem" id="btn-backup">いまの内容をファイルに書き出す（控え）</button>
+      <a role="menuitem" id="link-site" href="../solutions.html" target="_blank" rel="noopener">公開中のページを開く</a>
+      <button type="button" role="menuitem" id="btn-reload">最新の内容を読み込み直す</button>
+      <button type="button" role="menuitem" id="btn-logout">ログアウト</button>
+    </div>
+  </div>
+</header>
+
+<!-- ログイン -->
+<main class="login" id="login">
+  <div class="login__card">
+    <h1>管理画面にログイン</h1>
+    <p class="login__lead">「法人の方へ」ページの案件一覧を、ここから追加・編集・並べ替えできます。<br>「公開する」を押すと、1〜2分でサイトに反映されます。</p>
+    <form id="login-form" novalidate>
+      <!-- パスワード保存機能（Safari のキーチェーンなど）が「どのサイトの何の鍵か」を覚えるための欄 -->
+      <input type="text" class="visually-hidden" name="username" id="login-user" value="知上会 管理画面" autocomplete="username" readonly tabindex="-1" aria-hidden="true">
+      <label for="token">合言葉（アクセストークン）</label>
+      <input type="password" id="token" name="password" spellcheck="false" autocomplete="current-password" autocapitalize="off" placeholder="github_pat_…" aria-describedby="token-note">
+      <p class="login__note" id="token-note">制作担当からお渡しした <code>github_pat_</code> で始まる文字列です。ブラウザに「パスワードを保存しますか」と聞かれたら保存しておくと、次回から自動で入ります。</p>
+      <p class="login__error" id="login-error" role="alert" hidden></p>
+      <button type="submit" class="btn btn--primary btn--block" id="btn-login">ログイン</button>
+    </form>
+    <div class="help">
+      <p class="help__note">合言葉はパスワードと同じです。人に送ったり、メールやメモに貼ったりしないでください。このページは合言葉を GitHub 以外には送らず、ページの中にも残しません（閉じると消えます）。有効期限が切れたら「ログインできません」と出るので、制作担当に新しいものをご依頼ください。</p>
+      <details>
+        <summary>制作担当向け：合言葉（トークン）の発行手順</summary>
+        <ol>
+          <li>リポジトリ <code>chijokai-site</code> を持つ GitHub アカウントで<a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">新しい fine-grained トークンの作成画面</a>を開く。</li>
+          <li>Token name に <code>知上会 管理画面（堀之内さん）</code> など、誰に渡したか分かる名前を入れる。Expiration は <b>90日</b> 程度にする（無期限にしない）。</li>
+          <li>Repository access は <b>Only select repositories</b> で <code>chijokai-site</code> だけを選ぶ。</li>
+          <li>Permissions → Repository permissions の <b>Contents</b> を <b>Read and write</b> にする（ほかは付けない）。</li>
+          <li>Generate token で表示された文字列を、安全な方法で先方に渡す。渡した相手と期限を控えておき、期限前に作り直す。</li>
+        </ol>
+        <p class="help__note">この管理画面は、ほかの案件サイトと同じアドレス（playmark0227-svg.github.io）の下にあります。そのため、ページがトークンをブラウザに保存することはしていません。知上会の独自ドメインに移ったら、この制限は緩められます。</p>
+      </details>
+    </div>
+    <p class="login__demo" id="demo-wrap" hidden>
+      <button type="button" class="btn btn--text" id="btn-demo">お試しモード（保存はせず、操作だけ試す）</button>
+    </p>
+  </div>
+</main>
+
+<!-- 編集 -->
+<main class="app" id="app" hidden>
+
+  <section class="pane pane--list" aria-labelledby="list-title">
+    <div class="pane__head">
+      <h2 id="list-title">案件の一覧 <span class="count" id="count"></span></h2>
+      <button type="button" class="btn btn--small" id="btn-add">＋ 新しい案件</button>
+    </div>
+    <p class="pane__hint">上から順にサイトに並びます。<span class="hide-touch">ドラッグ、または</span>「↑」「↓」で並べ替えできます。</p>
+    <ol class="list" id="list" aria-describedby="list-title"></ol>
+  </section>
+
+  <section class="pane pane--editor" aria-labelledby="editor-title">
+    <div class="pane__head">
+      <h2 id="editor-title">編集</h2>
+      <div class="pane__tools">
+        <button type="button" class="btn btn--small btn--ghost" id="btn-duplicate">複製</button>
+        <button type="button" class="btn btn--small btn--danger" id="btn-delete">削除</button>
+      </div>
+    </div>
+
+    <form class="editor" id="editor" novalidate>
+      <div class="field field--switch">
+        <label class="switch">
+          <input type="checkbox" id="f-visible">
+          <span class="switch__track" aria-hidden="true"></span>
+          <span class="switch__label">サイトに出す</span>
+        </label>
+        <p class="field__hint">オフにすると、サイトの一覧には出ません（ここには残ります）。ただし内容と画像は誰でも見られる場所に置かれるので、社外秘の内容は入れないでください。</p>
+      </div>
+
+      <div class="field">
+        <label for="f-title">案件名 <span class="req">必須</span></label>
+        <input type="text" id="f-title" maxlength="60" data-count="30" aria-describedby="err-title">
+        <p class="field__hint">例：<code>ISS-4 ｜ 空調の省エネ</code>　「｜」の前がサービス名、後ろが分野です。</p>
+        <p class="field__error" data-error="title" id="err-title" aria-live="polite"></p>
+      </div>
+
+      <div class="field">
+        <label for="f-label">英字の小見出し</label>
+        <input type="text" id="f-label" maxlength="40" lang="en" spellcheck="false" placeholder="ENERGY SAVING">
+        <p class="field__hint">案件名の下に小さく出る英字です。空欄でもかまいません。</p>
+      </div>
+
+      <div class="field">
+        <span class="field__label" id="image-label">画像 <span class="req">必須</span></span>
+        <div class="drop" id="drop" tabindex="0" role="button" aria-labelledby="image-label" aria-describedby="drop-hint err-image">
+          <img class="drop__img" id="drop-img" alt="" hidden>
+          <div class="drop__empty" id="drop-empty">
+            <strong class="hide-touch">ここに画像をドラッグ<br>または</strong>クリック（タップ）して選ぶ
+          </div>
+        </div>
+        <input type="file" id="f-file" accept="image/jpeg,image/png,image/webp" hidden>
+        <p class="field__hint" id="drop-hint">横長（16:9 くらい）がきれいに収まります。はみ出た上下は切れて表示されます。大きな画像は自動で縮小します。</p>
+        <p class="field__warn" id="image-warn" hidden></p>
+        <p class="field__error" data-error="image" id="err-image" aria-live="polite"></p>
+      </div>
+
+      <div class="field">
+        <label for="f-alt">画像の説明 <span class="req">必須</span></label>
+        <input type="text" id="f-alt" maxlength="160" aria-describedby="err-alt">
+        <p class="field__hint">目の不自由な方の読み上げや、画像が出ないときに使われます。例：<code>ISS-4 の紹介資料。「空調設備を制御する省エネ機器」と記載</code></p>
+        <p class="field__error" data-error="alt" id="err-alt" aria-live="polite"></p>
+      </div>
+
+      <div class="field">
+        <label for="f-body">説明文 <span class="req">必須</span></label>
+        <textarea id="f-body" rows="7" maxlength="1200" data-count="220" aria-describedby="err-body"></textarea>
+        <p class="field__hint">空行をはさむと段落が分かれます。100〜200字くらいが読みやすい長さです。</p>
+        <p class="field__error" data-error="body" id="err-body" aria-live="polite"></p>
+      </div>
+
+      <fieldset class="field">
+        <legend>タグ <span class="field__opt">6個まで</span></legend>
+        <ul class="tags" id="tags"></ul>
+        <div class="tags__add">
+          <input type="text" id="tag-new" maxlength="24" placeholder="例：初期費用を抑えて導入" aria-label="追加するタグ">
+          <button type="button" class="btn btn--small btn--ghost" id="btn-tag-add">追加</button>
+        </div>
+        <p class="field__hint">色つきは強調したいタグに。<span class="swatch swatch--gold">金</span> 料金・条件の目玉　<span class="swatch swatch--coral">赤茶</span> 社会的な意義</p>
+        <p class="field__error" data-error="tags" id="err-tags" aria-live="polite"></p>
+      </fieldset>
+
+      <details class="more">
+        <summary>くわしい設定</summary>
+        <div class="field">
+          <label for="f-topic">お問い合わせに引き継ぐ名前</label>
+          <input type="text" id="f-topic" maxlength="60">
+          <p class="field__hint">「この案件を相談する」を押したとき、お問い合わせ欄に入る名前です。空欄なら案件名から自動で作ります。</p>
+        </div>
+        <div class="field">
+          <label for="f-id">ページ内リンク名</label>
+          <input type="text" id="f-id" maxlength="40" spellcheck="false" autocapitalize="off" aria-describedby="err-id">
+          <p class="field__hint">半角の小文字・数字・ハイフン。<code>solutions.html#<span id="id-example">iss4</span></code> のように、この案件へ直接飛ぶときに使います。公開後は変えないのがおすすめです。</p>
+          <p class="field__error" data-error="id" id="err-id" aria-live="polite"></p>
+        </div>
+      </details>
+    </form>
+
+    <div class="editor__empty" id="editor-empty" hidden>
+      <p>左の一覧から編集する案件を選ぶか、「＋ 新しい案件」を押してください。</p>
+    </div>
+  </section>
+
+  <section class="pane pane--preview" aria-labelledby="preview-title">
+    <div class="pane__head">
+      <h2 id="preview-title">プレビュー</h2>
+      <div class="seg" role="radiogroup" aria-label="プレビューの画面幅">
+        <button type="button" role="radio" aria-checked="true" data-width="390">スマホ</button>
+        <button type="button" role="radio" aria-checked="false" data-width="820">タブレット</button>
+        <button type="button" role="radio" aria-checked="false" data-width="1180">PC</button>
+      </div>
+    </div>
+    <div class="preview" id="preview-box">
+      <iframe id="preview" title="サイトでの見え方のプレビュー" sandbox="allow-same-origin"></iframe>
+    </div>
+    <p class="pane__hint">選んでいる案件を金の枠で囲んでいます。改行の位置は、公開したあとサイト側で自動で整います。</p>
+  </section>
+</main>
+
+<!-- 公開の確認 -->
+<dialog class="dialog" id="dlg-publish" aria-labelledby="dlg-publish-title">
+  <div class="dialog__inner">
+    <h2 id="dlg-publish-title">この内容で公開します</h2>
+    <ul class="changes" id="changes"></ul>
+    <p class="dialog__note">公開すると、1〜2分でサイトに反映されます。反映の様子はこの画面の右上に表示されます。</p>
+    <div class="dialog__actions">
+      <button type="button" class="btn btn--ghost" id="btn-publish-cancel">やめる</button>
+      <button type="button" class="btn btn--primary" id="btn-publish-ok">公開する</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 合言葉の入れ直し（編集内容はそのまま） -->
+<dialog class="dialog" id="dlg-token" aria-labelledby="dlg-token-title">
+  <div class="dialog__inner">
+    <h2 id="dlg-token-title">合言葉を入れ直してください</h2>
+    <p id="dlg-token-body">合言葉の有効期限が切れたか、書き込みの権限がありません。編集した内容はそのまま残っています。</p>
+    <input type="password" id="dlg-token-input" class="dialog__input" autocomplete="current-password" spellcheck="false" placeholder="github_pat_…" aria-labelledby="dlg-token-title">
+    <div class="dialog__actions">
+      <button type="button" class="btn btn--ghost" id="dlg-token-cancel">あとで</button>
+      <button type="button" class="btn btn--primary" id="dlg-token-ok">入れ直して公開する</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 汎用の確認 -->
+<dialog class="dialog" id="dlg-confirm" aria-labelledby="dlg-confirm-title">
+  <div class="dialog__inner">
+    <h2 id="dlg-confirm-title"></h2>
+    <p id="dlg-confirm-body"></p>
+    <div class="dialog__actions">
+      <button type="button" class="btn btn--ghost" id="dlg-confirm-cancel">やめる</button>
+      <button type="button" class="btn btn--primary" id="dlg-confirm-ok">OK</button>
+    </div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden><span id="toast-text"></span><button type="button" class="toast__action" id="toast-action" hidden></button></div>
+
+<noscript><p class="noscript">この管理画面は JavaScript を使います。ブラウザの設定で有効にしてください。</p></noscript>
+</body>
+</html>

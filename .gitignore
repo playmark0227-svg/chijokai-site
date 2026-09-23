@@ -15,3 +15,6 @@ assets/img/_unsplash_backup/
 
 # 差し替え前の案件カード画像（ローカル保管。公開配信しない）
 assets/img/_replaced/
+
+# Python のキャッシュ
+__pycache__/

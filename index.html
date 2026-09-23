@@ -127,8 +127,8 @@
     <dl class="hero__facts">
       <div><dt>活動開始</dt><dd><b>2018</b><span>年</span></dd></div>
       <div><dt>伴走サポート費用</dt><dd><b>0</b><span>円</span></dd></div>
-      <!-- 取扱件数は NUMBERS セクションおよび solutions.html のカード数と連動 -->
-      <div><dt>取扱ソリューション</dt><dd><b>10</b><span>件</span></dd></div>
+      <!-- 取扱件数（data-sol-count）は tools/build-solutions.py が公開中の案件数で自動更新 -->
+      <div><dt>取扱ソリューション</dt><dd><b data-sol-count>10</b><span>件</span></dd></div>
     </dl>
   </div>
 
@@ -239,7 +239,7 @@
     <h2 class="section-title reveal-words">数字で<wbr>見る知上会</h2>
   </div>
   <div class="wrap stats section-body">
-    <div class="stat" data-reveal data-reveal-delay="1"><div class="stat__num"><span>10</span><span class="unit">件</span></div><div class="stat__label">厳選ソリューション</div></div>
+    <div class="stat" data-reveal data-reveal-delay="1"><div class="stat__num"><span data-sol-count>10</span><span class="unit">件</span></div><div class="stat__label">厳選ソリューション</div></div>
     <div class="stat" data-reveal data-reveal-delay="2"><div class="stat__num">¥<span>0</span></div><div class="stat__label">伴走サポート費用</div></div>
     <div class="stat" data-reveal data-reveal-delay="3"><div class="stat__num"><span>2018</span><span class="unit">年</span></div><div class="stat__label">活動開始</div></div>
     <div class="stat" data-reveal data-reveal-delay="4"><div class="stat__num">∞</div><div class="stat__label">生涯つづく伴走の姿勢</div></div>
